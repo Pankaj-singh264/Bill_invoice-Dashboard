@@ -4,12 +4,6 @@ import Sidebar from '../Components/Sidebar';
 const CustomerPage = () => {
   return (
     <div className="flex min-h-screen">
-      
-      {/* Sidebar */}
-      <div className="hidden md:block w-60 bg-gray-800 text-white">
-        <Sidebar />
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
         <div className="bg-white border rounded-xl p-6 md:p-10 w-full max-w-7xl mx-auto">
