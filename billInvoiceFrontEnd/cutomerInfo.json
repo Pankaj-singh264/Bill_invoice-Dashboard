@@ -1,0 +1,101 @@
+{
+  "customers": [
+    {
+      "id": 12,
+      "companyName": "Mu Manufacturing 12",
+      "companyPhone": "9099001122",
+      "companyEmail": "info12@mumfg.com",
+      "billingAddress": "505 Manufacturing Hub",
+      "state": "Gujarat",
+      "pinCode": "380002",
+      "city": "Surat",
+      "gstRegistered": "yes",
+      "gstin": "24MU1234567890",
+      "panNumber": "MU1234567M",
+      "eInvoice": false,
+      "eInvoiceData": "",
+      "paymentMethod": "Credit Card",
+      "password": "muMfgPass",
+      "confirmPassword": "muMfgPass",
+      "businessType": "Private Limited",
+      "industryType": "Manufacturing",
+      "registrationType": "Registered",
+      "terms": "Net 30",
+      "signature": null,
+      "cartItems": [
+        {
+          "item": "Industrial Machine",
+          "price": 250000,
+          "qty": 1,
+          "discount": 10,
+          "total": 225000
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "companyName": "Mu Manufacturing 13",
+      "companyPhone": "9099001123",
+      "companyEmail": "info13@mumfg.com",
+      "billingAddress": "505 Manufacturing Hub",
+      "state": "Gujarat",
+      "pinCode": "380002",
+      "city": "Surat",
+      "gstRegistered": "yes",
+      "gstin": "24MU1234567891",
+      "panNumber": "MU1234568M",
+      "eInvoice": false,
+      "eInvoiceData": "",
+      "paymentMethod": "Credit Card",
+      "password": "muMfgPass",
+      "confirmPassword": "muMfgPass",
+      "businessType": "Private Limited",
+      "industryType": "Manufacturing",
+      "registrationType": "Registered",
+      "terms": "Net 30",
+      "signature": null,
+      "cartItems": [
+        {
+          "item": "Industrial Machine",
+          "price": 250000,
+          "qty": 1,
+          "discount": 10,
+          "total": 225000
+        }
+      ]
+    },
+   
+    {
+      "id": 23,
+      "companyName": "Mu Manufacturing 23",
+      "companyPhone": "9099001133",
+      "companyEmail": "info23@mumfg.com",
+      "billingAddress": "505 Manufacturing Hub",
+      "state": "Gujarat",
+      "pinCode": "380002",
+      "city": "Surat",
+      "gstRegistered": "yes",
+      "gstin": "24MU1234567901",
+      "panNumber": "MU1234578M",
+      "eInvoice": false,
+      "eInvoiceData": "",
+      "paymentMethod": "Credit Card",
+      "password": "muMfgPass",
+      "confirmPassword": "muMfgPass",
+      "businessType": "Private Limited",
+      "industryType": "Manufacturing",
+      "registrationType": "Registered",
+      "terms": "Net 30",
+      "signature": null,
+      "cartItems": [
+        {
+          "item": "Industrial Machine",
+          "price": 250000,
+          "qty": 1,
+          "discount": 10,
+          "total": 225000
+        }
+      ]
+    }
+  ]
+}

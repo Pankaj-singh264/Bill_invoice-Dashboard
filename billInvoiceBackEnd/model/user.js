@@ -1,36 +1,27 @@
 const mongoose = require('mongoose');
-
 const userSchema = new mongoose.Schema({
-    username: {
+    companyName: {
+        type: String,
+        required: true
+    },
+    companyEmail: {
         type: String,
         required: true,
         unique: true
     },
-    email: {
+    companyPhone: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     password: {
         type: String,
         required: true
     },
-    gstNumber: {
+    gstin: {
         type: String,
         required: true
-    },
-    businessName: {
-        type: String,
-        required: true
-    },
-    address: {
-        type: String,
-
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
 });
 
-module.exports = mongoose.model('User', userSchema);
+const UserModel = mongoose.model('User', userSchema);
+module.exports = UserModel;

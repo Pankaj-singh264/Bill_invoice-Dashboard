@@ -1,17 +1,21 @@
 const express = require('express');
-const {
-    protect
-} = require('../middleware/userAuth');
+const router = express.Router();
+
 const {
     createInvoice,
+    getAllInvoices,
+    getInvoiceById,
+    updateInvoice,
+    deleteInvoice,
     getGSTSummary
 } = require('../controllers/invoice');
 
-const router = express.Router();
-
-router.use(protect);
-
-router.post('/', createInvoice);
-router.get('/gst-summary', getGSTSummary);
+// Invoice routes
+router.post('/',  createInvoice);
+router.get('/',  getAllInvoices);
+router.get('/:id',  getInvoiceById);
+router.put('/:id',  updateInvoice);
+router.delete('/:id',  deleteInvoice);
+router.get('/gst-summary',  getGSTSummary);
 
 module.exports = router;

@@ -1,216 +1,221 @@
-// import React, { useState } from 'react';
-// import Sidebar2 from '../Components/Sidebar2';
-// import { Edit, Trash2, ArrowRight, X } from 'lucide-react';
-
-// function ProductPurchase() {
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   return (
-//     <>
-//       <section className={`flex ${isModalOpen ? "backdrop-blur-sm" : ""}`}>
-//         <div>
-//           <Sidebar2 />
-//         </div>
-
-//         <div className={`relative w-full`}>
-//           <div className="p-2 bg-white min-h-screen ml-25">
-//             {/* Modal */}
-//             {isModalOpen && (
-//               <div className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-opacity-30 z-50">
-//                 <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-//                   <button
-//                     onClick={() => setIsModalOpen(false)}
-//                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-//                   >
-//                     <X size={24} />
-//                   </button>
-//                   <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
-//                   <form className="space-y-4">
-//                     <div>
-//                       <label className="text-sm">Product Name</label>
-//                       <input type="text" className="w-full mt-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-//                     </div>
-//                     <div>
-//                       <label className="text-sm">Price</label>
-//                       <input type="number" className="w-full mt-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-//                     </div>
-//                     <div>
-//                       <label className="text-sm">Quantity</label>
-//                       <input type="number" className="w-full mt-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-//                     </div>
-//                     <div>
-//                       <label className="text-sm">Discount (%)</label>
-//                       <input type="number" className="w-full mt-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-//                     </div>
-//                     <button
-//                       type="submit"
-//                       className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
-//                     >
-//                       Add Product
-//                     </button>
-//                   </form>
-//                 </div>
-//               </div>
-//             )}
-
-//             {/* Main Content */}
-//             <h1 className="text-3xl font-bold mb-4">Customer Info</h1>
-//             <div className="text-sm mb-6 space-y-2">
-//               <p><span>Name: John Doe</span></p>
-//               <p><span>Phone: +91 98765 43210</span></p>
-//               <p><span>Invoice Date: 11-04-2025</span></p>
-//             </div>
-
-//             {/* Product Table */}
-//             <div className="bg-white rounded-md shadow-sm border border-gray-200 p-4 mb-4 w-280 h-100 space-y-2">
-//               <div className="flex items-center justify-between mb-4">
-//                 <h3 className="font-medium text-2xl">Add Purchased Products(7)</h3>
-//                 <button
-//                   className="bg-blue-600 text-white px-3 py-2 rounded-md text-sm flex items-center"
-//                   onClick={() => setIsModalOpen(true)}
-//                 >
-//                   <span className="mr-1">+</span> Add Product
-//                 </button>
-//               </div>
-
-//               {/* Table */}
-//               <div className="overflow-x-auto">
-//                 <table className="w-full">
-//                   <thead>
-//                     <tr className="text-left text-sm border-b">
-//                       <th className="py-2 pr-6">Product Name</th>
-//                       <th className="py-2 pr-6">Price</th>
-//                       <th className="py-2 pr-6">Qty</th>
-//                       <th className="py-2 pr-6">Discount</th>
-//                       <th className="py-2 pr-6">Total</th>
-//                       <th className="py-2">Action</th>
-//                     </tr>
-//                   </thead>
-//                   <tbody className="text-sm">
-//                     {/* Product Rows */}
-//                     <tr>
-//                       <td className="py-2 pr-6">Colored Shirt</td>
-//                       <td className="py-2 pr-6">₹4799</td>
-//                       <td className="py-2 pr-6">2</td>
-//                       <td className="py-2 pr-6">8.24%</td>
-//                       <td className="py-2 pr-6">₹8809</td>
-//                       <td className="py-2 flex space-x-2">
-//                         <button className="p-1 hover:text-blue-600">
-//                           <Edit size={16} />
-//                         </button>
-//                         <button className="p-1 hover:text-red-600">
-//                           <Trash2 size={16} />
-//                         </button>
-//                       </td>
-//                     </tr>
-//                     {/* Add more products here */}
-//                   </tbody>
-//                 </table>
-//               </div>
-
-//               {/* Totals */}
-//               <div className="mt-4">
-//                 <div className="flex items-center text-sm">
-//                   <span className="w-16 text-right">Subtotal:</span>
-//                   <span className="w-24 ml-222">₹15,067</span>
-//                 </div>
-//                 <div className="ml-1 mt-3 flex text-sm">
-//                   <span className="w-16 text-right">Tax (18%):</span>
-//                   <span className="w-24 ml-221">₹676</span>
-//                 </div>
-//                 <div className="flex mt-3 ml-1">
-//                   <span className="text-2xl">Grand Total:</span>
-//                   <span className="ml-205">₹15,963</span>
-//                 </div>
-//               </div>
-//             </div>
-
-//             {/* Payment Info */}
-//             <div className="bg-white rounded-md shadow-sm border border-gray-200 p-4">
-//               <h3 className="text-2xl mb-4">Payment Info</h3>
-//               <div className="mb-4">
-//                 <p className="text-sm mb-2">Payment Method</p>
-//                 <div className="flex space-x-2">
-//                   <button className="border rounded-md px-3 py-1 text-sm flex items-center">Card</button>
-//                   <button className="border rounded-md px-3 py-1 text-sm flex items-center bg-blue-600 text-white">Cash</button>
-//                   <button className="border rounded-md px-3 py-1 text-sm flex items-center">UPI</button>
-//                 </div>
-//               </div>
-//               <div className="mb-4">
-//                 <p className="text-sm mb-1">Amount Paid</p>
-//                 <input type="text" placeholder="15960" className="border-1 rounded w-220 py-3 px-2" />
-//               </div>
-//               <div className="mb-6">
-//                 <p className="text-sm mb-1">Balance</p>
-//                 <input type="text" placeholder="3" className="border-1 rounded w-220 py-3 px-2" />
-//               </div>
-//               <button className="w-220 bg-blue-600 text-white py-2 rounded-md flex items-center justify-center text-2xl">
-//                 Generate Bill <ArrowRight size={25} className="ml-5" />
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-//     </>
-//   );
-// }
-
-// export default ProductPurchase;
-
-
-
-
-import React, { useState } from 'react';
-import Sidebar2 from '../Components/Sidebar2';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ArrowRight, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useCustomers } from '../contexts/CustomerContext';
+import axios from 'axios'
+const API_URL = 'http://localhost:5000/api';
 
 function ProductPurchase() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { updateCustomerBalance } = useCustomers();
+  const customerData = location.state?.customerData || {};
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [discount, setDiscount] = useState('');
+  const [discount, setDiscount] = useState('10'); // Default 10% discount
   const { currentUser } = useAuth();
+  const [cartItems, setCartItems] = useState(() => {
+    const cart = location.state?.customerData?.cart || [];
+    return cart.map(item => ({
+      ...item,
+      id: item.id || Date.now() + Math.random(),
+      discount: 10
+    }));
+  });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [amountPaid, setAmountPaid] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [previousBalance, setPreviousBalance] = useState(() => {
+    return customerData.balance || 230;
+  });
+  const [balance, setBalance] = useState(() => {
+    return customerData.balance || 0;
+  });
+
+  useEffect(() => {
+    const financials = calculateFinancials();
+    const newBalance = Number(previousBalance) + Number(financials.grandTotal) - Number(amountPaid || 0);
+    setBalance(newBalance);
+  }, [amountPaid, cartItems, previousBalance]);
+
+  const handleEdit = (item) => {
+    setEditingProduct(item);
+    setProductName(item.item); // Note: using item.item as that's the property name in cart
+    setPrice(item.price);
+    setQuantity(item.qty); // Note: using item.qty as that's the property name in cart
+    setDiscount(item.discount);
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (itemId) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      setCartItems(items => items.filter(item => item.id !== itemId));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!currentUser || !currentUser._id) {
-      alert("User not logged in!");
-      return;
-    }
-
-    const itemData = {
-      user: currentUser._id,
-      name: productName,
-      discount: Number(discount),
+    const newItem = {
+      id: isEditMode ? editingProduct.id : Date.now() + Math.random(),
+      item: productName,
       price: Number(price),
-      quantity: Number(quantity),
+      qty: Number(quantity),
+      discount: Number(discount),
     };
-
+    console.log(newItem)
     try {
-      const res = await fetch('http://localhost:5000/api/items/addItem', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(itemData),
-      });
 
-      if (!res.ok) throw new Error('Failed to add item');
 
-      const data = await res.json();
-      console.log('Product added:', data);
+      // Update cart items
+      if (isEditMode) {
+        setCartItems(items =>
+          items.map(item => item.id === editingProduct.id ? newItem : item)
+        );
+      } else {
+        setCartItems(items => [...items, newItem]);
+      }
 
-      // Clear form
+      // Reset form
       setProductName('');
       setPrice('');
       setQuantity('');
-      setDiscount('');
+      setDiscount('10');
+      setIsEditMode(false);
+      setEditingProduct(null);
       setIsModalOpen(false);
+
     } catch (err) {
-      console.error('Error adding product:', err);
+      console.error('Error saving invoice:', err);
+      alert('Failed to save invoice. Please try again.');
     }
   };
+
+  const calculateFinancials = () => {
+    const subtotal = cartItems.reduce((acc, item) =>
+      acc + (item.price * item.qty * (1 - item.discount / 100)), 0
+    );
+    const tax = subtotal * 0.18;
+    const grandTotal = subtotal + tax;
+
+    return {
+      subtotal: subtotal.toFixed(2),
+      tax: tax.toFixed(2),
+      grandTotal: grandTotal.toFixed(2),
+      remainingBalance: balance.toFixed(2)
+    };
+  };
+
+  const validatePayment = () => {
+    const financials = calculateFinancials();
+    const totalDue = Number(previousBalance) + Number(financials.grandTotal);
+    const paid = Number(amountPaid);
+
+    if (!paid) {
+      alert('Please enter amount paid');
+      return false;
+    }
+
+    if (paid > totalDue) {
+      alert('Amount paid cannot be greater than total due');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleGenerateBill = async () => {
+    const financials = calculateFinancials();
+
+    // Validate data before sending
+    if (!customerData?.email) {
+      alert('Customer information is missing');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert('Cart is empty');
+      return;
+    }
+
+    const billData = {
+      customer: {
+        name: customerData.name || '',
+        email: customerData.email || '',
+        phone: customerData.phone || '',
+        balance: Number(balance) || 0,
+        cart: cartItems.map(item => ({
+          item: item.item,
+          price: Number(item.price),
+          qty: Number(item.qty),
+          discount: Number(item.discount)
+        }))
+      },
+      payment: {
+        method: paymentMethod,
+        amountPaid: Number(amountPaid) || 0,
+        previousBalance: Number(previousBalance) || 0,
+        currentBill: Number(financials.grandTotal) || 0,
+        remainingBalance: Number(balance) || 0
+      },
+      date: currentDate,
+      totals: {
+        subtotal: Number(financials.subtotal),
+        tax: Number(financials.tax),
+        grandTotal: Number(financials.grandTotal)
+      }
+    };
+
+    try {
+      console.log('Sending bill data:', billData);
+
+      const response = await axios.post(`${API_URL}/invoices`, billData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Server response:', response.data);
+
+      if (response.status === 200 || response.status === 201) {
+        // Update customer balance
+        updateCustomerBalance(customerData.email, balance);
+
+        // Navigate to bill preview
+        navigate('/home/billinvoice', {
+          state: {
+            billData,
+            customerData: {
+              ...customerData,
+              balance: balance
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+
+      alert(`Failed to save invoice: ${error.response?.data?.message || 'Server error occurred'}`);
+    }
+  };
+
+  // Format date for invoice
+  const currentDate = new Date().toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 
   return (
     <section className={`flex flex-col lg:flex-row ${isModalOpen ? "backdrop-blur-sm" : ""}`}>
@@ -221,10 +226,23 @@ function ProductPurchase() {
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
             <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-96 relative">
-              <button onClick={() => setIsModalOpen(false)} className="absolute top-2 right-2">
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setIsEditMode(false);
+                  setEditingProduct(null);
+                  setProductName('');
+                  setPrice('');
+                  setQuantity('');
+                  setDiscount('10'); // Reset to default 10%
+                }}
+                className="absolute top-2 right-2"
+              >
                 <X size={24} />
               </button>
-              <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                {isEditMode ? 'Edit Product' : 'Add New Product'}
+              </h2>
               <form className="space-y-4" onSubmit={handleSubmit}>
                 {['Product Name', 'Price', 'Quantity', 'Discount (%)'].map((label, idx) => (
                   <div key={idx}>
@@ -235,20 +253,20 @@ function ProductPurchase() {
                         label === 'Product Name'
                           ? productName
                           : label === 'Price'
-                          ? price
-                          : label === 'Quantity'
-                          ? quantity
-                          : discount
+                            ? price
+                            : label === 'Quantity'
+                              ? quantity
+                              : discount
                       }
                       onChange={(e) => {
                         const setter =
                           label === 'Product Name'
                             ? setProductName
                             : label === 'Price'
-                            ? setPrice
-                            : label === 'Quantity'
-                            ? setQuantity
-                            : setDiscount;
+                              ? setPrice
+                              : label === 'Quantity'
+                                ? setQuantity
+                                : setDiscount;
                         setter(e.target.value);
                       }}
                       required
@@ -260,7 +278,7 @@ function ProductPurchase() {
                   type="submit"
                   className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
                 >
-                  Add Product
+                  {isEditMode ? 'Update Product' : 'Add Product'}
                 </button>
               </form>
             </div>
@@ -271,9 +289,9 @@ function ProductPurchase() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">Customer Info</h1>
           <div className="text-sm space-y-1">
-            <p>Name: John Doe</p>
-            <p>Phone: +91 98765 43210</p>
-            <p>Invoice Date: 11-04-2025</p>
+            <p>Name: {customerData.name || 'N/A'}</p>
+            <p>Phone: {customerData.phone || 'N/A'}</p>
+            <p>Invoice Date: {currentDate}</p>
           </div>
         </div>
 
@@ -301,21 +319,31 @@ function ProductPurchase() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-2 pr-6">Colored Shirt</td>
-                <td className="py-2 pr-6">₹4799</td>
-                <td className="py-2 pr-6">2</td>
-                <td className="py-2 pr-6">8.24%</td>
-                <td className="py-2 pr-6">₹8809</td>
-                <td className="py-2 flex gap-2">
-                  <button className="hover:text-blue-600">
-                    <Edit size={16} />
-                  </button>
-                  <button className="hover:text-red-600">
-                    <Trash2 size={16} />
-                  </button>
-                </td>
-              </tr>
+              {cartItems.map((item) => (
+                <tr key={item.id}>
+                  <td className="py-2 pr-6">{item.item}</td>
+                  <td className="py-2 pr-6">₹{item.price}</td>
+                  <td className="py-2 pr-6">{item.qty}</td>
+                  <td className="py-2 pr-6">{item.discount}%</td>
+                  <td className="py-2 pr-6">
+                    ₹{(item.price * item.qty * (1 - item.discount / 100)).toFixed(2)}
+                  </td>
+                  <td className="py-2 flex gap-2">
+                    <button
+                      className="hover:text-blue-600"
+                      onClick={() => handleEdit(item)}
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      className="hover:text-red-600"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
@@ -323,15 +351,15 @@ function ProductPurchase() {
           <div className="mt-6 space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Subtotal:</span>
-              <span>₹15,067</span>
+              <span>₹{calculateFinancials().subtotal}</span>
             </div>
             <div className="flex justify-between">
               <span>Tax (18%):</span>
-              <span>₹676</span>
+              <span>₹{calculateFinancials().tax}</span>
             </div>
             <div className="flex justify-between font-semibold text-lg">
               <span>Grand Total:</span>
-              <span>₹15,963</span>
+              <span>₹{calculateFinancials().grandTotal}</span>
             </div>
           </div>
         </div>
@@ -340,34 +368,75 @@ function ProductPurchase() {
         <div className="bg-white rounded-md shadow-sm border border-gray-200 p-4 space-y-4">
           <h3 className="text-lg font-semibold">Payment Info</h3>
 
+
+
           <div>
             <p className="text-sm mb-1">Payment Method</p>
             <div className="flex gap-2 flex-wrap">
-              <button className="border rounded px-3 py-1 text-sm">Card</button>
-              <button className="border rounded px-3 py-1 text-sm bg-blue-600 text-white">Cash</button>
-              <button className="border rounded px-3 py-1 text-sm">UPI</button>
+              <button
+                className={`border rounded px-3 py-1 text-sm ${paymentMethod === 'card' ? 'bg-blue-600 text-white' : ''
+                  }`}
+                onClick={() => setPaymentMethod('card')}
+                type="button"
+              >
+                Card
+              </button>
+              <button
+                className={`border rounded px-3 py-1 text-sm ${paymentMethod === 'cash' ? 'bg-blue-600 text-white' : ''
+                  }`}
+                onClick={() => setPaymentMethod('cash')}
+                type="button"
+              >
+                Cash
+              </button>
+              <button
+                className={`border rounded px-3 py-1 text-sm ${paymentMethod === 'upi' ? 'bg-blue-600 text-white' : ''
+                  }`}
+                onClick={() => setPaymentMethod('upi')}
+                type="button"
+              >
+                UPI
+              </button>
             </div>
           </div>
 
           <div>
             <p className="text-sm mb-1">Amount Paid</p>
             <input
-              type="text"
-              placeholder="15960"
+              type="number"
+              value={amountPaid}
+              onChange={(e) => setAmountPaid(e.target.value)}
+              placeholder="Enter amount"
+              className="border rounded w-full sm:w-72 py-2 px-3"
+            />
+          </div>
+          <div>
+            <p className="text-sm mb-1">Balance</p>
+            <input
+              type="number"
+              value={previousBalance}
+              onChange={(e) => setPreviousBalance(e.target.value)}
+              placeholder="Previous Balance"
               className="border rounded w-full sm:w-72 py-2 px-3"
             />
           </div>
 
           <div>
-            <p className="text-sm mb-1">Balance</p>
-            <input
-              type="text"
-              placeholder="3"
-              className="border rounded w-full sm:w-72 py-2 px-3"
-            />
+            <p className="text-sm mb-1">Remaining Balance</p>
+            <p className={`text-lg font-semibold ${balance > 0 ? 'text-red-600' : 'text-green-600'
+              }`}>
+              ₹{balance.toFixed(2)}
+            </p>
           </div>
 
-          <button className="w-full sm:w-72 bg-blue-600 text-white py-2 rounded-md flex justify-center items-center text-lg">
+          <button
+            className="w-full sm:w-72 bg-blue-600 text-white py-2 rounded-md flex justify-center items-center text-lg"
+            onClick={() => {
+              if (validatePayment()) {
+                handleGenerateBill();
+              }
+            }}
+          >
             Generate Bill <ArrowRight size={20} className="ml-3" />
           </button>
         </div>

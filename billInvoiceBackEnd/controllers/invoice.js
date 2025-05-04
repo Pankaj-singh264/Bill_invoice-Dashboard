@@ -1,71 +1,154 @@
-// const 
+const invoiceModel = require('../model/invoice.js');
 
-// const createInvoice = async (req, res) => {
-//     const {
-//         customer,
-//         items
-//     } = req.body;
+// Create Invoice
+const createInvoice = async (req, res) => {
+    console.log('req.body', req.body);
+    try {
+        const {
+            customerInfo,
+            items,
+            paymentDetails,
+            
+        } = req.body;
 
-//     // Calculate totals
-//     let subtotal = 0;
-//     let totalGST = 0;
-//     const invoiceItems = [];
+        const invoice = new invoiceModel({
+            customerInfo,
+            items,
+            paymentDetails,
+            date,
+            userId: req.user._id // Add user reference
+        });
 
-//     for (const item of items) {
-//         const dbItem = await Item.findById(item.item).populate('user');
-//         if (!dbItem) {
-//             res.status(404);
-//             throw new Error('Item not found');
-//         }
+        const savedInvoice = await invoice.save();
+        res.status(201).json(savedInvoice);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to create invoice'
+        });
+    }
+};
 
-//         const itemTotal = dbItem.price * item.quantity;
-//         const itemGST = itemTotal * (dbItem.gstRate / 100);
+// Get All Invoices
+const getAllInvoices = async (req, res) => {
+    try {
+        const invoices = await invoiceModel.find({
+            userId: req.user._id
+        });
+        res.status(200).json(invoices);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch invoices'
+        });
+    }
+};
 
-//         subtotal += itemTotal;
-//         totalGST += itemGST;
+// Get Invoice by ID
+const getInvoiceById = async (req, res) => {
+    try {
+        const invoice = await invoiceModel.findOne({
+            _id: req.params.id,
+            userId: req.user._id
+        });
 
-//         invoiceItems.push({
-//             item: dbItem._id,
-//             quantity: item.quantity,
-//             price: dbItem.price,
-//             gstRate: dbItem.gstRate
-//         });
-//     }
+        if (!invoice) {
+            return res.status(404).json({
+                success: false,
+                error: 'Invoice not found'
+            });
+        }
 
-//     const grandTotal = subtotal + totalGST;
+        res.status(200).json(invoice);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch invoice'
+        });
+    }
+};
 
-//     const invoice = await Invoice.create({
-//         user: req.user._id,
-//         invoiceNumber: `INV-${Date.now()}`,
-//         customer,
-//         items: invoiceItems,
-//         subtotal,
-//         totalGST,
-//         grandTotal
-//     });
+// Update Invoice
+const updateInvoice = async (req, res) => {
+    try {
+        const invoice = await invoiceModel.findOneAndUpdate({
+                _id: req.params.id,
+                userId: req.user._id
+            },
+            req.body, {
+                new: true,
+                runValidators: true
+            }
+        );
 
-//     res.status(201).json(invoice);
-// };
+        if (!invoice) {
+            return res.status(404).json({
+                success: false,
+                error: 'Invoice not found'
+            });
+        }
 
+        res.status(200).json(invoice);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update invoice'
+        });
+    }
+};
 
-// const getGSTSummary = async (req, res) => {
-//     const invoices = await Invoice.find({
-//         user: req.user._id
-//     }).populate('items.item');
+// Delete Invoice
+const deleteInvoice = async (req, res) => {
+    try {
+        const invoice = await invoiceModel.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user._id
+        });
 
-//     const gstSummary = invoices.reduce((acc, invoice) => {
-//         invoice.items.forEach(item => {
-//             const rate = item.gstRate;
-//             const amount = item.price * item.quantity * (rate / 100);
-//             acc[rate] = (acc[rate] || 0) + amount;
-//         });
-//         return acc;
-//     }, {});
+        if (!invoice) {
+            return res.status(404).json({
+                success: false,
+                error: 'Invoice not found'
+            });
+        }
 
-//     res.json(gstSummary);
-// };
+        res.status(200).json({
+            success: true,
+            message: 'Invoice deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to delete invoice'
+        });
+    }
+};
 
-// module.exports = {
-//     createInvoice,
-//     getGSTSummary
-// };
+// Get GST Summary
+const getGSTSummary = async (req, res) => {
+    try {
+        const invoices = await invoiceModel.find({
+            userId: req.user._id
+        });
+        // Add your GST calculation logic here
+        const gstSummary = {
+            // Add your GST summary structure
+        };
+
+        res.status(200).json(gstSummary);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to generate GST summary'
+        });
+    }
+};
+
+module.exports = {
+    createInvoice,
+    getAllInvoices,
+    getInvoiceById,
+    updateInvoice,
+    deleteInvoice,
+    getGSTSummary
+};

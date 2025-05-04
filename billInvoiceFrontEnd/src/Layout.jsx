@@ -5,7 +5,6 @@ import Sidebar from './Components/Sidebar';
 export default function Layout() {
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar - now self-contained */}
       <Sidebar/>
       
       {/* Main content */}
