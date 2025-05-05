@@ -2,29 +2,67 @@ const invoiceModel = require('../model/invoice.js');
 
 // Create Invoice
 const createInvoice = async (req, res) => {
-    console.log('req.body', req.body);
     try {
+        console.log('Creating invoice with data:', JSON.stringify(req.body, null, 2));
+
         const {
-            customerInfo,
+            customer,
             items,
-            paymentDetails,
-            
+            payment,
+            date,
+            totals
         } = req.body;
 
+        if (!customer || !items || !payment) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields'
+            });
+        }
+
         const invoice = new invoiceModel({
-            customerInfo,
-            items,
-            paymentDetails,
-            date,
-            userId: req.user._id // Add user reference
+            invoiceNumber: `INV-${Date.now()}`,
+            customerInfo: {
+                name: customer.name,
+                email: customer.email,
+                phone: customer.phone,
+                address: customer.address,
+                balance: customer.balance
+            },
+            items: items.map(item => ({
+                name: item.item,
+                price: Number(item.price),
+                quantity: Number(item.qty),
+                discount: Number(item.discount)
+            })),
+            paymentDetails: {
+                method: payment.method,
+                amountPaid: Number(payment.amountPaid),
+                previousBalance: Number(payment.previousBalance),
+                currentBill: Number(payment.currentBill),
+                remainingBalance: Number(payment.remainingBalance)
+            },
+            date: date,
+            totals: {
+                subtotal: Number(totals.subtotal),
+                tax: Number(totals.tax),
+                grandTotal: Number(totals.grandTotal)
+            }
+            // userId: req.user._id // Uncomment when auth is implemented
         });
 
         const savedInvoice = await invoice.save();
-        res.status(201).json(savedInvoice);
+        console.log('Invoice saved successfully:', savedInvoice._id);
+        
+        res.status(201).json({
+            success: true,
+            data: savedInvoice
+        });
     } catch (error) {
+        console.error('Invoice creation error:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to create invoice'
+            error: error.message || 'Failed to create invoice'
         });
     }
 };

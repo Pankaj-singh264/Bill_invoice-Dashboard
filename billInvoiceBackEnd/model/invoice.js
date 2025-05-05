@@ -1,65 +1,99 @@
 const mongoose = require('mongoose');
 
 const invoiceSchema = new mongoose.Schema({
-    customerInfo: {
-        name: {
-            type: String,
-            required: true
-        },
-        address: {
-            type: String,
-            required: true
-        },
-        email: {
-            type: String
-        },
-        phone: {
-            type: String
-        }
+  invoiceNumber: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  // customerID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'customer',
+  //   required: true
+
+  // },
+  customerInfo: {
+
+    name: {
+      type: String,
+      required: true
     },
-    items: [{
-        description: {
-            type: String,
-            required: true
-        },
-        quantity: {
-            type: Number,
-            required: true
-        },
-        price: {
-            type: Number,
-            required: true
-        },
-        amount: {
-            type: Number,
-            required: true
-        }
-    }],
-    paymentDetails: {
-        subtotal: {
-            type: Number,
-            required: true
-        },
-        gst: {
-            type: Number,
-            required: true
-        },
-        total: {
-            type: Number,
-            required: true
-        }
+    email: {
+      type: String,
+      required: true
     },
-    date: {
-        type: Date,
-        default: Date.now
+    phone: {
+      type: String
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    address: {
+      type: String
+    },
+    balance: {
+      type: Number,
+      default: 0
     }
+  },
+  items: [{
+    name: {
+      type: String,
+      required: true
+    },
+    price: {
+      type: Number,
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true
+    },
+    discount: {
+      type: Number,
+      default: 0
+    }
+  }],
+  paymentDetails: {
+    method: {
+      type: String,
+      required: true,
+      enum: ['cash', 'card', 'upi']
+    },
+    amountPaid: {
+      type: Number,
+      required: true
+    },
+    previousBalance: {
+      type: Number,
+      default: 0
+    },
+    currentBill: {
+      type: Number,
+      required: true
+    },
+    remainingBalance: {
+      type: Number,
+      default: 0
+    }
+  },
+  date: {
+    type: String,
+    required: true
+  },
+  totals: {
+    subtotal: {
+      type: Number,
+      required: true
+    },
+    tax: {
+      type: Number,
+      required: true
+    },
+    grandTotal: {
+      type: Number,
+      required: true
+    }
+  }
 }, {
-    timestamps: true
+  timestamps: true
 });
 
 module.exports = mongoose.model('Invoice', invoiceSchema);

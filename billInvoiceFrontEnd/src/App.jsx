@@ -18,8 +18,7 @@ export default function App() {
         <AuthProvider>
           <Routes>
             {/* Public routes */}
-           /* These two lines of code are defining public routes in a React application using React
-           Router. */
+     
             {/* <Route path="/" element={<SignUp />} />
             <Route path="/login" element={<Login />} /> */}
 
@@ -32,11 +31,12 @@ export default function App() {
                 <Route path="customer" element={<CustomerInfo />} />
                 <Route path="productpurchase" element={<ProductPurchase />} />
                 <Route path="billinvoice" element={<BillInvoice />} />
+                <Route path="signup" element={<SignUp />} />
               </Route>
             {/* </Route> */}
 
             {/* Redirect all unknown routes to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>
         </AuthProvider>
       </Router>

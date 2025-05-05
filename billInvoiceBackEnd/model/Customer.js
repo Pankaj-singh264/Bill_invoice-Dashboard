@@ -20,7 +20,7 @@ const customarSchema = new mongoose.Schema({
   industrialType: String,
   registrationType: String,
   terms: String,
-  signature: String, // file path or base64 string
+  signature: String, 
 });
 
 module.exports = mongoose.model('Customar', customarSchema);

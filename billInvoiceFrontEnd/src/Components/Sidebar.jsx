@@ -16,7 +16,7 @@ export default function Sidebar() {
     { name: 'Dashboard', path: '/home', icon: <HiHome className="w-5 h-5" /> },
     { name: 'Customer', path: '/home/customer', icon: <HiUserGroup className="w-5 h-5" /> },
     { name: 'Inventory', path: '/home/inventory', icon: <HiCube className="w-5 h-5" /> },
-    { name: 'Settings', path: '/home/settings', icon: <HiCog className="w-5 h-5" /> },
+    { name: 'Settings', path: '/home/signup', icon: <HiCog className="w-5 h-5" /> },
   ];
 
   useEffect(() => {
