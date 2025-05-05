@@ -1,108 +1,393 @@
-import React, { useState } from 'react';
-import { Pencil, Trash2, MoreHorizontal } from "lucide-react";
-import Sidebar from '../Components/Sidebar';
+// import { useState, useEffect } from 'react';
+// import { HiPencil, HiTrash, HiDotsVertical, HiPlus, HiSearch } from 'react-icons/hi';
+// import axios from 'axios';
+// import AddInventoryModal from '../Pages/AddInventoryModal';
 
-const inventoryItems = [
-  { id: "ITM1 02", name: "H&M T-shirt", category: "T-shirt", stock: 24, price: 600, status: "In Stock" },
-  { id: "ITM1 43", name: "Black Cargo", category: "Cargos", stock: 45, price: 400, status: "In Stock" },
-  { id: "ITM1 56", name: "Shoes", category: "Shoes", stock: 3, price: 900, status: "Low stock" },
-  { id: "ITM1 45", name: "Denim Jeans", category: "Jeans", stock: 65, price: 1000, status: "In Stock" },
-  { id: "ITM1 07", name: "White Shirt", category: "Shirts", stock: 14, price: 200, status: "In Stock" },
-  { id: "ITM1 04", name: "Blue Shirt", category: "Shirts", stock: 0, price: 400, status: "Out of stock" },
-];
+// export default function Inventory() {
+//   const [inventoryItems, setInventoryItems] = useState([]);
+//   const [searchQuery, setSearchQuery] = useState('');
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
-const statusClasses = {
-  "In Stock": "bg-gray-100 text-gray-600",
-  "Low stock": "bg-yellow-100 text-yellow-700",
-  "Out of stock": "bg-red-100 text-red-700",
-};
+//   const fetchItems = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await axios.get('http://localhost:5000/api/inventory');
+//       setInventoryItems(Array.isArray(res.data) ? res.data : []);
+//       setError(null);
+//     } catch (error) {
+//       console.error("Error fetching items:", error);
+//       setError("Failed to load inventory items. Please try again later.");
+//       setInventoryItems([]);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-const InventoryPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+//   useEffect(() => {
+//     fetchItems();
+//   }, []);
+
+//   const getStatusClass = (status) => {
+//     if (!status) return "bg-gray-100 text-gray-800";
+    
+//     switch (status.toLowerCase()) {
+//       case "in stock":
+//         return "bg-green-100 text-green-800";
+//       case "low stock":
+//         return "bg-yellow-100 text-yellow-800";
+//       case "out of stock":
+//         return "bg-red-100 text-red-800";
+//       default:
+//         return "bg-gray-100 text-gray-800";
+//     }
+//   };
+
+//   const filteredItems = inventoryItems.filter(item =>
+//     item?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//     item?.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//     item?.id?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+//   );
+
+//   if (loading) {
+//     return (
+//       <div className="p-4 md:p-6">
+//         <div className="text-center py-10">
+//           <p>Loading inventory...</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="p-4 md:p-6">
+//         <div className="bg-red-50 p-4 rounded-md">
+//           <p className="text-red-700">{error}</p>
+//           <button 
+//             onClick={fetchItems}
+//             className="mt-2 text-sm text-red-700 underline"
+//           >
+//             Try again
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="p-4 md:p-6">
+//       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3 sm:gap-0">
+//         <h1 className="text-xl md:text-2xl font-bold">Inventory</h1>
+//         <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 text-white rounded px-3 py-1.5 md:px-4 md:py-2 flex items-center text-sm md:text-base w-full sm:w-auto justify-center sm:justify-start">
+//           <HiPlus className="mr-2" />
+//           Add Item
+//         </button>
+//       </div>
+
+//       <div className="mb-4 md:mb-6 relative">
+//         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+//           <HiSearch className="text-gray-400" />
+//         </div>
+//         <input
+//           type="text"
+//           className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+//           placeholder="Search item by name and category"
+//           value={searchQuery}
+//           onChange={(e) => setSearchQuery(e.target.value)}
+//         />
+//       </div>
+
+//       <div className="bg-white shadow rounded-lg">
+//         <div className="p-3 md:p-4 border-b border-gray-200">
+//           <div className="flex justify-between items-center">
+//             <h2 className="text-base md:text-lg font-medium">All Items</h2>
+//             <button className="text-gray-400 hover:text-gray-600">
+//               <HiDotsVertical className="h-5 w-5" />
+//             </button>
+//           </div>
+//         </div>
+
+//         {filteredItems.length === 0 ? (
+//           <div className="p-6 text-center text-gray-500">
+//             {searchQuery ? "No items match your search." : "No inventory items found."}
+//           </div>
+//         ) : (
+//           <>
+//             {/* Table for larger screens */}
+//             <div className="hidden md:block overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-50">
+//                   <tr>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item ID</th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item Name</th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stocks</th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+//                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white divide-y divide-gray-200">
+//                   {filteredItems.map((item) => (
+//                     <tr key={item?.id || Math.random().toString()}>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item?.ItemId || 'N/A'}</td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+//                         {item?.itemName || 'Unnamed Item'}
+//                         <div className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(item?.status)}`}>
+//                           {item?.status || 'Unknown'}
+//                         </div>
+//                       </td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item?.category || 'Uncategorized'}</td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item?.quantity || '0'}</td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{item?.price || '0'}</td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+//                         <button className="text-blue-600 hover:text-blue-900 mr-3"><HiPencil className="h-5 w-5" /></button>
+//                         <button className="text-red-600 hover:text-red-900"><HiTrash className="h-5 w-5" /></button>
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             {/* Mobile Card View */}
+//             <div className="md:hidden">
+//               {filteredItems.map((item) => (
+//                 <div key={item?.id || Math.random().toString()} className="p-3 border-b border-gray-200">
+//                   <div className="flex justify-between">
+//                     <div>
+//                       <p className="font-medium text-sm">{item?.name || 'Unnamed Item'}</p>
+//                       <div className="flex items-center space-x-2 mt-1">
+//                         <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(item?.status)}`}>
+//                           {item?.status || 'Unknown'}
+//                         </div>
+//                         <span className="text-xs text-gray-500">{item?.category || 'Uncategorized'}</span>
+//                       </div>
+//                       <div className="flex space-x-4 mt-1 text-xs text-gray-600">
+//                         <span>ID: {item?.id || 'N/A'}</span>
+//                         <span>Stock: {item?.stock || '0'}</span>
+//                         <span>₹{item?.price || '0'}</span>
+//                       </div>
+//                     </div>
+//                     <div className="flex flex-col space-y-2">
+//                       <button className="text-blue-600 hover:text-blue-900"><HiPencil className="h-5 w-5" /></button>
+//                       <button className="text-red-600 hover:text-red-900"><HiTrash className="h-5 w-5" /></button>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </>
+//         )}
+//       </div>
+
+//       {/* Modal for adding inventory */}
+//       {isModalOpen && (
+//         <AddInventoryModal
+//           closeModal={() => setIsModalOpen(false)}
+//           onItemAdded={fetchItems}
+//         />
+//       )}
+//     </div>
+//   );
+// }
+
+
+import { useState, useEffect } from 'react';
+import { HiPencil, HiTrash, HiDotsVertical, HiPlus, HiSearch } from 'react-icons/hi';
+import axios from 'axios';
+import AddInventoryModal from '../Pages/AddInventoryModal';
+import EditInventoryModal from '../Pages/EditInventoryModal';
+
+export default function Inventory() {
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, itemId: null });
+
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('http://localhost:5000/api/inventory');
+      setInventoryItems(Array.isArray(res.data) ? res.data : []);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      setError("Failed to load inventory items. Please try again later.");
+      setInventoryItems([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const getStatusClass = (quantity) => {
+    if (quantity === undefined || quantity === null) return "bg-gray-100 text-gray-800";
+    
+    if (quantity <= 0) {
+      return "bg-red-100 text-red-800";
+    } else if (quantity < 10) {
+      return "bg-yellow-100 text-yellow-800";
+    } else {
+      return "bg-green-100 text-green-800";
+    }
+  };
+
+  const getStatusText = (quantity) => {
+    if (quantity === undefined || quantity === null) return "Unknown";
+    
+    if (quantity <= 0) {
+      return "Out of stock";
+    } else if (quantity < 10) {
+      return "Low stock";
+    } else {
+      return "In stock";
+    }
+  };
+
+  const handleEdit = (item) => {
+    setCurrentItem(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = async (itemId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/inventory/${itemId}`);
+      fetchItems(); // Refresh the list after deletion
+      setDeleteConfirmation({ isOpen: false, itemId: null });
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      alert("Failed to delete item. Please try again.");
+    }
+  };
+
+  const confirmDelete = (itemId) => {
+    setDeleteConfirmation({ isOpen: true, itemId });
+  };
+
+  const filteredItems = inventoryItems.filter(item => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      item?.itemName?.toLowerCase().includes(searchLower) ||
+      item?.category?.toLowerCase().includes(searchLower) ||
+      item?.ItemId?.toString().toLowerCase().includes(searchLower)
+    );
+  });
+
+  if (loading) {
+    return (
+      <div className="p-4 md:p-6">
+        <div className="text-center py-10">
+          <p>Loading inventory...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 md:p-6">
+        <div className="bg-red-50 p-4 rounded-md">
+          <p className="text-red-700">{error}</p>
+          <button 
+            onClick={fetchItems}
+            className="mt-2 text-sm text-red-700 underline"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
-        <div className="hidden md:block">
-          <Sidebar />
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3 sm:gap-0">
+        <h1 className="text-xl md:text-2xl font-bold">Inventory</h1>
+        <button 
+          onClick={() => setIsAddModalOpen(true)} 
+          className="bg-blue-600 text-white rounded px-3 py-1.5 md:px-4 md:py-2 flex items-center text-sm md:text-base w-full sm:w-auto justify-center sm:justify-start"
+        >
+          <HiPlus className="mr-2" />
+          Add Item
+        </button>
+      </div>
+
+      <div className="mb-4 md:mb-6 relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <HiSearch className="text-gray-400" />
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+          placeholder="Search item by name, ID, or category"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      <div className="bg-white shadow rounded-lg">
+        <div className="p-3 md:p-4 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h2 className="text-base md:text-lg font-medium">All Items</h2>
+            <button className="text-gray-400 hover:text-gray-600">
+              <HiDotsVertical className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-6 bg-gray-50 overflow-y-auto">
-          <div className="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Inventory</h1>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm sm:text-base"
-              >
-                Add Item
-              </button>
-            </div>
-
-            {/* Search Input */}
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Search Item by name and category"
-                className="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
-              />
-            </div>
-
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <div className="flex items-center justify-between p-4">
-                <h2 className="text-lg font-semibold text-gray-900">All Items</h2>
-                <button className="p-2 rounded-md border border-gray-300 hover:bg-gray-100">
-                  <MoreHorizontal className="h-5 w-5 text-gray-600" />
-                </button>
-              </div>
-
-              {/* Responsive Table */}
-              <table className="min-w-full bg-white text-sm sm:text-base">
-                <thead className="bg-gray-100 hidden sm:table-header-group">
-                  <tr className="text-gray-700">
-                    <th className="text-left py-3 px-4">Item ID</th>
-                    <th className="text-left py-3 px-4">Item Name</th>
-                    <th className="text-left py-3 px-4">Category</th>
-                    <th className="text-left py-3 px-4">Stocks</th>
-                    <th className="text-left py-3 px-4">Price</th>
-                    <th className="text-left py-3 px-4">Action</th>
+        {filteredItems.length === 0 ? (
+          <div className="p-6 text-center text-gray-500">
+            {searchQuery ? "No items match your search." : "No inventory items found."}
+          </div>
+        ) : (
+          <>
+            {/* Table for larger screens */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stocks</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {inventoryItems.map((item, idx) => (
-                    <tr
-                      key={idx}
-                      className="flex flex-col sm:table-row border-b sm:border-none mb-4 sm:mb-0 p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none"
-                    >
-                      <td className="py-2 px-2 sm:py-3 sm:px-4 font-semibold">
-                        <span className="sm:hidden font-bold">Item ID: </span> {item.id}
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredItems.map((item) => (
+                    <tr key={item?._id || Math.random().toString()}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item?.ItemId || 'N/A'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {item?.itemName || 'Unnamed Item'}
+                        <div className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(item?.quantity)}`}>
+                          {getStatusText(item?.quantity)}
+                        </div>
                       </td>
-                      <td className="py-2 px-2 sm:py-3 sm:px-4 flex flex-col sm:flex-row sm:items-center gap-2">
-                        <span className="sm:hidden font-bold">Item Name: </span> 
-                        {item.name}
-                        <span className={`text-xs px-2 py-1 rounded-full ${statusClasses[item.status]}`}>
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="py-2 px-2 sm:py-3 sm:px-4">
-                        <span className="sm:hidden font-bold">Category: </span> {item.category}
-                      </td>
-                      <td className="py-2 px-2 sm:py-3 sm:px-4">
-                        <span className="sm:hidden font-bold">Stock: </span> {item.stock}
-                      </td>
-                      <td className="py-2 px-2 sm:py-3 sm:px-4">
-                        <span className="sm:hidden font-bold">Price: </span> ₹{item.price}
-                      </td>
-                      <td className="py-2 px-2 sm:py-3 sm:px-4 flex gap-3">
-                        <button className="text-blue-500 hover:text-blue-700">
-                          <Pencil size={18} />
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item?.category || 'Uncategorized'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item?.quantity || '0'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{item?.price || '0'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button 
+                          onClick={() => handleEdit(item)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          <HiPencil className="h-5 w-5" />
                         </button>
-                        <button className="text-red-500 hover:text-red-700">
-                          <Trash2 size={18} />
+                        <button 
+                          onClick={() => confirmDelete(item._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <HiTrash className="h-5 w-5" />
                         </button>
                       </td>
                     </tr>
@@ -110,57 +395,88 @@ const InventoryPage = () => {
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden">
+              {filteredItems.map((item) => (
+                <div key={item?._id || Math.random().toString()} className="p-3 border-b border-gray-200">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="font-medium text-sm">{item?.itemName || 'Unnamed Item'}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(item?.quantity)}`}>
+                          {getStatusText(item?.quantity)}
+                        </div>
+                        <span className="text-xs text-gray-500">{item?.category || 'Uncategorized'}</span>
+                      </div>
+                      <div className="flex space-x-4 mt-1 text-xs text-gray-600">
+                        <span>ID: {item?.ItemId || 'N/A'}</span>
+                        <span>Stock: {item?.quantity || '0'}</span>
+                        <span>₹{item?.price || '0'}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <button 
+                        onClick={() => handleEdit(item)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        <HiPencil className="h-5 w-5" />
+                      </button>
+                      <button 
+                        onClick={() => confirmDelete(item._id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <HiTrash className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Add New Item</h2>
-            <form className="flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="Item Name"
-                className="border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="text"
-                placeholder="Category"
-                className="border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="number"
-                placeholder="Stock Quantity"
-                className="border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="number"
-                placeholder="Price (₹)"
-                className="border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Add
-                </button>
-              </div>
-            </form>
+      {/* Modal for adding inventory */}
+      {isAddModalOpen && (
+        <AddInventoryModal
+          closeModal={() => setIsAddModalOpen(false)}
+          onItemAdded={fetchItems}
+        />
+      )}
+
+      {/* Modal for editing inventory */}
+      {isEditModalOpen && (
+        <EditInventoryModal
+          item={currentItem}
+          closeModal={() => setIsEditModalOpen(false)}
+          onItemUpdated={fetchItems}
+        />
+      )}
+
+      {/* Delete confirmation modal */}
+      {deleteConfirmation.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
+            <p className="mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setDeleteConfirmation({ isOpen: false, itemId: null })}
+                className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirmation.itemId)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
-};
-
-export default InventoryPage;
+}

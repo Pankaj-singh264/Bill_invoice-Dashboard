@@ -1,45 +1,316 @@
-import React from 'react'
-import { LogOut, UserCircle2 } from 'lucide-react';
 
-function Sidebar() {
+// // src/components/Sidebar.jsx
+// import { useState, useEffect } from 'react';
+// import { NavLink } from 'react-router-dom';
+// import { HiHome, HiUserGroup, HiCube, HiCog, HiLogout, HiX, HiMenuAlt1, HiMenu } from 'react-icons/hi';
+
+// export default function Sidebar() {
+//   const [collapsed, setCollapsed] = useState(false);
+//   const [mobileOpen, setMobileOpen] = useState(false);
+//   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  
+//   const navItems = [
+//     { name: 'Dashboard', path: '/home', icon: <HiHome className="w-5 h-5" /> },
+//     { name: 'Customer', path: '/home/customer', icon: <HiUserGroup className="w-5 h-5" /> },
+//     { name: 'Inventory', path: '/home/inventory', icon: <HiCube className="w-5 h-5" /> },
+//     { name: 'Settings', path: '/home/settings', icon: <HiCog className="w-5 h-5" /> },
+//   ];
+  
+//   // Handle window resize to detect mobile/desktop
+//   useEffect(() => {
+//     const handleResize = () => {
+//       setIsMobile(window.innerWidth < 1024);
+//     };
+    
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, []);
+  
+//   // Toggle collapsed state for desktop
+//   const toggleCollapse = () => {
+//     setCollapsed(!collapsed);
+//   };
+  
+//   // Toggle mobile sidebar visibility
+//   const toggleMobile = () => {
+//     setMobileOpen(!mobileOpen);
+//   };
+  
+//   // Close mobile sidebar when clicking a link
+//   const handleLinkClick = () => {
+//     if (isMobile) {
+//       setMobileOpen(false);
+//     }
+//   };
+  
+//   // Render the mobile toggle button (outside the sidebar)
+//   const renderMobileToggle = () => {
+//     return (
+//       <button 
+//         onClick={toggleMobile}
+//         className="fixed top-4 left-4 z-20 bg-blue-900 text-white p-2 rounded-md lg:hidden"
+//       >
+//         <HiMenu className="w-6 h-6" />
+//       </button>
+//     );
+//   };
+  
+//   // Render the actual sidebar content
+//   const renderSidebar = () => {
+//     return (
+//       <div className={`bg-blue-900 text-white h-full flex flex-col transition-all duration-300 ${collapsed && !isMobile ? 'w-16' : 'w-64'}`}>
+//         <div className="p-4 flex items-center justify-between border-b border-blue-800">
+//           {(!collapsed || isMobile) && (
+//             <div className="flex items-center space-x-3">
+//               <div className="bg-white text-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+//                 A
+//               </div>
+//               <div>
+//                 <p className="font-semibold text-sm">Shree Kaushal Prem</p>
+//                 <p className="text-xs opacity-70">metal</p>
+//               </div>
+//             </div>
+//           )}
+          
+//           {collapsed && !isMobile && (
+//             <div className="mx-auto">
+//               <div className="bg-white text-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+//                 A
+//               </div>
+//             </div>
+//           )}
+          
+//           {isMobile && (
+//             <button onClick={toggleMobile} className="text-white opacity-70 hover:opacity-100">
+//               <HiX className="w-5 h-5" />
+//             </button>
+//           )}
+//         </div>
+        
+//         {/* Desktop toggle button */}
+//         {!isMobile && (
+//           <div className="px-4 py-3 border-b border-blue-800">
+//             <button 
+//               onClick={toggleCollapse} 
+//               className="text-white opacity-70 hover:opacity-100 p-1 rounded-md hover:bg-blue-800 transition-colors"
+//             >
+//               <HiMenuAlt1 className="w-5 h-5" />
+//             </button>
+//           </div>
+//         )}
+        
+//         <nav className="mt-4 flex-1 overflow-y-auto">
+//           <ul>
+//             {navItems.map((item) => (
+//               <li key={item.name}>
+//                 <NavLink
+//                   to={item.path}
+//                   className={({ isActive }) => 
+//                     `w-full flex items-center py-3 ${collapsed && !isMobile ? 'px-0 justify-center' : 'px-4'} ${
+//                       isActive ? 'bg-blue-800' : 'hover:bg-blue-800'
+//                     }`
+//                   }
+//                   onClick={handleLinkClick}
+//                   end
+//                 >
+//                   <div className="text-white mr-3">
+//                     {item.icon}
+//                   </div>
+//                   {(!collapsed || isMobile) && <span className="text-sm md:text-base">{item.name}</span>}
+//                 </NavLink>
+//               </li>
+//             ))}
+//           </ul>
+//         </nav>
+        
+//         <div className="mt-auto p-4 border-t border-blue-800">
+//           <button className="bg-blue-800 text-white w-full py-2 rounded flex items-center justify-center text-sm">
+//             <HiLogout className={collapsed && !isMobile ? "" : "mr-2"} />
+//             {(!collapsed || isMobile) && "LOGOUT"}
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   };
+  
+//   return (
+//     <>
+//       {/* Mobile toggle button */}
+//       {isMobile && renderMobileToggle()}
+      
+//       {/* Mobile overlay */}
+//       {isMobile && mobileOpen && (
+//         <div 
+//           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
+//           onClick={toggleMobile}
+//         ></div>
+//       )}
+      
+//       {/* Sidebar container */}
+//       <div 
+//         className={`
+//           fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out 
+//           lg:relative lg:translate-x-0
+//           ${isMobile && !mobileOpen ? '-translate-x-full' : 'translate-x-0'}
+//         `}
+//       >
+//         {renderSidebar()}
+//       </div>
+//     </>
+//   );
+// }
+
+
+// src/components/Sidebar.jsx
+import { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+import { HiHome, HiUserGroup, HiCube, HiCog, HiLogout, HiX, HiMenuAlt1, HiMenu } from 'react-icons/hi';
+import { useAuth } from '../contexts/AuthContext'; 
+
+export default function Sidebar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  
+  const { currentUser, logout } = useAuth();
+
+  const navItems = [
+    { name: 'Dashboard', path: '/', icon: <HiHome className="w-5 h-5" /> },
+    { name: 'Customer', path: '/customer', icon: <HiUserGroup className="w-5 h-5" /> },
+    { name: 'Inventory', path: '/inventory', icon: <HiCube className="w-5 h-5" /> },
+    { name: 'Settings', path: '/settings', icon: <HiCog className="w-5 h-5" /> },
+  ];
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
+
+  const toggleMobile = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setMobileOpen(false);
+    }
+  };
+
+  const renderMobileToggle = () => (
+    <button 
+      onClick={toggleMobile}
+      className="fixed top-4 left-4 z-20 bg-blue-900 text-white p-2 rounded-md lg:hidden"
+    >
+      <HiMenu className="w-6 h-6" />
+    </button>
+  );
+
+  const renderSidebar = () => {
+    const userInitial = currentUser?.user.companyName?.charAt(0)?.toUpperCase();
+
     return (
-        <div className="bg-[#0b1f4e] text-white w-64 min-h-screen flex flex-col justify-between h-185">
-            <div>
-                {/* Top Profile Section */}
-                <div className="flex items-center px-4 py-6 border-b border-white/10">
-                    <UserCircle2 size={32} />
-                    <div className="text-sm leading-tight">
-                        <p className="font-semibold">Shree Kaushal Prem</p>
-                        <p className="text-xs text-white/70">Metal</p>
-                    </div>
-                </div>
-
-                <nav className="mt-4 space-y-2 px-4">
-                    <a href="/dashboard"><NavItem label="Dashboard" /></a>
-                    <a href="/customerinfo"><NavItem label="customer" /></a>
-                    <a href="/inventorypage"><NavItem label="inventory" /></a>
-                    <a href="/customerpage"><NavItem label="Settings" /></a>
-                </nav>
+      <div className={`bg-blue-900 text-white h-full flex flex-col transition-all duration-300 ${collapsed && !isMobile ? 'w-16' : 'w-64'}`}>
+        <div className="p-4 flex items-center justify-between border-b border-blue-800">
+          {(!collapsed || isMobile) && (
+            <div className="flex items-center space-x-3">
+              <div className="bg-white text-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                {userInitial}
+              </div>
+              <div>
+                <p className="font-semibold text-sm">{currentUser?.user.companyName}</p>
+                {/* <p className="text-xs opacity-70">{currentUser?.company}</p> */}
+              </div>
             </div>
+          )}
 
-
-            <div className="px-4 py-6">
-                <button className="flex items-center gap-2 text-white hover:text-red-500">
-                    <LogOut size={18} />
-                    <span>LOGOUT</span>
-                </button>
+          {collapsed && !isMobile && (
+            <div className="mx-auto">
+              <div className="bg-white text-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                {userInitial}
+              </div>
             </div>
+          )}
+
+          {isMobile && (
+            <button onClick={toggleMobile} className="text-white opacity-70 hover:opacity-100">
+              <HiX className="w-5 h-5" />
+            </button>
+          )}
         </div>
+
+        {!isMobile && (
+          <div className="px-4 py-3 border-b border-blue-800">
+            <button 
+              onClick={toggleCollapse} 
+              className="text-white opacity-70 hover:opacity-100 p-1 rounded-md hover:bg-blue-800 transition-colors"
+            >
+              <HiMenuAlt1 className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+
+        <nav className="mt-4 flex-1 overflow-y-auto">
+          <ul>
+            {navItems.map((item) => (
+              <li key={item.name}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) => 
+                    `w-full flex items-center py-3 ${collapsed && !isMobile ? 'px-0 justify-center' : 'px-4'} ${
+                      isActive ? 'bg-blue-800' : 'hover:bg-blue-800'
+                    }`
+                  }
+                  onClick={handleLinkClick}
+                  end
+                >
+                  <div className="text-white mr-3">
+                    {item.icon}
+                  </div>
+                  {(!collapsed || isMobile) && <span className="text-sm md:text-base">{item.name}</span>}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="mt-auto p-4 border-t border-blue-800">
+          <button 
+            className="bg-blue-800 text-white w-full py-2 rounded flex items-center justify-center text-sm"
+            onClick={logout}
+          >
+            <HiLogout className={collapsed && !isMobile ? "" : "mr-2"} />
+            {(!collapsed || isMobile) && "LOGOUT"}
+          </button>
+        </div>
+      </div>
     );
-}
+  };
 
-function NavItem({ label }) {
-    return (
-        <div className="flex items-center gap-2 px-2 py-2 hover:bg-white/10 rounded-lg cursor-pointer">
-            <div className="h-3 w-3 bg-gray-300 rounded-full" />
-            <span className="capitalize">{label}</span>
-        </div>
-    )
+  return (
+    <>
+      {isMobile && renderMobileToggle()}
+      {isMobile && mobileOpen && (
+        <div 
+          className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
+          onClick={toggleMobile}
+        ></div>
+      )}
+      <div 
+        className={`
+          fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out 
+          lg:relative lg:translate-x-0
+          ${isMobile && !mobileOpen ? '-translate-x-full' : 'translate-x-0'}
+        `}
+      >
+        {renderSidebar()}
+      </div>
+    </>
+  );
 }
-
-export default Sidebar

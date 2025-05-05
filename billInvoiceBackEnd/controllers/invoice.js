@@ -1,71 +1,222 @@
-// const 
+const Invoice = require('../model/invoice');
+const Customer = require('../model/Customer');
+const Item = require('../model/item');
 
-// const createInvoice = async (req, res) => {
-//     const {
-//         customer,
-//         items
-//     } = req.body;
+/**
+ * @desc    Create new invoice
+ * @route   POST /api/invoices
+ * @access  Private
+ */
+const createInvoice = async (req, res) => {
+  try {
+    const {
+      customer,
+      invoiceNumber,
+      items,
+      subtotal,
+      totalGST,
+      grandTotal,
+      paymentMethod,
+      amountPaid,
+      previousBalance,
+      remainingBalance
+    } = req.body;
 
-//     // Calculate totals
-//     let subtotal = 0;
-//     let totalGST = 0;
-//     const invoiceItems = [];
+    // First, create or find the customer
+    let customerDoc;
+    if (typeof customer === 'object') {
+      // If customer is sent as an object, create/find customer first
+      customerDoc = await Customer.findOne({ name: customer.name }) || 
+                   await Customer.create({
+                     name: customer.name,
+                     gstNumber: customer.gstNumber,
+                     address: customer.address
+                   });
+    } else {
+      // If customer is sent as ID, verify it exists
+      customerDoc = await Customer.findById(customer);
+      if (!customerDoc) {
+        return res.status(404).json({
+          message: 'Customer not found'
+        });
+      }
+    }
 
-//     for (const item of items) {
-//         const dbItem = await Item.findById(item.item).populate('user');
-//         if (!dbItem) {
-//             res.status(404);
-//             throw new Error('Item not found');
-//         }
+    // Create the invoice with customer reference
+    const invoice = await Invoice.create({
+      customer: customerDoc._id,
+      invoiceNumber: invoiceNumber || `INV-${Date.now()}`,
+      items: items.map(item => ({
+        item: item.item,
+        quantity: item.quantity,
+        price: item.price,
+        gstRate: item.gstRate
+      })),
+      subtotal,
+      totalGST,
+      grandTotal,
+      paymentDetails: {
+        method: paymentMethod,
+        amountPaid: amountPaid,
+        previousBalance: previousBalance,
+        remainingBalance: remainingBalance
+      }
+    });
 
-//         const itemTotal = dbItem.price * item.quantity;
-//         const itemGST = itemTotal * (dbItem.gstRate / 100);
+    // Populate the customer details
+    await invoice.populate('customer');
+    await invoice.populate('items.item');
 
-//         subtotal += itemTotal;
-//         totalGST += itemGST;
+    // Update customer balance
+    await Customer.findByIdAndUpdate(
+      customerDoc._id,
+      { balance: remainingBalance },
+      { new: true }
+    );
 
-//         invoiceItems.push({
-//             item: dbItem._id,
-//             quantity: item.quantity,
-//             price: dbItem.price,
-//             gstRate: dbItem.gstRate
-//         });
-//     }
+    res.status(201).json({
+      success: true,
+      invoice
+    });
+  } catch (error) {
+    console.error('Invoice creation error:', error);
+    res.status(500).json({
+      message: 'Failed to create invoice',
+      error: error.message
+    });
+  }
+};
 
-//     const grandTotal = subtotal + totalGST;
+/**
+ * @desc    Get GST summary
+ * @route   GET /api/invoices/gst-summary
+ * @access  Private
+ */
+const getGSTSummary = async (req, res) => {
+  try {
+    // Get date range from query params (optional)
+    const { startDate, endDate } = req.query;
+    
+    // Build query filter
+    const filter = { createdBy: req.user._id };
+    
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
 
-//     const invoice = await Invoice.create({
-//         user: req.user._id,
-//         invoiceNumber: `INV-${Date.now()}`,
-//         customer,
-//         items: invoiceItems,
-//         subtotal,
-//         totalGST,
-//         grandTotal
-//     });
+    const invoices = await Invoice.find(filter).populate('items.item');
 
-//     res.status(201).json(invoice);
-// };
+    const gstSummary = invoices.reduce((acc, invoice) => {
+      invoice.items.forEach(item => {
+        const rate = item.gstRate;
+        const amount = item.price * item.quantity * (rate / 100);
+        acc[rate] = (acc[rate] || 0) + amount;
+      });
+      return acc;
+    }, {});
 
+    // Create an array of GST rates and amounts
+    const gstData = Object.keys(gstSummary).map(rate => ({
+      rate: Number(rate),
+      amount: gstSummary[rate].toFixed(2)
+    }));
 
-// const getGSTSummary = async (req, res) => {
-//     const invoices = await Invoice.find({
-//         user: req.user._id
-//     }).populate('items.item');
+    res.json({
+      success: true,
+      gstData,
+      totalInvoices: invoices.length
+    });
+  } catch (error) {
+    console.error('GST summary error:', error);
+    res.status(500).json({
+      message: 'Failed to get GST summary',
+      error: error.message
+    });
+  }
+};
 
-//     const gstSummary = invoices.reduce((acc, invoice) => {
-//         invoice.items.forEach(item => {
-//             const rate = item.gstRate;
-//             const amount = item.price * item.quantity * (rate / 100);
-//             acc[rate] = (acc[rate] || 0) + amount;
-//         });
-//         return acc;
-//     }, {});
+/**
+ * @desc    Get all invoices
+ * @route   GET /api/invoices
+ * @access  Private
+ */
+const getInvoices = async (req, res) => {
+  try {
+    const { customerId, startDate, endDate, limit = 10, page = 1 } = req.query;
+    
+    // Build filter
+    const filter = { createdBy: req.user._id };
+    
+    if (customerId) filter['customer._id'] = customerId;
+    
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
+    
+    // Pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const invoices = await Invoice.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(skip);
+      
+    const total = await Invoice.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      invoices,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / parseInt(limit)),
+        totalResults: total
+      }
+    });
+  } catch (error) {
+    console.error('Get invoices error:', error);
+    res.status(500).json({
+      message: 'Failed to fetch invoices',
+      error: error.message
+    });
+  }
+};
 
-//     res.json(gstSummary);
-// };
+/**
+ * @desc    Get invoice by ID
+ * @route   GET /api/invoices/:id
+ * @access  Private
+ */
+const getInvoiceById = async (req, res) => {
+  try {
+    const invoice = await Invoice.findOne({
+      _id: req.params.id,
+      createdBy: req.user._id
+    }).populate('items.item');
 
-// module.exports = {
-//     createInvoice,
-//     getGSTSummary
-// };
+    if (!invoice) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+
+    res.json({
+      success: true,
+      invoice
+    });
+  } catch (error) {
+    console.error('Get invoice error:', error);
+    res.status(500).json({
+      message: 'Failed to fetch invoice',
+      error: error.message
+    });
+  }
+};
+
+module.exports = {
+  createInvoice,
+  getGSTSummary,
+  getInvoices,
+  getInvoiceById
+};

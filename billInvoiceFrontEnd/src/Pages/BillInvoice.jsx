@@ -1,20 +1,26 @@
 import React from "react";
-import Sidebar2 from "../Components/Sidebar2";
+import { useLocation } from "react-router-dom";
 
 const BillInvoice = () => {
-  const products = [
-    { name: "Collared Shirt", price: 4799, qty: 2, discount: "8.24%", total: 9089 },
-    { name: "Madras Shirt", price: 899, qty: 2, discount: "8.14%", total: 1500 },
-    { name: "Sportswear", price: 599, qty: 1, discount: "3.33%", total: 579 },
-    { name: "H&M T-shirt", price: 2999, qty: 1, discount: "2.01%", total: 2869 },
-  ];
+  const location = useLocation();
+  const { billData } = location.state || {};
+
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2
+    }).format(amount).replace('INR', '₹');
+  };
+
+
+
 
   return (
-    <section className="flex min-h-screen flex-col lg:flex-row">
+    <section className=" min-h-screen flex-col lg:flex-row">
       {/* Sidebar - Hidden on small and medium screens */}
-      <div className="hidden lg:block">
-        <Sidebar2 />
-      </div>
+
 
       {/* Main Content */}
       <div className="flex-1 bg-gray-100 p-3 sm:p-4 lg:p-6">
@@ -24,27 +30,27 @@ const BillInvoice = () => {
             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-0">Bill</h1>
             <div className="flex flex-wrap gap-2">
               <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base">Print</button>
-              <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base">Download</button>
+              <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base" >Download</button>
               <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base">Share</button>
             </div>
           </div>
 
           {/* Invoice Section */}
-          <div className="border p-3 sm:p-4 lg:p-5 rounded">
-            <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-center mb-4 sm:mb-6">Invoice</h2>
+          <div className="border p-3 sm:p-4 lg:p-5 rounded " id="invoice-content">
+            <h2 className="text-xl font-semibold text-center mb-4 sm:mb-6">Invoice</h2>
 
             {/* Billing Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm lg:text-base mb-4 sm:mb-6">
               <div>
                 <p><strong>Bill From:</strong> Inventor Pvt Limited</p>
                 <p>Ballupur, Dehradun - 248001</p>
-                <p className="mt-3 sm:mt-4"><strong>Bill To:</strong> Rishubh Rawat</p>
-                <p>Rishikesh, Uttarakhand - 249201</p>
+                <p className="mt-3 sm:mt-4"><strong>Bill To:</strong> {billData?.customer?.name}</p>
+                <p>{billData?.customer?.address}</p>
               </div>
               <div className="text-left sm:text-right mt-3 sm:mt-0">
                 <p><strong>Invoice Details:</strong></p>
-                <p>Date: 4/12/2025</p>
-                <p>Payment Method: <span className="capitalize">cash</span></p>
+                <p>Date: {billData?.date}</p>
+                <p>Payment Method: <span className="capitalize">{billData?.payment?.method}</span></p>
               </div>
             </div>
 
@@ -61,13 +67,15 @@ const BillInvoice = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((item, idx) => (
-                    <tr key={idx} className="border-t">
-                      <td className="p-1 sm:p-2">{item.name}</td>
-                      <td className="p-1 sm:p-2">₹{item.price}</td>
+                  {billData?.items?.map((item) => (
+                    <tr key={item.item} className="border-t">
+                      <td className="p-1 sm:p-2">{item.item}</td>
+                      <td className="p-1 sm:p-2">{formatCurrency(item.price)}</td>
                       <td className="p-1 sm:p-2">{item.qty}</td>
-                      <td className="p-1 sm:p-2">{item.discount}</td>
-                      <td className="p-1 sm:p-2">₹{item.total}</td>
+                      <td className="p-1 sm:p-2">{item.discount}%</td>
+                      <td className="p-1 sm:p-2">
+                        {formatCurrency(item.price * item.qty * (1 - item.discount / 100))}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -76,15 +84,18 @@ const BillInvoice = () => {
 
             {/* Totals Section */}
             <div className="text-right mt-4 sm:mt-6 space-y-1 text-xs sm:text-sm lg:text-base">
-              <p><span className="font-semibold">Subtotal:</span> ₹15,087</p>
-              <p><span className="font-semibold">Tax (18%):</span> ₹676</p>
-              <p className="text-sm sm:text-base lg:text-lg font-bold mt-2">Grand Total: ₹15,963</p>
+              <p><span className="font-semibold">Subtotal:</span> {formatCurrency(billData?.totals?.subtotal)}</p>
+              <p><span className="font-semibold">Tax (18%):</span> {formatCurrency(billData?.totals?.tax)}</p>
+              <p className="text-sm sm:text-base lg:text-lg font-bold mt-2">
+                Grand Total: {formatCurrency(billData?.totals?.grandTotal)}
+              </p>
             </div>
 
             {/* Payment Details */}
             <div className="mt-6 sm:mt-8 space-y-1 text-xs sm:text-sm lg:text-base">
-              <p><span className="font-semibold">In Words:</span> Fifteen thousand Nine Hundred & Sixty Three</p>
-              <p><span className="font-semibold">Amount Paid:</span> ₹15,963</p>
+              <p><span className="font-semibold">Previous Balance:</span> {formatCurrency(billData?.payment?.previousBalance)}</p>
+              <p><span className="font-semibold">Amount Paid:</span> {formatCurrency(billData?.payment?.amountPaid)}</p>
+              <p><span className="font-semibold">Remaining Balance:</span> {formatCurrency(billData?.payment?.remainingBalance)}</p>
             </div>
 
             {/* Thank You Note */}

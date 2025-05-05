@@ -1,114 +1,288 @@
+
+// const User = require('../model/user');
+// const Item = require('../model/item');
+
+// // Utility function to send error
+// const sendError = (res, status, message) => {
+//     return res.status(status).json({ success: false, message });
+// };
+
+// // Utility function to check required fields
+// const validateFields = (fields) => {
+//     return Object.values(fields).every(field => field !== undefined && field !== null && field !== '');
+// };
+
+// // Get all items for the logged-in user
+// const allItems = async (req, res) => {
+//     try {
+//         const items = await Item.find({ user: req.user?._id });
+
+//         if (!items.length) return sendError(res, 404, 'No items found');
+
+//         return res.status(200).json({ success: true, items });
+//     } catch (error) {
+//         return sendError(res, 500, error.message);
+//     }
+// };
+
+// // Add a new item
+// const addItem = async (req, res) => {
+//     try {
+//         const { user, name, price, quantity, discount } = req.body;
+
+//         if (!validateFields({ name, price, quantity, discount })) {
+//             return sendError(res, 400, 'All fields are required');
+//         }
+
+//         const item = await Item.create({
+//             user,
+//             name,
+//             price,
+//             quantity,
+//             discount
+//         });
+
+//         return res.status(201).json({
+//             success: true,
+//             message: 'Item created successfully',
+//             item
+//         });
+//     } catch (error) {
+//         return sendError(res, 500, error.message);
+//     }
+// };
+
+// // Delete an item
+// const deleteItem = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+
+//         if (!id) return sendError(res, 400, 'Item ID is required');
+
+//         const item = await Item.findOneAndDelete({
+//             _id: id,
+//             user: req.user._id
+//         });
+
+//         if (!item) return sendError(res, 404, 'Item not found');
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Item deleted successfully',
+//             item
+//         });
+//     } catch (error) {
+//         return sendError(res, 500, error.message);
+//     }
+// };
+
+// // Update an item
+// const updateItem = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { name, price, quantity, discount } = req.body;
+
+//         const item = await Item.findOne({
+//             _id: id,
+//             user: req.user._id
+//         });
+
+//         if (!item) return sendError(res, 404, 'Item not found');
+
+//         if (name !== undefined) item.name = name;
+//         if (price !== undefined) item.price = price;
+//         if (quantity !== undefined) item.quantity = quantity;
+//         if (discount !== undefined) item.discount = discount;
+
+//         const updatedItem = await item.save();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Item updated successfully',
+//             item: updatedItem
+//         });
+//     } catch (error) {
+//         return sendError(res, 500, error.message);
+//     }
+// };
+
+// // Get a single item by ID
+// const getItem = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+
+//         if (!id) return sendError(res, 400, 'Item ID is required');
+
+//         const item = await Item.findOne({
+//             _id: id,
+//             user: req.user._id
+//         });
+
+//         if (!item) return sendError(res, 404, 'Item not found');
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Item found',
+//             item
+//         });
+//     } catch (error) {
+//         return sendError(res, 500, error.message);
+//     }
+// };
+
+// module.exports = {
+//     allItems,
+//     addItem,
+//     deleteItem,
+//     updateItem,
+//     getItem
+// };
+
+
+
+
 const User = require('../model/user');
 const Item = require('../model/item');
-const item = require('../model/item');
-// const Invoice = require('../model/invoice');   
 
+// Utility function to send error
+const sendError = (res, status, message) => {
+    return res.status(status).json({ success: false, message });
+};
+
+// Utility function to check required fields
+const validateFields = (fields) => {
+    return Object.values(fields).every(field => field !== undefined && field !== null && field !== '');
+};
+
+// Get all items for a specific customer
 const allItems = async (req, res) => {
-    const items = await Item.find({});
-    if (!items) {
-        return res.status(404).json({
-            message: 'No items found'
-        });
-    }
-    return res.status(200).json(items);
+    try {
+        const customerId = req.query.customerId || req.params.customerId;
+        
+        if (!customerId) {
+            return sendError(res, 400, 'Customer ID is required');
+        }
+        
+        const items = await Item.find({ customer: customerId }).sort({ createdAt: -1 });
 
-}
+        // Return empty array instead of 404 to make frontend handling easier
+        return res.status(200).json({ 
+            success: true, 
+            items,
+            count: items.length
+        });
+    } catch (error) {
+        return sendError(res, 500, error.message);
+    }
+};
+
+// Add a new item
 const addItem = async (req, res) => {
-    const {
-        name,
-        price,
-        quantity,
-        discount
-    } = req.body;
-    if (!name || !price || !quantity || !discount) {
-        return res.status(400).json({
-            message: 'All fields are required'
+    try {
+        const { customer, name, price, quantity, discount } = req.body;
+
+        if (!validateFields({ customer, name, price, quantity, discount })) {
+            return sendError(res, 400, 'All fields are required');
+        }
+
+        const item = await Item.create({
+            customer, // Use customer instead of user
+            name,
+            price,
+            quantity,
+            discount
         });
+
+        return res.status(201).json({
+            success: true,
+            message: 'Item created successfully',
+            item
+        });
+    } catch (error) {
+        return sendError(res, 500, error.message);
     }
-    const item = await Item.create({
-        name,
-        price,
-        quantity,
-        discount
-    });
-    return res.status(201).json({
-        message: 'Item created successfully',
-        item
-    });
-}
+};
+
+// Delete an item
 const deleteItem = async (req, res) => {
-    const {
-        id
-    } = req.params;
-    if (!id) {
-        return res.status(400).json({
-            message: 'Item id is required'
-        });
-    }
-    const item = await Item.findByIdAndDelete(id)
-    if (!items) {
-        return res.status(404).json({
-            message: 'Item not found'
-        });
-    }
-    return res.status(200).json({
-        message: 'Item deleted successfully',
-        item
-    });
-}
+    try {
+        const { id } = req.params;
+        const { customerId } = req.query;
 
+        if (!id) return sendError(res, 400, 'Item ID is required');
 
+        const item = await Item.findOneAndDelete({
+            _id: id,
+            customer: customerId
+        });
+
+        if (!item) return sendError(res, 404, 'Item not found');
+
+        return res.status(200).json({
+            success: true,
+            message: 'Item deleted successfully',
+            item
+        });
+    } catch (error) {
+        return sendError(res, 500, error.message);
+    }
+};
+
+// Update an item
 const updateItem = async (req, res) => {
-    const {
-        id
-    } = req.params;
-    const {
-        name,
-        price,
-        quantity,
-        discount
-    } = req.body;
-    //find and items verify
-    const item = await Item.findOne({
-        _id: id,
-        // user: req.user._id
-    })
-    if (!item) {
-        return res.status(404).json({
-            message: 'Item not found'
-        });
-    }
-    if (nama !== undefined) item.name = name;
-    if (price !== undefined) item.price = price;
-    if (discount !== undefined) item.discount = discount;
-    if (quantity !== undefined) item.qunatity = qunatity
+    try {
+        const { id } = req.params;
+        const { name, price, quantity, discount, customerId } = req.body;
 
-    const updatedItem = await item.save()
-    res.status(200).json({
-        message: 'Item updated successfully',
-        item: updatedItem
-    });
-}
+        const item = await Item.findOne({
+            _id: id,
+            customer: customerId
+        });
+
+        if (!item) return sendError(res, 404, 'Item not found');
+
+        if (name !== undefined) item.name = name;
+        if (price !== undefined) item.price = price;
+        if (quantity !== undefined) item.quantity = quantity;
+        if (discount !== undefined) item.discount = discount;
+
+        const updatedItem = await item.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Item updated successfully',
+            item: updatedItem
+        });
+    } catch (error) {
+        return sendError(res, 500, error.message);
+    }
+};
+
+// Get a single item by ID
 const getItem = async (req, res) => {
-    const {
-        id
-    } = req.params;
-    if (!id) {
-        return res.status(400).json({
-            message: 'Item id is required'
+    try {
+        const { id } = req.params;
+        const { customerId } = req.query;
+
+        if (!id) return sendError(res, 400, 'Item ID is required');
+        if (!customerId) return sendError(res, 400, 'Customer ID is required');
+
+        const item = await Item.findOne({
+            _id: id,
+            customer: customerId
         });
-    }
-    const item = await Item.findById(id)
-    if (!item) {
-        return res.status(404).json({
-            message: 'Item not found'
+
+        if (!item) return sendError(res, 404, 'Item not found');
+
+        return res.status(200).json({
+            success: true,
+            message: 'Item found',
+            item
         });
+    } catch (error) {
+        return sendError(res, 500, error.message);
     }
-    return res.status(200).json({
-        message: 'Item found',
-        item
-    });
-}
+};
 
 module.exports = {
     allItems,
@@ -116,4 +290,4 @@ module.exports = {
     deleteItem,
     updateItem,
     getItem
-}
+};
