@@ -45,9 +45,9 @@ function ProductPurchase() {
 
   const handleEdit = (item) => {
     setEditingProduct(item);
-    setProductName(item.item); // Note: using item.item as that's the property name in cart
+    setProductName(item.item); 
     setPrice(item.price);
-    setQuantity(item.qty); // Note: using item.qty as that's the property name in cart
+    setQuantity(item.qty); 
     setDiscount(item.discount);
     setIsEditMode(true);
     setIsModalOpen(true);
@@ -108,7 +108,7 @@ function ProductPurchase() {
       subtotal: subtotal.toFixed(2),
       tax: tax.toFixed(2),
       grandTotal: grandTotal.toFixed(2),
-      remainingBalance: balance.toFixed(2)
+      remainingBalance: balance
     };
   };
 
@@ -133,30 +133,23 @@ function ProductPurchase() {
   const handleGenerateBill = async () => {
     const financials = calculateFinancials();
 
-    // Validate data before sending
-    if (!customerData?.email) {
-      alert('Customer information is missing');
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      alert('Cart is empty');
-      return;
-    }
+    // Validate data
+    if (!validatePayment()) return;
 
     const billData = {
       customer: {
         name: customerData.name || '',
         email: customerData.email || '',
         phone: customerData.phone || '',
+        address: customerData.address || '',
         balance: Number(balance) || 0,
-        cart: cartItems.map(item => ({
-          item: item.item,
-          price: Number(item.price),
-          qty: Number(item.qty),
-          discount: Number(item.discount)
-        }))
       },
+      items: cartItems.map(item => ({
+        item: item.item,
+        price: Number(item.price),
+        qty: Number(item.qty),
+        discount: Number(item.discount)
+      })),
       payment: {
         method: paymentMethod,
         amountPaid: Number(amountPaid) || 0,
@@ -173,21 +166,10 @@ function ProductPurchase() {
     };
 
     try {
-      console.log('Sending bill data:', billData);
-
-      const response = await axios.post(`${API_URL}/invoices`, billData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('Server response:', response.data);
-
-      if (response.status === 200 || response.status === 201) {
-        // Update customer balance
+      const response = await axios.post(`${API_URL}/invoices`, billData);
+      
+      if (response.status === 201) {
         updateCustomerBalance(customerData.email, balance);
-
-        // Navigate to bill preview
         navigate('/home/billinvoice', {
           state: {
             billData,
@@ -199,14 +181,8 @@ function ProductPurchase() {
         });
       }
     } catch (error) {
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-
-      alert(`Failed to save invoice: ${error.response?.data?.message || 'Server error occurred'}`);
+      console.error('Error details:', error);
+      alert('Failed to save invoice.');
     }
   };
 
@@ -425,7 +401,7 @@ function ProductPurchase() {
             <p className="text-sm mb-1">Remaining Balance</p>
             <p className={`text-lg font-semibold ${balance > 0 ? 'text-red-600' : 'text-green-600'
               }`}>
-              ₹{balance.toFixed(2)}
+                ₹{balance}
             </p>
           </div>
 

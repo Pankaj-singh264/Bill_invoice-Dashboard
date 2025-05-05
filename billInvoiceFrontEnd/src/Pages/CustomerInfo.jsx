@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AddCustomerModal from "./AddCustomerModal";
+import { HiX } from 'react-icons/hi';
 import { useNavigate } from "react-router-dom";
 import {
   faTrash,
@@ -8,17 +8,28 @@ import {
   faFileInvoice,
   faPlus,
   faSearch,
+  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCustomers } from "../contexts/CustomerContext";
 
 export default function CustomerPage() {
   const navigate = useNavigate();
- 
-  const { customers, addCustomer, deleteCustomers } = useCustomers();
-  console.log(customers.length)
+
+  const { customers, addCustomer, deleteCustomers, updateCustomer } = useCustomers();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCustomers, setSelectedCustomers] = useState(new Set());
+  const [newCustomer, setNewCustomer] = useState({
+    id: Date.now(),
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    balance: 0,
+    cart: []
+  });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
 
   const filteredCustomers = customers.filter(
     (customer) =>
@@ -28,20 +39,27 @@ export default function CustomerPage() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingCustomer(null);
+    setNewCustomer({
+      id: Date.now(),
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      balance: 0,
+      cart: []
+    });
   };
 
   const handleCustomer = (currentCustomer) => {
-    navigate('/home/productpurchase', { 
-      state: { 
-        customerData: currentCustomer 
+    navigate('/home/productpurchase', {
+      state: {
+        customerData: currentCustomer
       }
     });
   };
 
-  const handleCustomerAdded = (newCustomerData) => {
-    addCustomer(newCustomerData);
-    setIsModalOpen(false);
-  };
 
   const handleCheckboxChange = (email) => {
     setSelectedCustomers((prevSelected) => {
@@ -60,13 +78,90 @@ export default function CustomerPage() {
     setSelectedCustomers(new Set());
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCustomer(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleEditClick = (customer) => {
+    setEditingCustomer(customer);
+    setNewCustomer({
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address,
+      balance: customer.balance,
+      cart: customer.cart || []
+    });
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!newCustomer.name || !newCustomer.email) {
+      alert('Please fill required fields');
+      return;
+    }
+
+    if (isEditMode) {
+      updateCustomer(newCustomer);
+    } else {
+      addCustomer(newCustomer);
+    }
+
+    // Reset form
+    setNewCustomer({
+      id: Date.now(),
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      balance: 0,
+      cart: []
+    });
+    setIsEditMode(false);
+    setEditingCustomer(null);
+    setIsModalOpen(false);
+  };
+
+  const directPurchase = (e) => {
+    e.preventDefault(); // Prevent form submission
+
+    if (!newCustomer.name || !newCustomer.email) {
+      alert('Please fill required fields');
+      return;
+    }
+
+    // First add the customer
+    addCustomer(newCustomer);
+
+    // Then navigate to product purchase with the new customer data
+    navigate('/home/productpurchase', {
+      state: {
+        customerData: newCustomer
+      }
+    });
+
+    // Reset form and close modal
+    setNewCustomer({
+      id: Date.now(),
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      balance: 0,
+      cart: []
+    });
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar
-      <div className="hidden md:block">
-        <Sidebar />
-      </div> */}
-
       {/* Main Content */}
       <main className="flex-1 bg-white p-4 sm:p-6 ">
         <div className="max-w-7xl mx-auto">
@@ -78,13 +173,6 @@ export default function CustomerPage() {
             >
               <FontAwesomeIcon icon={faPlus} className="mr-2" /> Add Customer
             </button>
-
-            {isModalOpen && (
-              <AddCustomerModal
-                onClose={handleCloseModal}
-                onCustomerAdded={handleCustomerAdded}
-              />
-            )}
           </div>
 
           {/* Search Input */}
@@ -132,19 +220,21 @@ export default function CustomerPage() {
                     <th className="py-2 px-4">Balance</th>
                     <th className="py-2 px-4">Invoice</th>
                     <th className="py-2 px-4">Select</th>
+                    <th className="py-2 px-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCustomers.map((customer) => (
-                    <tr key={customer.email} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => handleCustomer(customer)}>
-                      <td className="py-2 px-4">{customer.name}</td>
+                    <tr key={customer.email} className="border-b hover:bg-gray-50 cursor-pointer" >
+                      <td
+                        onClick={() => handleCustomer(customer)}
+                        className="py-2 px-4">{customer.name}</td>
                       <td className="py-2 px-4">{customer.email}</td>
                       <td className="py-2 px-4">{customer.phone}</td>
                       <td className="py-2 px-4">{customer.address}</td>
                       <td className="py-2 px-4">
-                        <span className={`font-semibold ${
-                          customer.balance > 0 ? 'text-red-600' : 'text-green-600'
-                        }`}>
+                        <span className={`font-semibold ${customer.balance > 0 ? 'text-red-600' : 'text-green-600'
+                          }`}>
                           ₹{customer.balance || 0}
                         </span>
                       </td>
@@ -162,6 +252,30 @@ export default function CustomerPage() {
                             handleCheckboxChange(customer.email);
                           }}
                         />
+                      </td>
+                      <td className="py-2 px-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            className="hover:text-blue-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditClick(customer);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faPen} />
+                          </button>
+                          <button
+                            className="hover:text-red-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteCustomers(customer)
+
+                              handleDeleteSelected(new Set([customer.email]));
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -183,9 +297,8 @@ export default function CustomerPage() {
                   <p className="text-sm"><span className="font-semibold">Address:</span> {customer.address}</p>
                   <p className="text-sm mt-2">
                     <span className="font-semibold">Balance:</span>
-                    <span className={`ml-2 ${
-                      customer.balance > 0 ? 'text-red-600' : 'text-green-600'
-                    }`}>
+                    <span className={`ml-2 ${customer.balance > 0 ? 'text-red-600' : 'text-green-600'
+                      }`}>
                       ₹{customer.balance || 0}
                     </span>
                   </p>
@@ -193,14 +306,21 @@ export default function CustomerPage() {
                     <span className="text-sm font-semibold">Invoice:</span>
                     <div className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faFileInvoice} />
-                      {/* <input type="checkbox" /> */}
                     </div>
                   </div>
                   {/* Mobile delete icon */}
                   <FontAwesomeIcon
                     icon={faTrash}
                     className="cursor-pointer mt-2"
-                    onClick={() => handleDeleteSelected(customer.email)}
+                    onClick={() => handleDeleteSelected(customer)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faPen}
+                    className="cursor-pointer mt-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditClick(customer);
+                    }}
                   />
                 </div>
               ))}
@@ -208,6 +328,94 @@ export default function CustomerPage() {
           </div>
         </div>
       </main>
+
+      {/* Modal for Add/Edit Customer */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">{isEditMode ? 'Edit Customer' : 'Add Customer'}</h2>
+              <HiX className="cursor-pointer text-xl" onClick={handleCloseModal} />
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={newCustomer.name}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={newCustomer.email}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={newCustomer.phone}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={newCustomer.address}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Balance</label>
+                <input
+                  type="number"
+                  name="balance"
+                  value={newCustomer.balance}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <div className="flex justify-between px-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm border rounded-lg"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 border rounded-lg text-sm"
+                  onClick={directPurchase}
+                >
+                  Add & Purchase
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  {isEditMode ? 'Update' : 'Add Customer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

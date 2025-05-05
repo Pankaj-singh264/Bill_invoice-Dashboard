@@ -155,15 +155,13 @@ export function CustomerProvider({ children }) {
     localStorage.setItem("customers", JSON.stringify(updatedCustomers));
   };
 
-  const deleteCustomers = (emailsToDelete) => {
-    const updatedCustomers = customers.filter(
-      (customer) => !emailsToDelete.has(customer.email)
-    );
+  const deleteCustomers = (customer) => {
+    const updatedCustomers = customers.filter(c => c.email !== customer.email);
     setCustomers(updatedCustomers);
     localStorage.setItem("customers", JSON.stringify(updatedCustomers));
     return updatedCustomers;
   };
-
+// 
   const updateCustomer = (updatedCustomer) => {
     const updatedCustomers = customers.map(customer =>
       customer.email === updatedCustomer.email ? updatedCustomer : customer

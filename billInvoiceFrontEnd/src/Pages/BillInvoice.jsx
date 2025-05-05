@@ -68,7 +68,7 @@ const BillInvoice = () => {
                 </thead>
                 <tbody>
                   {billData?.items?.map((item) => (
-                    <tr key={item.id} className="border-t">
+                    <tr key={item.item} className="border-t">
                       <td className="p-1 sm:p-2">{item.item}</td>
                       <td className="p-1 sm:p-2">{formatCurrency(item.price)}</td>
                       <td className="p-1 sm:p-2">{item.qty}</td>

@@ -62,8 +62,8 @@ export default function Sidebar() {
                 {userInitial}
               </div>
               <div>
-                <p className="font-semibold text-sm">{currentUser?.username}</p>
-                {/* <p className="text-xs opacity-70">{currentUser?.company}</p> */}
+                {/* <p className="font-semibold text-sm">{currentUser?.username}</p> */}
+                <p className="text-xs opacity-70">{currentUser?.company}</p>
               </div>
             </div>
           )}
