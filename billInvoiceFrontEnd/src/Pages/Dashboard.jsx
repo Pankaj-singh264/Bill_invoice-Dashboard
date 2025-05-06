@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-import { useState } from 'react';
-=======
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { HiDocumentText, HiUserGroup, HiCube, HiMenu } from 'react-icons/hi';
 import { FaRupeeSign } from "react-icons/fa";
 import { HiArrowUp, HiArrowDown } from 'react-icons/hi';
 import { HiDocumentDuplicate } from 'react-icons/hi';
-<<<<<<< HEAD
-
-export default function Dashboard() {
-  // Initialize all the data directly inside the component
-  const currentDate = "21 April 2025";
-  const dayOfWeek = "Monday";
-  
-=======
 import { useNavigate } from 'react-router-dom';
 import DateObject from "react-date-object";
 import { useContext } from 'react';
@@ -30,7 +18,6 @@ export default function Dashboard() {
   //   console.log(response.data)
   // }
 
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   // Stats data
   const stats = {
     totalRevenue: {
@@ -59,11 +46,6 @@ export default function Dashboard() {
       icon: "inventory"
     }
   };
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   // Revenue data
   const revenueData = {
     title: "Revenue Overview",
@@ -83,11 +65,6 @@ export default function Dashboard() {
       { month: "July", value: 296099 }
     ]
   };
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   // Recent activities
   const recentActivities = [
     {
@@ -139,20 +116,6 @@ export default function Dashboard() {
 
   return (
     <div>
-<<<<<<< HEAD
-      {/* Header */}
-      <div className="bg-blue-900 text-white p-3 md:p-4 flex justify-end">
-  <div className="flex flex-col md:flex-row items-end md:items-end space-y-1 md:space-y-0 md:space-x-4 text-sm md:text-base">
-    <span className="flex items-end">👋 Welcome back</span>
-    <span className="hidden md:inline">|</span>
-    <span>{currentDate}</span>
-    <span className="hidden md:inline">|</span>
-    <span>{dayOfWeek}</span>
-  </div>
-</div>
-
-      
-=======
       {/* {totlaSales} */}
       {/* Header */}
       <div className="bg-blue-900 text-white p-3 md:p-4 flex justify-end">
@@ -166,7 +129,6 @@ export default function Dashboard() {
       </div>
       {/* <div>{totalSales}</div> */}
 
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
       {/* Dashboard Content */}
       <div className="bg-white p-4 md:p-6 rounded-b-lg shadow-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
@@ -175,20 +137,11 @@ export default function Dashboard() {
             <button className="border border-gray-300 rounded px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base whitespace-nowrap">
               Export Reports
             </button>
-<<<<<<< HEAD
-            <button className="bg-blue-600 text-white rounded px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base whitespace-nowrap">
-=======
             <button onClick={() => { navigate('/customer') }} className="bg-blue-600 text-white rounded px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base whitespace-nowrap">
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
               New Invoice
             </button>
           </div>
         </div>
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
         {/* Stats Cards - Using react-icons now */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           {/* Total Revenue Card */}
@@ -208,11 +161,6 @@ export default function Dashboard() {
               <span className="text-gray-500 ml-1">from last {stats.totalRevenue.period}</span>
             </div>
           </div>
-<<<<<<< HEAD
-          
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           {/* Pending Invoice Card */}
           <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
             <div className="flex justify-between items-center mb-1 md:mb-2">
@@ -230,11 +178,6 @@ export default function Dashboard() {
               <span className="text-gray-500 ml-1">from last {stats.pendingInvoices.period}</span>
             </div>
           </div>
-<<<<<<< HEAD
-          
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           {/* Total Customer Card */}
           <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
             <div className="flex justify-between items-center mb-1 md:mb-2">
@@ -252,11 +195,6 @@ export default function Dashboard() {
               <span className="text-gray-500 ml-1">from last {stats.totalCustomers.period}</span>
             </div>
           </div>
-<<<<<<< HEAD
-          
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           {/* Inventory Total Card */}
           <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
             <div className="flex justify-between items-center mb-1 md:mb-2">
@@ -275,22 +213,12 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
         {/* Charts and Activities */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Revenue Chart */}
           <div className="bg-white p-3 md:p-4">
             <h2 className="text-base md:text-lg font-semibold">{revenueData.title}</h2>
             <p className="text-xs md:text-sm text-gray-500">{revenueData.subtitle}</p>
-<<<<<<< HEAD
-            
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
             <div className="mt-3 md:mt-4 rounded-lg border border-gray-200 p-3 md:p-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
                 <div>
@@ -302,11 +230,6 @@ export default function Dashboard() {
                   {revenueData.year} ({revenueData.period})
                 </div>
               </div>
-<<<<<<< HEAD
-              
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
               <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
@@ -317,32 +240,19 @@ export default function Dashboard() {
                     <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} />
                     <Tooltip contentStyle={{ fontSize: '12px' }} />
-<<<<<<< HEAD
-                    <Line 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#3B82F6" 
-                      strokeWidth={2} 
-=======
                     <Line
                       type="monotone"
                       dataKey="value"
                       stroke="#3B82F6"
                       strokeWidth={2}
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
                       dot={{ stroke: '#3B82F6', strokeWidth: 2, fill: 'white', r: 3 }}
                       activeDot={{ r: 5 }}
                       fill="url(#colorUv)"
                     />
                     <defs>
                       <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-<<<<<<< HEAD
-                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
-=======
                         <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
                         <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1} />
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
                       </linearGradient>
                     </defs>
                   </LineChart>
@@ -350,26 +260,14 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-<<<<<<< HEAD
-          
-=======
-
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           {/* Recent Activities */}
           <div className="bg-white p-3 md:p-4">
             <h2 className="text-base md:text-lg font-semibold">Recent Activities</h2>
             <p className="text-xs md:text-sm text-gray-500">Latest transaction and actions</p>
-<<<<<<< HEAD
-            
-            <div className="mt-3 md:mt-4 space-y-3 md:space-y-4 rounded-lg border border-gray-200 p-3 md:p-4">
-              {recentActivities.map((activity, index) => (
-                <div 
-=======
 
             <div className="mt-3 md:mt-4 space-y-3 md:space-y-4 rounded-lg border border-gray-200 p-3 md:p-4">
               {recentActivities.map((activity, index) => (
                 <div
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
                   key={activity.id}
                   className={`flex items-start ${index !== recentActivities.length - 1 ? 'border-b border-gray-100 pb-3 md:pb-4' : ''}`}
                 >
