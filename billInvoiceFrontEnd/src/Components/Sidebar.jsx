@@ -1,6 +1,4 @@
 
-<<<<<<< HEAD
-=======
 // // src/components/Sidebar.jsx
 // import { useState, useEffect } from 'react';
 // import { NavLink } from 'react-router-dom';
@@ -163,7 +161,6 @@
 // }
 
 
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 // src/components/Sidebar.jsx
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -178,17 +175,10 @@ export default function Sidebar() {
   const { currentUser, logout } = useAuth();
 
   const navItems = [
-<<<<<<< HEAD
-    { name: 'Dashboard', path: '/home', icon: <HiHome className="w-5 h-5" /> },
-    { name: 'Customer', path: '/home/customer', icon: <HiUserGroup className="w-5 h-5" /> },
-    { name: 'Inventory', path: '/home/inventory', icon: <HiCube className="w-5 h-5" /> },
-    { name: 'Settings', path: '/home/signup', icon: <HiCog className="w-5 h-5" /> },
-=======
     { name: 'Dashboard', path: '/', icon: <HiHome className="w-5 h-5" /> },
     { name: 'Customer', path: '/customer', icon: <HiUserGroup className="w-5 h-5" /> },
     { name: 'Inventory', path: '/inventory', icon: <HiCube className="w-5 h-5" /> },
     { name: 'Settings', path: '/settings', icon: <HiCog className="w-5 h-5" /> },
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   ];
 
   useEffect(() => {
@@ -216,43 +206,26 @@ export default function Sidebar() {
   const renderMobileToggle = () => (
     <button 
       onClick={toggleMobile}
-<<<<<<< HEAD
-      className="fixed top-4 right-4 z-20 bg-blue-900 text-white p-2 rounded-md lg:hidden"
-=======
       className="fixed top-4 left-4 z-20 bg-blue-900 text-white p-2 rounded-md lg:hidden"
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
     >
       <HiMenu className="w-6 h-6" />
     </button>
   );
 
   const renderSidebar = () => {
-<<<<<<< HEAD
-    const userInitial = currentUser?.username?.charAt(0)?.toUpperCase();
-
-    return (
-      <div className={`bg-blue-900 text-white h-full flex flex-col  transition-all duration-300 ${collapsed && !isMobile ? 'w-16' : 'w-64'}`}>
-        <div className="p-4 flex items-center justify-between border-b border-blue-300  ">
-=======
     const userInitial = currentUser?.user.companyName?.charAt(0)?.toUpperCase();
 
     return (
       <div className={`bg-blue-900 text-white h-full flex flex-col transition-all duration-300 ${collapsed && !isMobile ? 'w-16' : 'w-64'}`}>
         <div className="p-4 flex items-center justify-between border-b border-blue-800">
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           {(!collapsed || isMobile) && (
             <div className="flex items-center space-x-3">
               <div className="bg-white text-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold">
                 {userInitial}
               </div>
               <div>
-<<<<<<< HEAD
-                {/* <p className="font-semibold text-sm">{currentUser?.username}</p> */}
-                <p className="text-xs opacity-70">{currentUser?.company}</p>
-=======
                 <p className="font-semibold text-sm">{currentUser?.user.companyName}</p>
                 {/* <p className="text-xs opacity-70">{currentUser?.company}</p> */}
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
               </div>
             </div>
           )}
@@ -266,22 +239,14 @@ export default function Sidebar() {
           )}
 
           {isMobile && (
-<<<<<<< HEAD
-            <button onClick={toggleMobile} className="text-white opacity-70 hover:opacity-100 ">
-=======
             <button onClick={toggleMobile} className="text-white opacity-70 hover:opacity-100">
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
               <HiX className="w-5 h-5" />
             </button>
           )}
         </div>
 
         {!isMobile && (
-<<<<<<< HEAD
-          <div className="px-4 py-3 border-b border-blue-800  ">
-=======
           <div className="px-4 py-3 border-b border-blue-800">
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
             <button 
               onClick={toggleCollapse} 
               className="text-white opacity-70 hover:opacity-100 p-1 rounded-md hover:bg-blue-800 transition-colors"
@@ -333,23 +298,14 @@ export default function Sidebar() {
       {isMobile && renderMobileToggle()}
       {isMobile && mobileOpen && (
         <div 
-<<<<<<< HEAD
-          className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden  "
-=======
           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           onClick={toggleMobile}
         ></div>
       )}
       <div 
         className={`
-<<<<<<< HEAD
-          fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 mb-8 ease-in-out 
-          lg:relative lg:translate-x-0 
-=======
           fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out 
           lg:relative lg:translate-x-0
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
           ${isMobile && !mobileOpen ? '-translate-x-full' : 'translate-x-0'}
         `}
       >

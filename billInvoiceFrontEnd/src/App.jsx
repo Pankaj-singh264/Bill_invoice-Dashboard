@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // import {
 //   createBrowserRouter,
 //   RouterProvider,
@@ -40,22 +38,16 @@
 
 
 
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './Layout';
 import SignUp from './Pages/SignUp';
 import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
-<<<<<<< HEAD
-import InventoryPage from './Pages/InventoryPage';
-import CustomerInfo from './Pages/CustomerInfo';
-=======
 import Inventory from './Pages/InventoryPage'
 import CustomerInfo from './Pages/CustomerInfo';
 import CustomerPage from './Pages/CustomerPage';
 import CustomerDetail from './Pages/CustomerDetail';
 import CustomerDetail2 from './Pages/CustomerDetail2';
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 import ProductPurchase from './Pages/ProductPurchase';
 import BillInvoice from './Pages/BillInvoice';
 import { AuthProvider } from './contexts/AuthContext';
@@ -64,36 +56,6 @@ import { CustomerProvider } from './contexts/CustomerContext';
 
 export default function App() {
   return (
-<<<<<<< HEAD
-    <CustomerProvider>
-      <Router>
-        <AuthProvider>
-          <Routes>
-            {/* Public routes */}
-     
-            {/* <Route path="/" element={<SignUp />} />
-            <Route path="/login" element={<Login />} /> */}
-
-            {/* Protected layout with nested routes */}
-            {/* <Route element={<ProtectedRoute />}> */}
-            {/* <Route path="/" element={<Layout />}> */}
-              <Route path="/home" element={<Layout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="inventory" element={<InventoryPage />} />
-                <Route path="customer" element={<CustomerInfo />} />
-                <Route path="productpurchase" element={<ProductPurchase />} />
-                <Route path="billinvoice" element={<BillInvoice />} />
-                <Route path="signup" element={<SignUp />} />
-              </Route>
-            {/* </Route> */}
-
-            {/* Redirect all unknown routes to home */}
-            <Route path="*" element={<Navigate to="/home" replace />} />
-          </Routes>
-        </AuthProvider>
-      </Router>
-    </CustomerProvider>
-=======
     <Router>
       <AuthProvider>
         <CustomerProvider>
@@ -121,6 +83,5 @@ export default function App() {
         </CustomerProvider>
       </AuthProvider>
     </Router>
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   );
 }
