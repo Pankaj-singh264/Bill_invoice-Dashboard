@@ -7,6 +7,7 @@ import {
   faSearch,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
 
 export default function CustomerInvoiceModal({ customer, onClose }) {
   const [invoices, setInvoices] = useState([]);
@@ -30,7 +31,8 @@ export default function CustomerInvoiceModal({ customer, onClose }) {
     try {
       setLoading(true);
       // Replace with your actual API endpoint
-      const response = await axios.get(`http://localhost:5000/api/customer/invoices/${customer._id}`);
+      // const response = await axios.get(`http://localhost:5000/api/customer/invoices/${customer._id}`);
+      const response = await axios.get(`${API_URL}/customer/invoices/${customer._id}`);
       setInvoices(response.data);
       setError(null);
     } catch (err) {

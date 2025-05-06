@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import Sidebar from "../Components/Sidebar";
 
 const BillInvoice = () => {
   const location = useLocation();
   const { billData } = location.state || {};
+  const { currentUser } = useAuth()
+  // console.log("currentUser", currentUser)
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -14,16 +18,23 @@ const BillInvoice = () => {
     }).format(amount).replace('INR', '₹');
   };
 
+  // useEffect(()=>{
+  //   async function loadUser() {
+  //   console.log(currrenUser)  
+  //   }
+  //   loadUser
+  // },[])
 
-
-
+  const user =  currentUser.user
+  console.log(user)
   return (
-    <section className=" min-h-screen flex-col lg:flex-row">
+    <section className="w-20 h-[100vh] bg-amber-100 border flex ">
       {/* Sidebar - Hidden on small and medium screens */}
+        <Sidebar/>
 
 
       {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-3 sm:p-4 lg:p-6">
+      <div className="">
         <div className="max-w-full sm:max-w-4xl mx-auto bg-white shadow-md rounded-lg p-3 sm:p-6 lg:p-8">
           {/* Top Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6">
@@ -42,8 +53,8 @@ const BillInvoice = () => {
             {/* Billing Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm lg:text-base mb-4 sm:mb-6">
               <div>
-                <p><strong>Bill From:</strong> Inventor Pvt Limited</p>
-                <p>Ballupur, Dehradun - 248001</p>
+                <p><strong>Bill From:</strong> {user.companyName}</p>
+                <p><span>{user.city}</span><span> || {user.pincode}</span> || <span>{user.state}</span></p>
                 <p className="mt-3 sm:mt-4"><strong>Bill To:</strong> {billData?.customer?.name}</p>
                 <p>{billData?.customer?.address}</p>
               </div>

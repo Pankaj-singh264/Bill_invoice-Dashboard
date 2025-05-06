@@ -118,6 +118,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
+
 
 const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
   const navigate = useNavigate();
@@ -151,7 +153,7 @@ const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
       setIsSubmitting(true);
       console.log('Form Data:', formData);  // Debugging line to check form data
       
-      const response = await axios.post('http://localhost:5000/api/customer', formData);
+      const response = await axios.post(`${API_URL}/customer`, formData);
       onCustomerAdded(response.data);  // Passing data to parent component
       onClose();  // Close the modal after adding customer
     } catch (error) {
@@ -169,7 +171,7 @@ const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
       setIsSubmitting(true);
       
       // First save the customer to get the ID and complete data
-      const response = await axios.post('http://localhost:5000/api/customer', formData);
+      const response = await axios.post(`${API_URL}/customer`, formData);
       const customerData = response.data;
       
       // Notify parent component that customer was added

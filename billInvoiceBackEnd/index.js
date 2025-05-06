@@ -70,11 +70,11 @@ uploadDirs.forEach(dir => {
 
 // Routes
 app.use('/api/user', userRoute);
-app.use('/api/user/items', itemRoute);
-app.use('/api/user/customer', addCustomerRoutes);
-app.use('/api/user/inventory', inventoryItemRoute);
-app.use('/api/user/invoice', customerInvoiceRoutes);
-app.use('/api/user/invoice', invoiceRoute);
+app.use('/api/items', itemRoute);
+app.use('/api/customer', addCustomerRoutes);
+app.use('/api/inventory', inventoryItemRoute);
+app.use('/api/invoice', customerInvoiceRoutes);
+app.use('/api/invoice', invoiceRoute);
 
 const PORT = process.env.PORT || 5000;
 

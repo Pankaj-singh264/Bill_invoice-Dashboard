@@ -782,7 +782,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ArrowRight, X, PlusCircle, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
+
 
 function ProductPurchase() {
   const location = useLocation();

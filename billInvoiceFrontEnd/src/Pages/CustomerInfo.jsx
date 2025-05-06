@@ -313,6 +313,9 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
+
+const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
+
 export default function CustomerPage() {
   const navigate = useNavigate(); // Initialize useNavigate
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -328,7 +331,8 @@ export default function CustomerPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/api/customer");
+      // const response = await axios.get("http://localhost:5000/api/customer");
+      const response = await axios.get(`${API_URL}/customer`);
       setCustomers(response.data);
       setError(null);
     } catch (err) {
@@ -373,7 +377,8 @@ export default function CustomerPage() {
   // Delete a single customer
   const handleDeleteCustomer = async (customerId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/customer/${customerId}`);
+      // await axios.delete(`http://localhost:5000/api/customer/${customerId}`);
+      await axios.delete(`${API_URL}/customer/${customerId}`);
       // Refresh customer list after successful deletion
       setCustomers(customers.filter(customer => customer._id !== customerId));
       // Remove from selected if it's there
@@ -394,7 +399,8 @@ export default function CustomerPage() {
     
     try {
       const idsToDelete = Array.from(selectedCustomers);
-      await axios.post("http://localhost:5000/api/customer/delete-multiple", {
+      // await axios.post("http://localhost:5000/api/customer/delete-multiple", {
+      await axios.post(`${API_URL}/customer/delete=multiple`, {
         ids: idsToDelete
       });
       

@@ -195,7 +195,7 @@ export default function Dashboard() {
               <span className="text-gray-500 ml-1">from last {stats.totalCustomers.period}</span>
             </div>
           </div>
-          {/* Inventory Total Card */}
+          Inventory Total Card
           <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
             <div className="flex justify-between items-center mb-1 md:mb-2">
               <span className="text-gray-600 text-sm md:text-base">Inventory Total</span>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = 'http://localhost:5000/api/user' || process.env.REACT_APP_API_URL;
+
 export default function EditInventoryModal({ item, closeModal, onItemUpdated }) {
   const [form, setForm] = useState({
     ItemId: '',
@@ -34,7 +36,8 @@ export default function EditInventoryModal({ item, closeModal, onItemUpdated }) 
     setError('');
 
     try {
-      await axios.put(`http://localhost:5000/api/inventory/${item._id}`, form);
+      // await axios.put(`http://localhost:5000/api/inventory/${item._id}`, form);
+      await axios.put(`${API_URL}/${item._id}`, form);
       onItemUpdated();
       closeModal();
     } catch (error) {
