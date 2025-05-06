@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const invoiceSchema = new mongoose.Schema({
+<<<<<<< HEAD
   invoiceNumber: {
     type: String,
     required: true,
@@ -17,11 +18,18 @@ const invoiceSchema = new mongoose.Schema({
     name: {
       type: String,
       required: true
+=======
+    customer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer',
+        required: true
+>>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
     },
     email: {
       type: String,
       required: true
     },
+<<<<<<< HEAD
     phone: {
       type: String
     },
@@ -94,6 +102,21 @@ const invoiceSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+=======
+    items: [{
+        item: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Item',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        },
+        price: Number,
+        gstRate: Number
+    }]
+>>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 });
 
 module.exports = mongoose.model('Invoice', invoiceSchema);

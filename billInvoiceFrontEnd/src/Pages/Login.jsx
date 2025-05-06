@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { useNavigate } from 'react-router-dom';
 
 // const Login = () => {
@@ -90,6 +91,8 @@
 
 
 
+=======
+>>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -133,7 +136,11 @@ const Login = () => {
       await login(formData.email, formData.password);
       
       // Redirect to dashboard
+<<<<<<< HEAD
       navigate('/home');
+=======
+      navigate('/');
+>>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
