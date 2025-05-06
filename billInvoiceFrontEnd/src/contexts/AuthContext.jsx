@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
 // import axios from 'axios';
 // import React, { createContext, useState, useEffect, useContext } from 'react';
@@ -212,13 +210,12 @@
 
 
 
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 import axios from 'axios';
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // API Configuration
-const API_URL = 'http://localhost:5000/api/user';
+
 
 // Configure axios defaults
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -242,12 +239,6 @@ authAxios.interceptors.request.use(
 const AuthService = {
   // Register a new user
   register: async (userData) => {
-<<<<<<< HEAD
-    const response = await axios.post(`${API_URL}/register`, userData);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
-=======
     // Check if userData is FormData (for multipart/form-data with files)
     const isFormData = userData instanceof FormData;
     
@@ -263,25 +254,16 @@ const AuthService = {
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user || response.data));
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
     }
     return response.data;
   },
   
   // Login user
-<<<<<<< HEAD
-  login: async (email, password) => {
-    const response = await axios.post(`${API_URL}/login`, { email, password });
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
-=======
   login: async (companyEmail, password) => {
-    const response = await axios.post(`${API_URL}/login`, { companyEmail, password });
+    const response = await axios.post(`PRO/login`, { companyEmail, password });
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user || response.data));
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
     }
     return response.data;
   },
@@ -307,10 +289,6 @@ const AuthService = {
   // Get user profile
   getUserProfile: async () => {
     const response = await authAxios.get(`${API_URL}/profile`);
-<<<<<<< HEAD
-    return response.data;
-  }
-=======
     // Update local storage with complete profile data
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
@@ -340,7 +318,6 @@ const AuthService = {
     return response.data;
   },
 
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 };
 
 // Create auth context
@@ -354,13 +331,6 @@ export const AuthProvider = ({ children }) => {
   
   // Check if user is already logged in on component mount
   useEffect(() => {
-<<<<<<< HEAD
-    const initAuth = () => {
-      const user = AuthService.getCurrentUser();
-      console.log('User from localStorage:', user);
-      if (user) {
-        setCurrentUser(user);
-=======
     const initAuth = async () => {
       const user = AuthService.getCurrentUser();
       if (user) {
@@ -379,7 +349,6 @@ export const AuthProvider = ({ children }) => {
             // Already using fallback data from above
           }
         }
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
       }
       setLoading(false);
     };
@@ -388,11 +357,6 @@ export const AuthProvider = ({ children }) => {
   
   // Login function
   const login = async (email, password) => {
-<<<<<<< HEAD
-    const user = await AuthService.login(email, password);
-    setCurrentUser(user);
-    return user;
-=======
     try {
       const response = await AuthService.login(email, password);
       // Get complete user data after login
@@ -403,16 +367,10 @@ export const AuthProvider = ({ children }) => {
       console.error("Login error:", error);
       throw error;
     }
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   };
   
   // Register function
   const register = async (userData) => {
-<<<<<<< HEAD
-    const user = await AuthService.register(userData);
-    setCurrentUser(user);
-    return user;
-=======
     try {
       const response = await AuthService.register(userData);
       // Get complete user data after registration
@@ -458,7 +416,6 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsRefreshing(false);
     }
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   };
   
   // Logout function
@@ -475,13 +432,9 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-<<<<<<< HEAD
-    loading
-=======
     updateProfile,
     refreshUserData,
     loading,
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
   };
   
   return (
