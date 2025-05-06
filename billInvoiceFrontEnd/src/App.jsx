@@ -46,7 +46,6 @@ import Dashboard from './Pages/Dashboard';
 import Inventory from './Pages/InventoryPage'
 import CustomerInfo from './Pages/CustomerInfo';
 import CustomerPage from './Pages/CustomerPage';
-import CustomerDetail from './Pages/CustomerDetail';
 import CustomerDetail2 from './Pages/CustomerDetail2';
 import ProductPurchase from './Pages/ProductPurchase';
 import BillInvoice from './Pages/BillInvoice';
@@ -72,7 +71,6 @@ export default function App() {
               <Route path="customer" element={<CustomerInfo />} />
               <Route path="settings" element={<CustomerPage />} />
             </Route>
-            <Route path="/customerdetail" element={<CustomerDetail />} />
             <Route path="/productpurchase" element={<ProductPurchase />} />
             <Route path="/billinvoice" element={<BillInvoice />} />
           </Route>
