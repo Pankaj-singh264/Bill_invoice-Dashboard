@@ -41,16 +41,10 @@ const cors = require('cors');
 const path = require('path');
 const userRoute = require('./routes/user');
 const itemRoute = require('./routes/item');
-<<<<<<< HEAD
-const invoiceRoutes = require('./routes/invoice');
-
-const addCustomerRoutes = require('./routes/addCustomerRoutes');
-=======
 const addCustomerRoutes = require('./routes/addCustomerRoutes');
 const inventoryItemRoute = require('./routes/inventoryItem')
 const customerInvoiceRoutes = require('./routes/customerInvoice');
 const invoiceRoute = require('./routes/invoice')
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
 const app = express();
 
 // Connect Database
@@ -76,16 +70,11 @@ uploadDirs.forEach(dir => {
 
 // Routes
 app.use('/api/user', userRoute);
-app.use('/api/items', itemRoute);
-<<<<<<< HEAD
-// app.use('/api/customer', addCustomerRoutes);
-app.use('/api/invoices', invoiceRoutes);
-=======
-app.use('/api/customer', addCustomerRoutes);
-app.use('/api/inventory', inventoryItemRoute);
-app.use('/api/invoice', customerInvoiceRoutes);
-app.use('/api/invoice', invoiceRoute);
->>>>>>> 381d956219014ba0118730d67358c36bf5ceb3a5
+app.use('/api/user/items', itemRoute);
+app.use('/api/user/customer', addCustomerRoutes);
+app.use('/api/user/inventory', inventoryItemRoute);
+app.use('/api/user/invoice', customerInvoiceRoutes);
+app.use('/api/user/invoice', invoiceRoute);
 
 const PORT = process.env.PORT || 5000;
 
