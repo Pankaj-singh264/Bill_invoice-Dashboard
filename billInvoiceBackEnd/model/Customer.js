@@ -11,8 +11,14 @@ const customerSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: true
+        // required: true
     },
+    email:{
+        type:String,
+        required:true,
+        unique:true,
+        trim:true,
+    }
 }, {
     timestamps: true
 });

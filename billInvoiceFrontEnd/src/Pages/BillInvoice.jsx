@@ -28,64 +28,82 @@ const BillInvoice = () => {
   const user =  currentUser.user
   console.log(user)
   return (
-    <section className="w-20 h-[100vh] bg-amber-100 border flex ">
-      {/* Sidebar - Hidden on small and medium screens */}
-        <Sidebar/>
+    <section className=" bg-gradient-to-r from-amber-200 via-amber-100 to-amber-50 p-4">
+     <div>
+        <Sidebar />
+     </div>
 
-
-      {/* Main Content */}
-      <div className="">
-        <div className="max-w-full sm:max-w-4xl mx-auto bg-white shadow-md rounded-lg p-3 sm:p-6 lg:p-8">
+      <div className="container mx-auto">
+        <div className="max-w-full sm:max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4 sm:p-6 lg:p-8">
           {/* Top Section */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-0">Bill</h1>
-            <div className="flex flex-wrap gap-2">
-              <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base">Print</button>
-              <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base" >Download</button>
-              <button className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-gray-200 rounded hover:bg-gray-300 text-xs sm:text-sm lg:text-base">Share</button>
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Bill Invoice</h1>
+            <div className="flex flex-wrap gap-3">
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                Print
+              </button>
+              <button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                Download
+              </button>
+              <button className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+                Share
+              </button>
             </div>
           </div>
 
           {/* Invoice Section */}
-          <div className="border p-3 sm:p-4 lg:p-5 rounded " id="invoice-content">
-            <h2 className="text-xl font-semibold text-center mb-4 sm:mb-6">Invoice</h2>
+          <div className="border p-4 rounded" id="invoice-content">
+            <h2 className="text-xl font-semibold text-center text-gray-700 mb-6">Invoice</h2>
 
             {/* Billing Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm lg:text-base mb-4 sm:mb-6">
-              <div>
-                <p><strong>Bill From:</strong> {user.companyName}</p>
-                <p><span>{user.city}</span><span> || {user.pincode}</span> || <span>{user.state}</span></p>
-                <p className="mt-3 sm:mt-4"><strong>Bill To:</strong> {billData?.customer?.name}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="text-gray-600">
+                <p>
+                  <strong>Bill From:</strong> {user.companyName}
+                </p>
+                <p>
+                  {user.city} || {user.pincode} || {user.state}
+                </p>
+                <p className="mt-4">
+                  <strong>Bill To:</strong> {billData?.customer?.name}
+                </p>
                 <p>{billData?.customer?.address}</p>
               </div>
-              <div className="text-left sm:text-right mt-3 sm:mt-0">
-                <p><strong>Invoice Details:</strong></p>
+              <div className="text-gray-600 text-right">
+                <p>
+                  <strong>Invoice Details:</strong>
+                </p>
                 <p>Date: {billData?.date}</p>
-                <p>Payment Method: <span className="capitalize">{billData?.payment?.method}</span></p>
+                <p>
+                  Payment Method:{" "}
+                  <span className="capitalize">{billData?.payment?.method}</span>
+                </p>
               </div>
             </div>
 
             {/* Table Section */}
             <div className="overflow-x-auto">
-              <table className="w-full text-xs sm:text-sm lg:text-base text-left border-t border-b">
-                <thead className="bg-gray-50">
+              <table className="w-full text-left border-t border-b">
+                <thead className="bg-gray-100">
                   <tr>
-                    <th className="p-1 sm:p-2">Product Name</th>
-                    <th className="p-1 sm:p-2">Price</th>
-                    <th className="p-1 sm:p-2">Qty</th>
-                    <th className="p-1 sm:p-2">Discount</th>
-                    <th className="p-1 sm:p-2">Total</th>
+                    <th className="p-2">Product Name</th>
+                    <th className="p-2">Price</th>
+                    <th className="p-2">Qty</th>
+                    <th className="p-2">Discount</th>
+                    <th className="p-2">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {billData?.items?.map((item) => (
                     <tr key={item.item} className="border-t">
-                      <td className="p-1 sm:p-2">{item.item}</td>
-                      <td className="p-1 sm:p-2">{formatCurrency(item.price)}</td>
-                      <td className="p-1 sm:p-2">{item.qty}</td>
-                      <td className="p-1 sm:p-2">{item.discount}%</td>
-                      <td className="p-1 sm:p-2">
-                        {formatCurrency(item.price * item.qty * (1 - item.discount / 100))}
+                      <td className="p-2">{item.item}</td>
+                      <td className="p-2">{formatCurrency(item.price)}</td>
+                      <td className="p-2">{item.qty}</td>
+                      <td className="p-2">{item.discount}%</td>
+                      <td className="p-2">
+                        {formatCurrency(
+                          item.price * item.qty * (1 - item.discount / 100)
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -94,23 +112,38 @@ const BillInvoice = () => {
             </div>
 
             {/* Totals Section */}
-            <div className="text-right mt-4 sm:mt-6 space-y-1 text-xs sm:text-sm lg:text-base">
-              <p><span className="font-semibold">Subtotal:</span> {formatCurrency(billData?.totals?.subtotal)}</p>
-              <p><span className="font-semibold">Tax (18%):</span> {formatCurrency(billData?.totals?.tax)}</p>
-              <p className="text-sm sm:text-base lg:text-lg font-bold mt-2">
+            <div className="text-right mt-6 space-y-2 text-gray-700">
+              <p>
+                <span className="font-semibold">Subtotal:</span>{" "}
+                {formatCurrency(billData?.totals?.subtotal)}
+              </p>
+              <p>
+                <span className="font-semibold">Tax (18%):</span>{" "}
+                {formatCurrency(billData?.totals?.tax)}
+              </p>
+              <p className="text-xl font-bold">
                 Grand Total: {formatCurrency(billData?.totals?.grandTotal)}
               </p>
             </div>
 
             {/* Payment Details */}
-            <div className="mt-6 sm:mt-8 space-y-1 text-xs sm:text-sm lg:text-base">
-              <p><span className="font-semibold">Previous Balance:</span> {formatCurrency(billData?.payment?.previousBalance)}</p>
-              <p><span className="font-semibold">Amount Paid:</span> {formatCurrency(billData?.payment?.amountPaid)}</p>
-              <p><span className="font-semibold">Remaining Balance:</span> {formatCurrency(billData?.payment?.remainingBalance)}</p>
+            <div className="mt-6 space-y-2 text-gray-600">
+              <p>
+                <span className="font-semibold">Previous Balance:</span>{" "}
+                {formatCurrency(billData?.payment?.previousBalance)}
+              </p>
+              <p>
+                <span className="font-semibold">Amount Paid:</span>{" "}
+                {formatCurrency(billData?.payment?.amountPaid)}
+              </p>
+              <p>
+                <span className="font-semibold">Remaining Balance:</span>{" "}
+                {formatCurrency(billData?.payment?.remainingBalance)}
+              </p>
             </div>
 
             {/* Thank You Note */}
-            <p className="text-center mt-6 sm:mt-8 text-blue-600 font-semibold text-xs sm:text-sm lg:text-base">
+            <p className="text-center mt-8 text-blue-600 font-semibold">
               Thank you for your Purchase!!
             </p>
           </div>

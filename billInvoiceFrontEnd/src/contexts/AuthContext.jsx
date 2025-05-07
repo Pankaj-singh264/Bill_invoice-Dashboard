@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }) => {
         if (Object.keys(user).length <= 2) {
           try {
             // Get fresh user data from backend
-            console.log("Fetching fresh user data during initialization");
+            // console.log("Fetching fresh user data during initialization");
             const freshUserData = await AuthService.getUserProfile();
             setCurrentUser(freshUserData);
           } catch (error) {

@@ -132,6 +132,8 @@ export default function Inventory() {
   const sortItems = (items) => {
     switch (filters.sortBy) {
       case 'name-asc':
+/* The code is creating a new array by spreading the items array and then sorting the new array based
+on the itemName property of each object using the localeCompare method for string comparison. */
         return [...items].sort((a, b) => a.itemName.localeCompare(b.itemName));
       case 'name-desc':
         return [...items].sort((a, b) => b.itemName.localeCompare(a.itemName));
@@ -144,6 +146,9 @@ export default function Inventory() {
     }
   };
 
+/* The above code is filtering and sorting inventory items based on various criteria. It first filters
+the inventory items based on a search query that matches the item's name, category, or ID. Then it
+filters the items by stock availability, category, and price. Finally, it sorts the filtered items. */
   const filteredItems = sortItems(
     filterByPrice(
       filterByCategory(

@@ -71,7 +71,7 @@ uploadDirs.forEach(dir => {
 // Routes
 app.use('/api/user', userRoute);
 app.use('/api/items', itemRoute);
-app.use('/api/customer', addCustomerRoutes);
+app.use('/api/customers', addCustomerRoutes);
 app.use('/api/inventory', inventoryItemRoute);
 app.use('/api/invoice', customerInvoiceRoutes);
 app.use('/api/invoice', invoiceRoute);
