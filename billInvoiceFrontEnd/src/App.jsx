@@ -3,7 +3,7 @@
 //   RouterProvider,
 // } from 'react-router-dom';
 // import CustomerDetail from './Pages/CustomerDetail';
-// import CustomerDetail2 from './Pages/CustomerDetail2';
+// import SignUp from './Pages/SignUp';
 // import CustomerInfo from './Pages/CustomerInfo';
 // import Dashboard from './Pages/Dashboard';
 // import SignUp from './Pages/SignUp';
@@ -16,7 +16,7 @@
 
 // const router = createBrowserRouter([
 //   { path: "/customerdetail", element: <CustomerDetail /> },
-//   { path: "/customerdetail2", element: <CustomerDetail2 /> },
+//   { path: "/SignUp", element: <SignUp /> },
 //   { path: "/dashboard", element: <Dashboard /> },
 //   { path: "/", element: <SignUp /> },
 //   { path: "/login", element: <Login/> },
@@ -46,7 +46,7 @@ import Dashboard from './Pages/Dashboard';
 import Inventory from './Pages/InventoryPage'
 import CustomerInfo from './Pages/CustomerInfo';
 import CustomerPage from './Pages/CustomerPage';
-import CustomerDetail2 from './Pages/CustomerDetail2';
+import SignUp from './Pages/SignUp';
 import ProductPurchase from './Pages/ProductPurchase';
 import BillInvoice from './Pages/BillInvoice';
 import { AuthProvider } from './contexts/AuthContext';
@@ -60,7 +60,7 @@ export default function App() {
         <CustomerProvider>
         <Routes>
           {/* Public routes */}
-          <Route path="/signup" element={<CustomerDetail2 />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
 
           {/* Protected layout with nested routes */}
