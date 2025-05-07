@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // API Configuration - Use environment variable
-const API_URL = 'http://localhost:5000/api/user' || process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/user';
 
 // Configure axios defaults
 axios.defaults.headers.post['Content-Type'] = 'application/json';
