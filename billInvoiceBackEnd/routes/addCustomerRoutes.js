@@ -22,6 +22,11 @@ router.post('/', customerController.addCustomer);
 router.get('/', customerController.getAllCustomers);
 router.delete('/:id', customerController.deleteCustomer);
 router.post('/delete-multiple', customerController.deleteMultipleCustomers);
+router.post('/update/:id',customerController.updateCustomer)
+router.post('/updatebalance/:id',customerController.updateCustomer)
+
+
+
 
 // Customer invoice routes
 router.get('/invoices/:customerId', invoiceController.getCustomerInvoices);

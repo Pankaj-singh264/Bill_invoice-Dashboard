@@ -83,6 +83,30 @@ export function CustomerProvider({ children }) {
     }
   };
 
+  // Update customer balance
+  const updateCustomerBalance = async (customerId, newBalance) => {
+    try {
+      setLoading(true);
+      const { data } = await axios.patch(
+        `${API_URL}/customers/${customerId}/balance`,
+        { balance: newBalance }
+      );
+      setCustomers(prev => 
+        prev.map(customer => 
+          customer._id === customerId 
+            ? { ...customer, balance: data.balance }
+            : customer
+        )
+      );
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update balance');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load customers on mount
   useEffect(() => {
     fetchCustomers();
@@ -96,6 +120,7 @@ export function CustomerProvider({ children }) {
     deleteCustomer,
     deleteMultipleCustomers,
     updateCustomer,
+    updateCustomerBalance,
     refreshCustomers: fetchCustomers
   };
 

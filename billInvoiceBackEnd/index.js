@@ -44,6 +44,7 @@ const itemRoute = require('./routes/item');
 const addCustomerRoutes = require('./routes/addCustomerRoutes');
 const inventoryItemRoute = require('./routes/inventoryItem')
 const customerInvoiceRoutes = require('./routes/customerInvoice');
+// const paymentRouter = require('./routes/payment.js')
 const invoiceRoute = require('./routes/invoice')
 const app = express();
 
@@ -70,11 +71,13 @@ uploadDirs.forEach(dir => {
 
 // Routes
 app.use('/api/user', userRoute);
+
 app.use('/api/items', itemRoute);
 app.use('/api/customers', addCustomerRoutes);
 app.use('/api/inventory', inventoryItemRoute);
 app.use('/api/invoice', customerInvoiceRoutes);
 app.use('/api/invoice', invoiceRoute);
+// app.use('/api/payment', paymentRouter);
 
 const PORT = process.env.PORT || 5000;
 

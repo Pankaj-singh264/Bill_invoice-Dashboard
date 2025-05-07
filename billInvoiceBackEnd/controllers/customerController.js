@@ -1,29 +1,3 @@
-// // controllers/customerController.js
-// const Customer = require('../model/Customer');
-
-// // Add new customer
-// exports.addCustomer = async (req, res) => {
-//   try {
-//     console.log("Request Body:", req.body);
-//     const newCustomer = new Customer(req.body);
-//     const savedCustomer = await newCustomer.save();
-//     res.status(201).json(savedCustomer);
-//   } catch (err) {
-//     res.status(400).json({ error: err.message });
-//   }
-// };
-
-// // Get all customers
-// exports.getAllCustomers = async (req, res) => {
-//   try {
-//     const customers = await Customer.find();
-//     res.status(200).json(customers);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-
 
 const Customer = require('../model/Customer');
 
@@ -82,5 +56,72 @@ exports.deleteMultipleCustomers = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+
+//update Customer
+exports.updateCustomer = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+    const updateData = req.body;
+
+    const customer = await Customer.findByIdAndUpdate(
+      id, {
+        $set: updateData
+      }, {
+        new: true
+      }
+    );
+
+    if (!customer) {
+      return res.status(404).json({
+        message: 'Customer not found'
+      });
+    }
+
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error updating customer',
+      error: error.message
+    });
+  }
+};
+
+//update Cutomers remainig balance
+exports.updateBalance = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+    const {
+      balance
+    } = req.body;
+
+    const customer = await Customer.findByIdAndUpdate(
+      id, {
+        $set: {
+          balance: balance
+        }
+      }, {
+        new: true
+      }
+    );
+
+    if (!customer) {
+      return res.status(404).json({
+        message: 'Customer not found'
+      });
+    }
+
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error updating balance',
+      error: error.message
+    });
   }
 };
