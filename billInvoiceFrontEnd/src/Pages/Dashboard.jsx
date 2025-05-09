@@ -337,37 +337,38 @@ const Dashboard = () => {
         </div>
 
         {/* Revenue Chart */}
-        <div className="bg-white rounded-lg shadow mb-6 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trends</h2>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" />
-                <YAxis 
-                  tickFormatter={(value) => `₹${value/1000}K`}
-                  width={80}
-                />
-                <Tooltip 
-                  formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
-                  labelFormatter={(label) => `Month: ${label}`}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#4F46E5" 
-                  strokeWidth={2}
-                  dot={{ fill: '#4F46E5', strokeWidth: 2 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="grid grid-cols-2 w-full border"> 
+          <div className="bg-white rounded-lg shadow mb-6 p-6 flex-1 w-[90%]">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trends</h2>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" />
+                  <YAxis
+                    tickFormatter={(value) => `₹${value / 1000}K`}
+                    width={80}
+                  />
+                  <Tooltip
+                    formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                    labelFormatter={(label) => `Month: ${label}`}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#4F46E5"
+                    strokeWidth={2}
+                    dot={{ fill: '#4F46E5', strokeWidth: 2 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
 
-        {/* Three Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-          {/* Recent Invoices - Takes up 3/7 of the space */}
-          <div className="lg:col-span-3">
+          {/* Three Column Layout */}
+          <div className=" border" >
+            {/* Recent Invoices - Takes up 3/7 of the space */}
+            {/* <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Recent Invoices</h2>
@@ -409,10 +410,10 @@ const Dashboard = () => {
                 </table>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          {/* Chat Section - Takes up 2/7 of the space */}
-          <div className="lg:col-span-2">
+            {/* Chat Section - Takes up 2/7 of the space */}
+            {/* <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow h-full flex flex-col">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Chat Updates</h2>
@@ -449,52 +450,51 @@ const Dashboard = () => {
                 </form>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          {/* Recent Activities - Takes up 2/7 of the space */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Activities</h2>
-              </div>
-              <div className="p-6">
-                <div className="space-y-6">
-                  {dashboardData.recentInvoices.slice(0, 5).map((invoice) => (
-                    <div key={invoice._id} className="flex items-start space-x-4">
-                      <div className={`flex-shrink-0 rounded-full p-2 ${
-                        invoice.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'
-                      }`}>
-                        {invoice.status === 'paid' ? (
-                          <DollarSign className="h-5 w-5 text-green-600" />
-                        ) : (
-                          <FileText className="h-5 w-5 text-yellow-600" />
-                        )}
+            {/* Recent Activities - Takes up 2/7 of the space */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-lg shadow">
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900">Recent Activities</h2>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {dashboardData.recentInvoices.slice(0, 5).map((invoice) => (
+                      <div key={invoice._id} className="flex items-start space-x-4">
+                        <div className={`flex-shrink-0 rounded-full p-2 ${invoice.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'
+                          }`}>
+                          {invoice.status === 'paid' ? (
+                            <DollarSign className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <FileText className="h-5 w-5 text-yellow-600" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            Invoice #{invoice.invoiceNumber} - {invoice.customerName}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Amount: {formatCurrency(invoice.totalAmount)}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {formatDate(invoice.date)}
+                          </p>
+                        </div>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${invoice.status === 'paid'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">
-                          Invoice #{invoice.invoiceNumber} - {invoice.customerName}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Amount: {formatCurrency(invoice.totalAmount)}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {formatDate(invoice.date)}
-                        </p>
-                      </div>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        invoice.status === 'paid' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+      </div>
       </div>
     </div>
   );
