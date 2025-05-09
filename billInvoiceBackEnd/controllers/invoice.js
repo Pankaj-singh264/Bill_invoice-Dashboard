@@ -1,5 +1,4 @@
 const Customer = require('../model/Customer');
-// const Item = require('../model/item');
 const Invoice = require('../model/Invoice');
 const createInvoice = async (req, res) => {
   try {
