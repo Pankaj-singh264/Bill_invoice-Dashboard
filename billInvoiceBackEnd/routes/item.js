@@ -8,10 +8,12 @@ const {
     getItem
 } = require('../controllers/item');
 
-
+// Get all items (with optional customer filter)
 router.get('/', allItems);
-router.get('customer/:customerId', allItems);
-router.post('/addItem', addItem);
+router.get('/customer/:customerId', allItems);
+
+// CRUD operations
+router.post('/', addItem);
 router.delete('/:id', deleteItem);
 router.put('/:id', updateItem);
 router.get('/:id', getItem);

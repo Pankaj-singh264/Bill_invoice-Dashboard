@@ -1,17 +1,3 @@
-
-// const express = require('express');
-// const router = express.Router();
-// const customerController = require('../controllers/customerController');
-
-// router.post('/', customerController.addCustomer);
-// router.get('/', customerController.getAllCustomers);
-
-// router.delete('/:id', customerController.deleteCustomer);
-
-// router.post('/delete-multiple', customerController.deleteMultipleCustomers);
-
-// module.exports = router;
-
 const express = require('express');
 const router = express.Router();
 const customerController = require('../controllers/customerController');
@@ -22,11 +8,8 @@ router.post('/', customerController.addCustomer);
 router.get('/', customerController.getAllCustomers);
 router.delete('/:id', customerController.deleteCustomer);
 router.post('/delete-multiple', customerController.deleteMultipleCustomers);
-router.post('/update/:id',customerController.updateCustomer)
-router.post('/updatebalance/:id',customerController.updateCustomer)
-
-
-
+router.put('/:id', customerController.updateCustomer);
+router.patch('/:id/balance', customerController.updateCustomerBalance);
 
 // Customer invoice routes
 router.get('/invoices/:customerId', invoiceController.getCustomerInvoices);

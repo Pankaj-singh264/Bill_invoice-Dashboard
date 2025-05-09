@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ArrowRight, X, PlusCircle, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+const API_URL = 'http://localhost:9000/api' || import.meta.env.REACT_APP_API_URL;
+
+// Add axios interceptor to include token in all requests
+    
 
 function ProductPurchase() {
   const location = useLocation();
@@ -19,7 +22,7 @@ function ProductPurchase() {
   const [loading, setLoading] = useState(false);
   const [customerProducts, setCustomerProducts] = useState([]);
   const [showProductsDrawer, setShowProductsDrawer] = useState(false);
-  const [cartItems, setCartItems] = useState(() => {
+  const [ cartItems, setCartItems] = useState(() => {
     const cart = location.state?.customerData?.cart || [];
     return cart.map(item => ({
       ...item,
@@ -43,24 +46,29 @@ function ProductPurchase() {
   // Load customer's previous products
   useEffect(() => {
     const fetchCustomerProducts = async () => {
-      if (!customerData._id) return;
-
       setLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/items?customerId=${customerData._id}`);
-        if (response.status === 200) {
-          setCustomerProducts(response.data.items);
+        if (customerData._id) {
+          const response = await axios.get(`${API_URL}/items?customerId=${customerData._id}`);
+          if (response.status === 200) {
+            setCustomerProducts(response.data.items);
+          }
+        } else {
+          setCustomerProducts([]);
         }
       } catch (error) {
         console.error("Failed to fetch customer products:", error);
-        // Don't show error alert to avoid interrupting the user flow
+        if (error.response?.status === 401) {
+          navigate('/login');
+        }
+        setCustomerProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCustomerProducts();
-  }, [customerData._id]);
+  }, [customerData._id, navigate]);
 
   // Calculate balance
   useEffect(() => {
@@ -133,17 +141,16 @@ function ProductPurchase() {
         discount: Number(discount),
         price: Number(price),
         quantity: Number(quantity),
-        gstRate: Number(gstRate) // Add GST rate
+        gstRate: Number(gstRate)
       };
 
       // Only save to backend for new items, not temporary cart edits
       if (!isEditMode) {
-        const res = await axios.post(`${API_URL}/items/addItem`, itemData);
+        const res = await axios.post(`${API_URL}/items`, itemData);
 
         if (res.status !== 201) {
           throw new Error('Failed to add item to database');
         }
-
         console.log('Product added to database:', res.data);
         // Store the database item ID for later reference
         newItem.itemId = res.data.item._id;
@@ -215,22 +222,42 @@ function ProductPurchase() {
     if (!validatePayment()) return;
 
     // Format invoice items for the database
-    const invoiceItems = cartItems.map(item => ({
-      item: item.itemId || null, // Use the database item ID if available
-      quantity: Number(item.qty),
-      price: Number(item.price),
-      gstRate: Number(gstRate)
-    }));
+    const invoiceItems = cartItems.map(item => {
+      // Ensure all values are valid numbers
+      const quantity = Number(item.qty);
+      const price = Number(item.price);
+      
+      if (isNaN(quantity) || isNaN(price)) {
+        throw new Error('Invalid quantity or price values');
+      }
+
+      return {
+        productId: item.itemId,
+        productName: item.item || 'Unnamed Product',
+        quantity: quantity,
+        price: price,
+        amount: quantity * price,
+        discount: Number(item.discount) || 0,
+        gstRate: 18 // Default GST rate
+      };
+    });
+
+    // Validate that we have valid items
+    if (!invoiceItems.length) {
+      alert('Please add at least one item to the invoice');
+      return;
+    }
+
+    // Validate payment method
+    const validPaymentMethods = ['cash', 'upi', 'card', 'bank_transfer'];
+    if (!validPaymentMethods.includes(paymentMethod)) {
+      alert(`Invalid payment method. Please choose one of: ${validPaymentMethods.join(', ')}`);
+      return;
+    }
 
     // Create invoice data according to the schema
     const invoiceData = {
       customer: customerData._id,
-      invoiceNumber: `INV-${Date.now()}`,
-      // customer: {
-      //   name: customerData.name || '',
-      //   gstNumber: customerData.gstNumber || '',
-      //   address: customerData.address || ''
-      // },
       items: invoiceItems,
       subtotal: Number(financials.subtotal),
       totalGST: Number(financials.tax),
@@ -242,15 +269,14 @@ function ProductPurchase() {
     };
 
     try {
-      const response = await axios.post(`${API_URL}/invoice`, invoiceData);
+      const response = await axios.post(`${API_URL}/invoices/addItem`, invoiceData);
 
       if (response.status === 201) {
-        // Update customer balance in database
-        // await updateCustomerBalance(customerData.email, balance);
-        console.log(response.data)
+        console.log('Invoice created:', response.data);
 
         // Create bill data for display
         const billData = {
+          // billNumber: response.data.invoice.invoiceNumber,
           customer: {
             id: customerData._id || '',
             name: customerData.name || '',
@@ -278,7 +304,7 @@ function ProductPurchase() {
             tax: Number(financials.tax),
             grandTotal: Number(financials.grandTotal)
           },
-          invoiceNumber: response.data.invoiceNumber || `INV-${Date.now()}`
+          // invoiceNumber: response.data.invoice.invoiceNumber
         };
 
         navigate('/billinvoice', {
@@ -293,66 +319,84 @@ function ProductPurchase() {
       }
     } catch (error) {
       console.error('Error details:', error);
-      alert('Failed to save invoice: ' + (error.response?.data?.message || error.message));
+      
+      // Handle validation errors specifically
+      if (error.response?.data?.message?.includes('validation failed')) {
+        const errorMessage = error.response.data.message;
+        // Extract specific validation errors
+        if (errorMessage.includes('quantity')) {
+          alert('Invalid quantity value. Please ensure all quantities are valid numbers greater than 0.');
+        } else if (errorMessage.includes('amount')) {
+          alert('Invalid amount value. Please check the price and quantity values.');
+        } else if (errorMessage.includes('productName')) {
+          alert('Product name is required for all items.');
+        } else {
+          alert('Invoice validation failed. Please check all item details.');
+        }
+      } else if (error.response?.status === 401) {
+        navigate('/login');
+      } else {
+        alert('Failed to save invoice: ' + (error.response?.data?.message || error.message));
+      }
     }
   };
 
-  const handlePayment = async () => {
-    try {
-      const res = await axios.post(`${API_URL}/payment/order`, {
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          amountPaid
-        })
-      });
+  // const handlePayment = async () => {
+  //   try {
+  //     const res = await axios.post(`${API_URL}/payment/order`, {
+  //       headers: {
+  //         "content-type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         amountPaid
+  //       })
+  //     });
 
-      const data = await res.json();
-      console.log(data);
-      handlePaymentVerify(data.data)
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //     const data = await res.json();
+  //     console.log(data);
+  //     handlePaymentVerify(data.data)
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
-  const handlePaymentVerify = async (data) => {
-    const options = {
-      key: import.meta.env.RAZORPAY_KEY_ID,
-      amount: data.amount,
-      currency: data.currency,
-      name: "Devknus",
-      description: "Test Mode",
-      order_id: data.id,
-      handler: async (response) => {
-        console.log("response", response)
-        try {
-          const res = await axios.post(`${API_URL}/payment/verify`, {
-            method: 'POST',
-            headers: {
-              'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            })
-          })
+  // const handlePaymentVerify = async (data) => {
+  //   const options = {
+  //     key: import.meta.env.RAZORPAY_KEY_ID,
+  //     amount: data.amount,
+  //     currency: data.currency,
+  //     name: "Devknus",
+  //     description: "Test Mode",
+  //     order_id: data.id,
+  //     handler: async (response) => {
+  //       console.log("response", response)
+  //       try {
+  //         const res = await axios.post(`${API_URL}/payment/verify`, {
+  //           method: 'POST',
+  //           headers: {
+  //             'content-type': 'application/json'
+  //           },
+  //           body: JSON.stringify({
+  //             razorpay_order_id: response.razorpay_order_id,
+  //             razorpay_payment_id: response.razorpay_payment_id,
+  //             razorpay_signature: response.razorpay_signature,
+  //           })
+  //         })
 
-          const verifyData = await res.json();
+  //         const verifyData = await res.json();
 
-          if (verifyData.message) {
-            toast.success(verifyData.message)
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      },
+  //         if (verifyData.message) {
+  //           toast.success(verifyData.message)
+  //         }
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     },
 
-    };
-    const rzp1 = new window.Razorpay(options);
-    rzp1.open();
-  }
+  //   };
+  //   const rzp1 = new window.Razorpay(options);
+  //   rzp1.open();
+  // }
 
   // Format date for invoice
   const currentDate = new Date().toLocaleDateString('en-IN', {

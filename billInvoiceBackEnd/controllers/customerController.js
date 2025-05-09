@@ -1,4 +1,3 @@
-
 const Customer = require('../model/Customer');
 
 // Add new customer
@@ -6,20 +5,59 @@ exports.addCustomer = async (req, res) => {
   try {
     console.log("Request Body:", req.body);
     const newCustomer = new Customer(req.body);
+    
+    // Validate required fields
+    if (!req.body.name || !req.body.email || !req.body.phoneNumber || !req.body.address) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields'
+      });
+    }
+    
+    // Check if customer with same email already exists
+    const existingCustomer = await Customer.findOne({ email: req.body.email });
+    if (existingCustomer) {
+      return res.status(400).json({
+        success: false,
+        error: 'Customer with this email already exists'
+      });
+    }
+
+    // Check if customer with same phone number already exists
+    const existingPhone = await Customer.findOne({ phoneNumber: req.body.phoneNumber });
+    if (existingPhone) {
+      return res.status(400).json({
+        success: false,
+        error: 'Customer with this phone number already exists'
+      });
+    }
+  
     const savedCustomer = await newCustomer.save();
-    res.status(201).json(savedCustomer);
+    res.status(201).json({
+      success: true,
+      data: savedCustomer
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({
+      success: false,
+      error: err.message
+    });
   }
 };
 
 // Get all customers
 exports.getAllCustomers = async (req, res) => {
   try {
-    const customers = await Customer.find();
-    res.status(200).json(customers);
+    const customers = await Customer.find({}).sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      data: customers
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 };
 
@@ -30,12 +68,21 @@ exports.deleteCustomer = async (req, res) => {
     const deletedCustomer = await Customer.findByIdAndDelete(customerId);
     
     if (!deletedCustomer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({
+        success: false,
+        error: 'Customer not found'
+      });
     }
     
-    res.status(200).json({ message: 'Customer deleted successfully', customerId });
+    res.status(200).json({
+      success: true,
+      data: deletedCustomer
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 };
 
@@ -59,62 +106,51 @@ exports.deleteMultipleCustomers = async (req, res) => {
   }
 };
 
-
-//update Customer
+// Update customer
 exports.updateCustomer = async (req, res) => {
   try {
-    const {
-      id
-    } = req.params;
+    const { id } = req.params;
     const updateData = req.body;
 
     const customer = await Customer.findByIdAndUpdate(
-      id, {
-        $set: updateData
-      }, {
-        new: true
-      }
+      id,
+      { $set: updateData },
+      { new: true }
     );
 
     if (!customer) {
       return res.status(404).json({
-        message: 'Customer not found'
+        success: false,
+        error: 'Customer not found'
       });
     }
 
-    res.status(200).json(customer);
+    res.status(200).json({
+      success: true,
+      data: customer
+    });
   } catch (error) {
     res.status(500).json({
-      message: 'Error updating customer',
+      success: false,
       error: error.message
     });
   }
 };
 
-//update Cutomers remainig balance
-exports.updateBalance = async (req, res) => {
+// Update customer balance
+exports.updateCustomerBalance = async (req, res) => {
   try {
-    const {
-      id
-    } = req.params;
-    const {
-      balance
-    } = req.body;
+    const { id } = req.params;
+    const { balance } = req.body;
 
     const customer = await Customer.findByIdAndUpdate(
-      id, {
-        $set: {
-          balance: balance
-        }
-      }, {
-        new: true
-      }
+      id,
+      { $set: { balance } },
+      { new: true }
     );
 
     if (!customer) {
-      return res.status(404).json({
-        message: 'Customer not found'
-      });
+      return res.status(404).json({ message: 'Customer not found' });
     }
 
     res.status(200).json(customer);

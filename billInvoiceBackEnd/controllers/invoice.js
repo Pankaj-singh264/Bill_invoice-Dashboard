@@ -1,12 +1,6 @@
-const Invoice = require('../model/invoice');
 const Customer = require('../model/Customer');
-const Item = require('../model/item');
-
-/**
- * @desc    Create new invoice
- * @route   POST /api/invoices
- * @access  Private
- */
+// const Item = require('../model/item');
+const Invoice = require('../model/Invoice');
 const createInvoice = async (req, res) => {
   try {
     const {
@@ -22,76 +16,61 @@ const createInvoice = async (req, res) => {
       remainingBalance
     } = req.body;
 
-    // First, create or find the customer
-    let customerDoc;
-    if (typeof customer === 'object') {
-      // If customer is sent as an object, create/find customer first
-      customerDoc = await Customer.findOne({ name: customer.name }) || 
-                   await Customer.create({
-                     name: customer.name,
-                     gstNumber: customer.gstNumber,
-                     address: customer.address
-                   });
-    } else {
-      // If customer is sent as ID, verify it exists
-      customerDoc = await Customer.findById(customer);
-      if (!customerDoc) {
-        return res.status(404).json({
-          message: 'Customer not found'
-        });
-      }
+    console.log('Creating invoice with data:', req.body);
+
+    // Validate required fields
+    if (!customer || !items || !grandTotal) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer, items, and grand total are required'
+      });
     }
 
-    // Create the invoice with customer reference
+    // Create the invoice
     const invoice = await Invoice.create({
-      customer: customerDoc._id,
+      customerId: customer,
+      customerName: req.body.customer.name || 'Customer',
       invoiceNumber: invoiceNumber || `INV-${Date.now()}`,
+      date: new Date(),
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       items: items.map(item => ({
-        item: item.item,
-        quantity: item.quantity,
-        price: item.price,
-        gstRate: item.gstRate
+        productId: item.item || item.itemId,
+        productName: item.item || item.name,
+        quantity: Number(item.quantity || item.qty),
+        price: Number(item.price),
+        amount: Number(item.price) * Number(item.quantity || item.qty)
       })),
-      subtotal,
-      totalGST,
-      grandTotal,
-      paymentDetails: {
-        method: paymentMethod,
-        amountPaid: amountPaid,
-        previousBalance: previousBalance,
-        remainingBalance: remainingBalance
-      }
+      subtotal: Number(subtotal),
+      tax: Number(totalGST),
+      amount: Number(grandTotal),
+      status: amountPaid >= grandTotal ? 'paid' : 'pending',
+      notes: `Payment Method: ${paymentMethod}`,
+      paymentTerms: 'Net 30',
+      createdBy: customer // Using customer ID as created by for now
     });
-
-    // Populate the customer details
-    await invoice.populate('customer');
-    await invoice.populate('items.item');
 
     // Update customer balance
     await Customer.findByIdAndUpdate(
-      customerDoc._id,
-      { balance: remainingBalance },
+      customer,
+      { $set: { balance: Number(remainingBalance) } },
       { new: true }
     );
 
     res.status(201).json({
       success: true,
+      message: 'Invoice created successfully',
       invoice
     });
   } catch (error) {
     console.error('Invoice creation error:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to create invoice',
       error: error.message
     });
   }
 };
 
-/**
- * @desc    Get GST summary
- * @route   GET /api/invoices/gst-summary
- * @access  Private
- */
 const getGSTSummary = async (req, res) => {
   try {
     // Get date range from query params (optional)
@@ -144,42 +123,22 @@ const getGSTSummary = async (req, res) => {
  */
 const getInvoices = async (req, res) => {
   try {
-    const { customerId, startDate, endDate, limit = 10, page = 1 } = req.query;
+    const invoices = await Invoice.find({})
+      .populate('customerId', 'name address phone email') // Populate customer details
+      .sort({ date: -1 }); // Sort by date descending
     
-    // Build filter
-    const filter = { createdBy: req.user._id };
+    console.log('Fetched invoices:', invoices);
     
-    if (customerId) filter['customer._id'] = customerId;
-    
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
-    }
-    
-    // Pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    const invoices = await Invoice.find(filter)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .skip(skip);
-      
-    const total = await Invoice.countDocuments(filter);
-    
-    res.json({
+    res.status(200).json({
       success: true,
-      invoices,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / parseInt(limit)),
-        totalResults: total
-      }
+      count: invoices.length,
+      data: invoices
     });
   } catch (error) {
-    console.error('Get invoices error:', error);
+    console.error('Error fetching invoices:', error);
     res.status(500).json({
-      message: 'Failed to fetch invoices',
+      success: false,
+      message: 'Error fetching invoices',
       error: error.message
     });
   }
@@ -214,9 +173,148 @@ const getInvoiceById = async (req, res) => {
   }
 };
 
+// Get customer-specific invoices
+const getCustomerInvoices = async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    
+    if (!customerId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer ID is required'
+      });
+    }
+
+    // Find all invoices for this customer
+    const invoices = await Invoice.find({ customerId })
+      .sort({ date: -1 }) // Sort by date descending (newest first)
+      .select('invoiceNumber date items totalAmount status'); // Select only needed fields
+
+    // Format the response
+    const formattedInvoices = invoices.map(invoice => ({
+      _id: invoice._id,
+      invoiceNumber: invoice.invoiceNumber,
+      date: invoice.date,
+      itemCount: invoice.items.length,
+      amount: invoice.totalAmount, // Use totalAmount from the schema
+      status: invoice.status
+    }));
+
+    res.status(200).json({
+      success: true,
+      invoices: formattedInvoices
+    });
+  } catch (error) {
+    console.error('Error fetching customer invoices:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch customer invoices',
+      error: error.message
+    });
+  }
+};
+
+// Add new invoice
+const addInvoice = async (req, res) => {
+  try {
+    const {
+      customer,
+      items,
+      subtotal,
+      totalGST,
+      grandTotal,
+      paymentMethod,
+      amountPaid,
+      previousBalance,
+      remainingBalance
+    } = req.body;
+
+    // Validate required fields
+    if (!customer || !items || !grandTotal) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer, items, and grand total are required'
+      });
+    }
+
+    // Validate payment method
+    const validPaymentMethods = ['cash', 'upi'];
+    if (!validPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: `Payment method must be one of: ${validPaymentMethods.join(', ')}`
+      });
+    }
+
+    // Get customer details
+    const customerDoc = await Customer.findById(customer);
+    if (!customerDoc) {
+      return res.status(404).json({
+        success: false,
+        message: 'Customer not found'
+      });
+    }
+
+    // Generate unique invoice number
+    const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    // Create the invoice with properly mapped fields
+    const invoice = await Invoice.create({
+      customerId: customer,
+      customerName: customerDoc.name,
+      invoiceNumber,
+      date: new Date(),
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      items: items.map(item => ({
+        productId: item.productId,
+        productName: item.productName,
+        quantity: Number(item.quantity),
+        price: Number(item.price),
+        amount: Number(item.amount),
+        discount: item.discount || 0,
+        gstRate: item.gstRate || 18
+      })),
+      subtotal: Number(subtotal),
+      tax: Number(totalGST),
+      totalAmount: Number(grandTotal),
+      status: Number(amountPaid) >= Number(grandTotal) ? 'paid' : 'pending',
+      paymentMethod,
+      amountPaid: Number(amountPaid) || 0,
+      previousBalance: Number(previousBalance) || 0,
+      remainingBalance: Number(remainingBalance) || 0,
+      notes: `Payment Method: ${paymentMethod}`,
+      paymentTerms: 'Net 30',
+      createdBy: customer // Using customer ID as created by since we don't have user context
+    });
+
+    // Update customer balance if needed
+    if (remainingBalance !== undefined) {
+      await Customer.findByIdAndUpdate(
+        customer,
+        { $set: { balance: Number(remainingBalance) } },
+        { new: true }
+      );
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Invoice created successfully',
+      invoice
+    });
+  } catch (error) {
+    console.error('Invoice creation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create invoice',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createInvoice,
   getGSTSummary,
   getInvoices,
-  getInvoiceById
+  getInvoiceById,
+  getCustomerInvoices,
+  addInvoice
 };

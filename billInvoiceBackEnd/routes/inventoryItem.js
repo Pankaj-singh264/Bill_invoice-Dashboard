@@ -6,14 +6,16 @@ const {
   deleteItem,
   searchItems,
   updateItem,
+  getItemById,
 } = require('../controllers/inventoryItem');
 
 const router = express.Router();
 
-router.post('/add', addItem);
+router.post('/addItem', addItem);
 router.get('/', getAllItems);
 router.delete('/:id', deleteItem);
-router.get('/search/:query', searchItems);
+// router.get('/search/:query', searchItems);
+router.get('/:id', getItemById);
 router.put('/:id', updateItem);
 
 module.exports = router;
