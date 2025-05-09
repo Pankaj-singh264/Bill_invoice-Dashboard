@@ -7,7 +7,6 @@ import CustomerInfo from './Pages/CustomerInfo';
 import CustomerPage from './Pages/CustomerPage';
 import SignUp from './Pages/SignUp';
 import ProductPurchase from './Pages/ProductPurchase';
-import Invoices from './Pages/Invoices';
 import BillInvoice from './Pages/BillInvoice';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
