@@ -11,6 +11,7 @@ import BillInvoice from './Pages/BillInvoice';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { CustomerProvider } from './contexts/CustomerContext';
+import Invoices from './Pages/Invoices';
 
 export default function App() {
   return (
