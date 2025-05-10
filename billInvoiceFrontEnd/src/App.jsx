@@ -1,43 +1,3 @@
-// import {
-//   createBrowserRouter,
-//   RouterProvider,
-// } from 'react-router-dom';
-// import CustomerDetail from './Pages/CustomerDetail';
-// import SignUp from './Pages/SignUp';
-// import CustomerInfo from './Pages/CustomerInfo';
-// import Dashboard from './Pages/Dashboard';
-// import SignUp from './Pages/SignUp';
-// import Login from './Pages/Login';
-// import InventoryPage from './Pages/InventoryPage';
-// import CustomerPage from './Pages/CustomerPage';
-// import ProductPurchase from './Pages/ProductPurchase';
-// import BillInvoice from './Pages/BillInvoice';
-// import Sidebar2 from './Components/Sidebar2';
-
-// const router = createBrowserRouter([
-//   { path: "/customerdetail", element: <CustomerDetail /> },
-//   { path: "/SignUp", element: <SignUp /> },
-//   { path: "/dashboard", element: <Dashboard /> },
-//   { path: "/", element: <SignUp /> },
-//   { path: "/login", element: <Login/> },
-//   { path: "/customerinfo", element: <CustomerInfo /> },
-//   { path: "/inventorypage", element: <InventoryPage /> },
-//   { path: "/customerpage", element: <CustomerPage /> },
-//   {path: "/productpurchase", element: <ProductPurchase/>},
-//   {path: "/billinvoice", element: <BillInvoice/>},
-//   {path: "/Sidebar2", element: <Sidebar2/>}
-// ]);
-
-// function App() {
-//   return <RouterProvider router={router} />;
-// }
-
-// export default App;
-
-
-
-
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './Layout';
 import Login from './Pages/Login';
@@ -68,6 +28,7 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="inventory" element={<Inventory />} />
               <Route path="customer" element={<CustomerInfo />} />
+              <Route path="invoices" element={<Invoices />} />
               <Route path="settings" element={<CustomerPage />} />
             </Route>
             <Route path="/productpurchase" element={<ProductPurchase />} />

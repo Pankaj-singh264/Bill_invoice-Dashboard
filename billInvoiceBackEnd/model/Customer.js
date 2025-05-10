@@ -11,7 +11,7 @@ const customerSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        // required: true
+        required: true
     },
     email:{
         type:String,
@@ -21,6 +21,8 @@ const customerSchema = new mongoose.Schema({
     },
     phoneNumber:{
         type:Number,
+        required:true,
+        unique:true,
     },
     items: [{
         item: {
@@ -43,6 +45,11 @@ const customerSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    invoice: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Invoice',
+        required: true
+    }]
 }, {
     timestamps: true
 });

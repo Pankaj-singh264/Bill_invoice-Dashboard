@@ -7,393 +7,140 @@ import {
   faSearch,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
+
+const API_URL = 'http://localhost:9000/api';
 
 export default function CustomerInvoiceModal({ customer, onClose }) {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddInvoice, setShowAddInvoice] = useState(false);
-  const [newInvoice, setNewInvoice] = useState({
-    invoiceNo: "",
-    date: new Date().toISOString().split('T')[0],
-    items: [],
-    amount: 0
-  });
-  const [currentItem, setCurrentItem] = useState({
-    name: "",
-    quantity: 1,
-    price: 0
-  });
-
-  // Fetch customer invoices
-  const fetchInvoices = async () => {
-    try {
-      setLoading(true);
-      // Replace with your actual API endpoint
-      // const response = await axios.get(`http://localhost:5000/api/customer/invoices/${customer._id}`);
-      const response = await axios.get(`${API_URL}/customer/invoices/${customer._id}`);
-      setInvoices(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching invoices:", err);
-      setError("Failed to load invoice data. Please try again.");
-      // For demo, populate with sample data
-      setInvoices([
-        {
-          _id: "inv1",
-          invoiceNo: "#INV00123",
-          date: "14-Apr-2025",
-          itemsPurchased: "5 Items",
-          amount: 3250
-        },
-        {
-          _id: "inv2",
-          invoiceNo: "#INV00456",
-          date: "12-Apr-2025",
-          itemsPurchased: "3 Items",
-          amount: 1105
-        },
-        {
-          _id: "inv3",
-          invoiceNo: "#INV00623",
-          date: "08-Apr-2025",
-          itemsPurchased: "6 Items",
-          amount: 2050
-        }
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchInvoices();
-  }, [customer._id]);
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/invoices/customer/${customer._id}`);
+        console.log('Invoice response:', response.data);
+        
+        if (response.data.success) {
+          setInvoices(response.data.invoices);
+        } else {
+          setError('Failed to fetch invoices');
+        }
+      } catch (error) {
+        console.error('Error fetching invoices:', error);
+        setError(error.response?.data?.message || 'Failed to fetch invoices');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Calculate total purchase amount
-  const calculateTotalPurchase = () => {
-    return invoices.reduce((total, invoice) => total + invoice.amount, 0);
-  };
-
-  const handleAddItem = () => {
-    if (!currentItem.name || currentItem.price <= 0) return;
-    
-    const itemTotal = currentItem.quantity * currentItem.price;
-    const newItems = [...newInvoice.items, {...currentItem, total: itemTotal}];
-    
-    // Calculate new invoice total
-    const newTotal = newItems.reduce((sum, item) => sum + item.total, 0);
-    
-    setNewInvoice({
-      ...newInvoice,
-      items: newItems,
-      amount: newTotal
-    });
-    
-    // Reset current item
-    setCurrentItem({
-      name: "",
-      quantity: 1,
-      price: 0
-    });
-  };
-
-  const handleRemoveItem = (index) => {
-    const updatedItems = [...newInvoice.items];
-    updatedItems.splice(index, 1);
-    
-    // Recalculate total
-    const newTotal = updatedItems.reduce((sum, item) => sum + item.total, 0);
-    
-    setNewInvoice({
-      ...newInvoice,
-      items: updatedItems,
-      amount: newTotal
-    });
-  };
-
-  const handleSubmitInvoice = async () => {
-    if (newInvoice.items.length === 0) {
-      alert("Please add at least one item to the invoice");
-      return;
+    if (customer?._id) {
+      fetchInvoices();
     }
+  }, [customer]);
 
-    try {
-      setLoading(true);
-      // Replace with your actual API endpoint
-      await axios.post(`http://localhost:5000/api/customer/invoice/${customer._id}`, newInvoice);
-      
-      // Add to local state for immediate UI update
-      const newInvoiceDisplay = {
-        _id: Date.now().toString(),
-        invoiceNo: newInvoice.invoiceNo,
-        date: new Date().toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
-        }).replace(/ /g, '-'),
-        itemsPurchased: `${newInvoice.items.length} Items`,
-        amount: newInvoice.amount
-      };
-      
-      setInvoices([...invoices, newInvoiceDisplay]);
-      setShowAddInvoice(false);
-      setNewInvoice({
-        invoiceNo: "",
-        date: new Date().toISOString().split('T')[0],
-        items: [],
-        amount: 0
-      });
-    } catch (err) {
-      console.error("Error adding invoice:", err);
-      alert("Failed to add invoice. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  // Calculate total amount
+  const calculateTotalAmount = () => {
+    return invoices.reduce((total, invoice) => total + Number(invoice.amount), 0);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-bold">Invoice Details of Customer</h2>
-          <button 
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <FontAwesomeIcon icon={faTimes} size="lg" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-xl font-semibold">
+              Invoices for {customer?.name}
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Total Invoices: {invoices.length} | Total Amount: ₹{calculateTotalAmount().toFixed(2)}
+            </p>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
-        {/* Customer Info */}
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <p><span className="font-semibold">Purchaser:</span> {customer.name}</p>
-            <p><span className="font-semibold">Address:</span> {customer.address}</p>
-            <p><span className="font-semibold">Total Invoice:</span> {invoices.length}</p>
-          </div>
-          <div>
-            <p><span className="font-semibold">Phone No.:</span> {customer.phone}</p>
-            <p><span className="font-semibold">GSTIN:</span> {customer.gstin || "N/A"}</p>
-            <p><span className="font-semibold">Total Purchase:</span> ₹{calculateTotalPurchase().toLocaleString()}</p>
+        {/* Customer Details */}
+        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm"><span className="font-medium">Name:</span> {customer.name}</p>
+              <p className="text-sm"><span className="font-medium">Email:</span> {customer.email}</p>
+              <p className="text-sm"><span className="font-medium">Phone:</span> {customer.phone}</p>
+            </div>
+            <div>
+              <p className="text-sm"><span className="font-medium">Address:</span> {customer.address}</p>
+              <p className="text-sm"><span className="font-medium">Balance:</span> ₹{customer.balance || 0}</p>
+            </div>
           </div>
         </div>
 
-        {/* Invoice History Table */}
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Invoice History Table</h3>
-            <button
-              onClick={() => setShowAddInvoice(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
-            >
-              <FontAwesomeIcon icon={faPlus} className="mr-2" /> New Invoice
-            </button>
+        {loading ? (
+          <div className="text-center py-8">
+            <FontAwesomeIcon icon={faSpinner} spin className="text-blue-500 text-2xl" />
+            <p className="mt-2">Loading invoices...</p>
           </div>
-
-          {/* Loading indicator */}
-          {loading && (
-            <div className="flex justify-center items-center p-8">
-              <FontAwesomeIcon icon={faSpinner} spin className="text-blue-500 text-2xl" />
-            </div>
-          )}
-
-          {/* Error message */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-
-          {/* Invoices Table */}
-          {!loading && !error && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="py-2 px-4 border text-left">Invoice No.</th>
-                    <th className="py-2 px-4 border text-left">Date</th>
-                    <th className="py-2 px-4 border text-left">Item Purchased</th>
-                    <th className="py-2 px-4 border text-left">Amount (₹)</th>
-                    <th className="py-2 px-4 border text-center">View</th>
+        ) : error ? (
+          <div className="text-center py-8 text-red-600">
+            {error}
+          </div>
+        ) : invoices.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            No invoices found for this customer.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice Number</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {invoices.map((invoice) => (
+                  <tr key={invoice._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">{invoice.invoiceNumber}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(invoice.date)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{invoice.itemCount} items</td>
+                    <td className="px-6 py-4 whitespace-nowrap">₹{Number(invoice.amount).toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
+                        invoice.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {invoices.map((invoice) => (
-                    <tr key={invoice._id} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-4 border">{invoice.invoiceNo}</td>
-                      <td className="py-2 px-4 border">{invoice.date}</td>
-                      <td className="py-2 px-4 border">{invoice.itemsPurchased}</td>
-                      <td className="py-2 px-4 border">₹{invoice.amount.toLocaleString()}</td>
-                      <td className="py-2 px-4 border text-center">
-                        <button className="text-blue-600 hover:text-blue-800">
-                          <FontAwesomeIcon icon={faSearch} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Add Invoice Modal */}
-      {showAddInvoice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="text-xl font-bold">Create New Invoice</h2>
-              <button 
-                onClick={() => setShowAddInvoice(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <FontAwesomeIcon icon={faTimes} size="lg" />
-              </button>
-            </div>
-
-            <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Invoice Number
-                  </label>
-                  <input
-                    type="text"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="e.g. #INV00789"
-                    value={newInvoice.invoiceNo}
-                    onChange={(e) => setNewInvoice({...newInvoice, invoiceNo: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={newInvoice.date}
-                    onChange={(e) => setNewInvoice({...newInvoice, date: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              {/* Add Items */}
-              <div className="mb-6">
-              
-                
-                <div className="grid grid-cols-12 gap-2 mb-2">
-                  <div className="col-span-5">
-                  <label className="block text-gray-700 text-sm font-bold">
-                    Item
-                  </label>
-                    <input
-                      type="text"
-                      placeholder="Item name"
-                      className="w-full p-2 border rounded"
-                      value={currentItem.name}
-                      onChange={(e) => setCurrentItem({...currentItem, name: e.target.value})}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                  <label className="block text-gray-700 text-sm font-bold">
-                    Qty
-                  </label>
-                    <input
-                      type="number"
-                      placeholder="Qty"
-                      min="1"
-                      className="w-full p-2 border rounded"
-                      value={currentItem.quantity}
-                      onChange={(e) => setCurrentItem({...currentItem, quantity: parseInt(e.target.value) || 1})}
-                    />
-                  </div>
-                  <div className="col-span-3">
-                  <label className="block text-gray-700 text-sm font-bold">
-                    prize
-                  </label>
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      min="0"
-                      className="w-full p-2 border rounded"
-                      value={currentItem.price}
-                      onChange={(e) => setCurrentItem({...currentItem, price: parseFloat(e.target.value) || 0})}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <button
-                      onClick={handleAddItem}
-                      className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-
-                {/* Items Table */}
-                {newInvoice.items.length > 0 && (
-                  <div className="overflow-x-auto mt-4">
-                    <table className="min-w-full bg-white border">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="py-2 px-4 border text-left">Item</th>
-                          <th className="py-2 px-4 border text-left">Quantity</th>
-                          <th className="py-2 px-4 border text-left">Price</th>
-                          <th className="py-2 px-4 border text-left">Total</th>
-                          <th className="py-2 px-4 border text-center">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {newInvoice.items.map((item, index) => (
-                          <tr key={index} className="border-b">
-                            <td className="py-2 px-4 border">{item.name}</td>
-                            <td className="py-2 px-4 border">{item.quantity}</td>
-                            <td className="py-2 px-4 border">₹{item.price.toLocaleString()}</td>
-                            <td className="py-2 px-4 border">₹{item.total.toLocaleString()}</td>
-                            <td className="py-2 px-4 border text-center">
-                              <button
-                                onClick={() => handleRemoveItem(index)}
-                                className="text-red-600 hover:text-red-800"
-                              >
-                                Remove
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                        <tr className="bg-gray-50 font-semibold">
-                          <td colSpan="3" className="py-2 px-4 border text-right">Total Amount:</td>
-                          <td className="py-2 px-4 border">₹{newInvoice.amount.toLocaleString()}</td>
-                          <td className="py-2 px-4 border"></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={() => setShowAddInvoice(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 mr-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitInvoice}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Create Invoice
-                </button>
-              </div>
-            </div>
+                ))}
+              </tbody>
+              <tfoot className="bg-gray-50">
+                <tr>
+                  <td colSpan="3" className="px-6 py-4 text-right font-medium">Total:</td>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium">₹{calculateTotalAmount().toFixed(2)}</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

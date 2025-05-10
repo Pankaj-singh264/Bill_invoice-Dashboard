@@ -29,6 +29,27 @@ const deleteItem = async (req, res) => {
   }
 };
 
+const getItemById = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching item' });
+  }
+};
+
+const getInvoiceById = async (req, res) => {
+  try {
+    const invoice = await Invoice.findById(req.params.id);
+    res.json(invoice);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching invoice' });
+  }
+};
+
 const searchItems = async (req, res) => {
   try {
     const items = await Item.find({
@@ -67,4 +88,5 @@ module.exports = {
   deleteItem,
   searchItems,
   updateItem,
+  getItemById
 };

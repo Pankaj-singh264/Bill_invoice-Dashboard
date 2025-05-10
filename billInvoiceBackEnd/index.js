@@ -1,39 +1,3 @@
-
-
-// require('dotenv').config();
-// const express = require('express');
-// const connectDB = require('./dataBase/db');
-// const cors = require('cors');
-// const userRoute = require('./routes/user');
-// const itemRoute = require('./routes/item');
-// // const invoiceRoutes = require('./routes/invoice');
-// const addCustomerRoutes = require('./routes/addCustomerRoutes');
-// const app = express();
-
-// // Connect Database
-// connectDB();
-
-// // Middleware
-// // app.use(helmet());
-// app.use(cors());
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-
-// // Routes
-// app.use('/api/user', userRoute);
-// app.use('/api/items', itemRoute);
-// app.use('/api/customer', addCustomerRoutes);
-// // app.use('/api/invoices', invoiceRoutes);
-
-// const PORT = process.env.PORT || 5000;
-
-// app.listen(PORT, () =>
-//     console.log(`Server running in mode on port ${PORT}`));
-
-
-
-
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./dataBase/db');
@@ -42,10 +6,9 @@ const path = require('path');
 const userRoute = require('./routes/user');
 const itemRoute = require('./routes/item');
 const addCustomerRoutes = require('./routes/addCustomerRoutes');
-const inventoryItemRoute = require('./routes/inventoryItem')
-const customerInvoiceRoutes = require('./routes/customerInvoice');
+const inventoryItemRoute = require('./routes/inventoryItem');
+const invoiceRoutes = require('./routes/invoice');
 // const paymentRouter = require('./routes/payment.js')
-const invoiceRoute = require('./routes/invoice')
 const app = express();
 
 // Connect Database
@@ -71,15 +34,23 @@ uploadDirs.forEach(dir => {
 
 // Routes
 app.use('/api/user', userRoute);
-
-app.use('/api/items', itemRoute);
 app.use('/api/customers', addCustomerRoutes);
+app.use('/api/items', itemRoute);
 app.use('/api/inventory', inventoryItemRoute);
-app.use('/api/invoice', customerInvoiceRoutes);
-app.use('/api/invoice', invoiceRoute);
+app.use('/api/invoices', invoiceRoutes);
 // app.use('/api/payment', paymentRouter);
 
-const PORT = process.env.PORT || 5000;
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!',
+    error: err.message
+  });
+});
+
+const PORT = process.env.PORT || 9000;
 
 app.listen(PORT, () =>
     console.log(`Server running on port ${PORT}`));

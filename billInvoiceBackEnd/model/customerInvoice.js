@@ -24,7 +24,7 @@ const invoiceItemSchema = new mongoose.Schema({
 const customerInvoiceSchema = new mongoose.Schema({
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customar',
+    ref: 'Customer',
     required: true
   },
   invoiceNo: {
@@ -56,5 +56,9 @@ const customerInvoiceSchema = new mongoose.Schema({
     default: ''
   }
 }, { timestamps: true });
+
+// Create indexes for better query performance
+customerInvoiceSchema.index({ customerId: 1, date: -1 });
+customerInvoiceSchema.index({ invoiceNo: 1 }, { unique: true });
 
 module.exports = mongoose.model('CustomerInvoice', customerInvoiceSchema);

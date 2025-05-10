@@ -9,7 +9,7 @@ import {
   faSearch,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-import { useCustomers } from "../contexts/CustomerContext";
+import { useCustomer } from "../contexts/CustomerContext";
 import AddCustomerModal from "./AddCustomerModal";
 import CustomerInvoiceModal from "./CustomerInvoiceModal";
 
@@ -21,9 +21,8 @@ export default function CustomerPage() {
     error,
     addCustomer,
     deleteCustomer,
-    deleteMultipleCustomers,
-    updateCustomers 
-  } = useCustomers();
+    updateCustomer 
+  } = useCustomer();
 
   // Local state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,19 +52,13 @@ export default function CustomerPage() {
     }
   };
 
-// const handleUpdate = async (customerId, updatedData, e) => {
-//   e?.stopPropagation();
-//   try {
-//     await updateCustomers(customerId, updatedData);
-//   } catch (error) {
-//     console.error("Update failed:", error);
-//   }
-// };
-
   const handleDeleteSelected = async () => {
     if (selectedCustomers.size === 0) return;
     try {
-      await deleteMultipleCustomers(Array.from(selectedCustomers));
+      // Delete customers one by one since we removed bulk delete
+      for (const customerId of selectedCustomers) {
+        await deleteCustomer(customerId);
+      }
       setSelectedCustomers(new Set());
     } catch (error) {
       console.error("Bulk delete failed:", error);

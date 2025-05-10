@@ -17,7 +17,7 @@
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 //     try {
-//       await axios.post('http://localhost:5000/api/inventory/add', form);
+//       await axios.post('http://localhost:9000/api/inventory/add', form);
 //       onItemAdded();
 //       closeModal();
 //     } catch (error) {
@@ -155,7 +155,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
-const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
+const API_URL = 'http://localhost:9000/api' || import.meta.env.REACT_APP_API_URL;
 
 
 export default function AddInventoryModal({ closeModal, onItemAdded }) {
@@ -180,7 +180,7 @@ export default function AddInventoryModal({ closeModal, onItemAdded }) {
 
     try {
       // Updated endpoint to match backend API
-      // await axios.post('http://localhost:5000/api/inventory/add', form);
+      // await axios.post('http://localhost:9000/api/inventory/add', form);
       await axios.post(`${API_URL}/inventory/add`, form);
       onItemAdded();
       closeModal();
