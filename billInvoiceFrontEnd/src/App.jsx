@@ -10,6 +10,7 @@ import ProductPurchase from './Pages/ProductPurchase';
 import BillInvoice from './Pages/BillInvoice';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
+import Invoices from './Pages/Invoices';
 import { CustomerProvider } from './contexts/CustomerContext';
 
 export default function App() {
