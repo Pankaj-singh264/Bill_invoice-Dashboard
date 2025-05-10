@@ -254,7 +254,10 @@ const SignUp = () => {
         {/* Header */}
         <div className="w-full border-b border-black bg-[#0F2657] flex flex-wrap justify-end items-center p-4 gap-2">
           <a href="/dashboard">
-            <button className="px-4 py-2 rounded border border-white text-white w-full sm:w-auto">Go Back</button>
+            <button 
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 rounded border border-white text-white w-full sm:w-auto">Go Back</button>
+            
           </a>
           <button 
             onClick={handleSubmit}

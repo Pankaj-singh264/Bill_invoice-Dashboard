@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCustomer } from '../contexts/CustomerContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Receipt, 
@@ -18,7 +19,7 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const API_URL = 'http://localhost:9000/api';
+const API_URL = 'http://localhost:5000/api';
 
 // Sample activities data
 const sampleActivities = [
@@ -113,6 +114,7 @@ const sampleChats = [
 
 const Dashboard = () => {
   const { customers } = useCustomer();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chatMessage, setChatMessage] = useState('');
