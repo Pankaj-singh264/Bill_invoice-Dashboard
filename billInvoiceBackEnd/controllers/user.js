@@ -13,6 +13,7 @@ const handleFileUploads = upload.fields([
 
 // REGISTER USER
 const registerUser = async (req, res) => {
+  console.log(req.body);
   try {
     const { 
       // Company Info

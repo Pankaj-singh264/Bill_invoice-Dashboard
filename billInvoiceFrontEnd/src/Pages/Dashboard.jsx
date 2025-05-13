@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useCustomer } from '../contexts/CustomerContext';
 import { useApp } from '../contexts/AppContext';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API from '../utils/config';
 import { 
   Users, 
   Receipt, 
@@ -20,12 +20,6 @@ import {
   Send
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-<<<<<<< HEAD
-const API_URL = 'http://localhost:5000/api';
-=======
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000/api';
->>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
 
 // Sample activities data
 const sampleActivities = [
@@ -119,30 +113,10 @@ const sampleChats = [
 ];
 
 const Dashboard = () => {
-  const { customers } = useCustomer();
-<<<<<<< HEAD
-  const { 
-    theme, 
-    sidebarOpen, 
-    currentUser, 
-    loading: appLoading, 
-    error: appError,
-    setTheme,
-    toggleSidebar,
-    addNotification,
-    setUser,
-    setLoading: setAppLoading,
-    setError: setAppError
-  } = useApp();
-  
-  const [isLoading, setIsLoading] = useState(true);
+  const { customers, setLoading, isLoading } = useCustomer();
+  const { theme } = useApp();
   const [dashboardError, setDashboardError] = useState(null);
-=======
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
->>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
-  const [chatMessage, setChatMessage] = useState('');
+  const [invoices, setInvoices] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     totalRevenue: 0,
     pendingAmount: 0,
@@ -150,11 +124,9 @@ const Dashboard = () => {
     totalInvoices: 0,
     pendingInvoices: 0,
     paidInvoices: 0,
-    recentInvoices: [],
     monthlyRevenue: 0,
     monthlyGrowth: 0
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -162,23 +134,40 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      setIsLoading(true);
-      const response = await axios.get(`${API_URL}/invoices`);
-      const invoices = response.data.data;
-
+      setLoading(true);
+      const response = await axios.get(API.INVOICES.GET_ALL);
+      const fetchedInvoices = response.data.data || [];
+      console.log(fetchedInvoices);
+      
+      // Save invoices to state
+      setInvoices(fetchedInvoices);
+      
       // Calculate statistics
-      const stats = calculateStatistics(invoices);
+      const stats = calculateStatistics(fetchedInvoices);
       setDashboardData(stats);
       setDashboardError(null);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       setDashboardError('Failed to load dashboard data');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const calculateStatistics = (invoices) => {
+    if (!invoices || invoices.length === 0) {
+      return {
+        totalRevenue: 0,
+        pendingAmount: 0,
+        paidAmount: 0,
+        totalInvoices: 0,
+        pendingInvoices: 0,
+        paidInvoices: 0,
+        monthlyRevenue: 0,
+        monthlyGrowth: 0
+      };
+    }
+
     const now = new Date();
     const currentMonth = now.getMonth();
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
@@ -190,7 +179,6 @@ const Dashboard = () => {
       totalInvoices: invoices.length,
       pendingInvoices: 0,
       paidInvoices: 0,
-      recentInvoices: [],
       monthlyRevenue: 0,
       monthlyGrowth: 0
     };
@@ -201,7 +189,7 @@ const Dashboard = () => {
 
     invoices.forEach(invoice => {
       const invoiceDate = new Date(invoice.date);
-      const amount = Number(invoice.totalAmount || 0);
+      const amount = Number(invoice.amount || invoice.totalAmount || 0);
 
       // Total amounts
       stats.totalRevenue += amount;
@@ -229,15 +217,11 @@ const Dashboard = () => {
       ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : 
       100;
 
-    // Get recent invoices (last 5)
-    stats.recentInvoices = invoices
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 5);
-
     return stats;
   };
 
   const formatCurrency = (amount) => {
+    if (amount === undefined || amount === null) return '₹0';
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
@@ -246,11 +230,16 @@ const Dashboard = () => {
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+    if (!date) return 'N/A';
+    try {
+      return new Date(date).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return 'Invalid Date';
+    }
   };
 
   if (isLoading) {
@@ -264,7 +253,7 @@ const Dashboard = () => {
   if (dashboardError) {
     return (
       <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'} flex items-center justify-center`}>
-        <div className="text-xl text-red-600">{dashboardError}</div>
+        <div className={`text-xl ${theme === 'dark' ? 'text-red-300' : 'text-red-600'}`}>{dashboardError}</div>
       </div>
     );
   }
@@ -347,9 +336,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Revenue Chart */}
+        {/* Revenue Chart and Recent Invoices */}
         <div className="grid grid-cols-2 w-full border"> 
-          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow mb-6 p-6 flex-1 w-[90%]`}>
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow w-[800px] mb-6 p-6 flex-1`}>
             <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>Revenue Trends</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -385,42 +374,48 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activities */}
-          <div className="lg:col-span-2">
+          <div className="w-3/5 justify-self-end">
             <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow`}>
               <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Activities</h2>
+                <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Invoices</h2>
               </div>
               <div className="p-6">
                 <div className="space-y-6">
-                  {dashboardData.recentInvoices.slice(0, 5).map((invoice) => (
-                    <div key={invoice._id} className="flex items-start space-x-4">
-                      <div className={`flex-shrink-0 rounded-full p-2 ${invoice.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'}`}>
-                        {invoice.status === 'paid' ? (
-                          <DollarSign className="h-5 w-5 text-green-600" />
-                        ) : (
-                          <FileText className="h-5 w-5 text-yellow-600" />
-                        )}
+                  {invoices && invoices.length > 0 ? (
+                    invoices.slice(0, 4).map((invoice) => (
+                      <div key={invoice._id} className="flex items-start space-x-4">
+                        <div className={`flex-shrink-0 rounded-full p-2 ${invoice.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'}`}>
+                          {invoice.status === 'paid' ? (
+                            <DollarSign className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <FileText className="h-5 w-5 text-yellow-600" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Invoice #{invoice.invoiceNumber || 'N/A'} - {invoice.customerName || 'Customer'}
+                          </p>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Amount: {formatCurrency(invoice.amount || invoice.totalAmount || 0)}
+                          </p>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} mt-1`}>
+                            {formatDate(invoice.date)}
+                          </p>
+                        </div>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          invoice.status === 'paid'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {invoice.status ? invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1) : 'Pending'}
+                        </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                          Invoice #{invoice.invoiceNumber} - {invoice.customerName}
-                        </p>
-                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                          Amount: {formatCurrency(invoice.totalAmount)}
-                        </p>
-                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} mt-1`}>
-                          {formatDate(invoice.date)}
-                        </p>
-                      </div>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        invoice.status === 'paid'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                      </span>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      No recent invoices found
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>

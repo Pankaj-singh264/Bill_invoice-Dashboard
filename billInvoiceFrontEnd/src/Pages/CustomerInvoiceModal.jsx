@@ -8,11 +8,9 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
-<<<<<<< HEAD
+// const API_URL = 'http://localhost:5000/api';
+
 const API_URL = 'http://localhost:5000/api';
-=======
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000/api';
->>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
 
 export default function CustomerInvoiceModal({ customer, onClose }) {
   const [invoices, setInvoices] = useState([]);

@@ -7,7 +7,7 @@ const connectToDB = async () => {
         console.log("Connected to MongoDB!")
     } catch (err) {
         console.error("Connection error:", err);
-    }GIT 
+    }
 };
 
 module.exports = connectToDB;

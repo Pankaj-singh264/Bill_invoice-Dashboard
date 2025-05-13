@@ -103,6 +103,7 @@ export function CustomerProvider({ children }) {
     customers,
     loading,
     error,
+    setLoading,
     fetchCustomers,
     addCustomer,
     updateCustomer,

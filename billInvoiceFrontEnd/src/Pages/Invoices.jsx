@@ -13,12 +13,10 @@ export default function Invoices() {
   const { customers, loading: customersLoading } = useCustomer();
   const navigate = useNavigate();
 
-<<<<<<< HEAD
-  const API_URL = 'http://localhost:5000/api' || import.meta.env.REACT_APP_API_URL;
-=======
-  const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000/api';
->>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
-  
+  // const API_URL = 'http://localhost:5000/api';
+
+  const API_URL = 'http://localhost:5000/api';
+
   useEffect(() => {
     fetchInvoices();
   }, []);

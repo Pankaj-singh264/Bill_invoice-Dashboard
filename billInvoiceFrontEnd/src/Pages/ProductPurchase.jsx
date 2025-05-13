@@ -2,16 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ArrowRight, X, PlusCircle, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
-
-<<<<<<< HEAD
-const API_URL = 'http://localhost:5000/api' || import.meta.env.REACT_APP_API_URL;
-=======
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000/api';
->>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
+import API from '../utils/config';
 
 // Add axios interceptor to include token in all requests
-    
-
 function ProductPurchase() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -53,7 +46,7 @@ function ProductPurchase() {
       setLoading(true);
       try {
         if (customerData._id) {
-          const response = await axios.get(`${API_URL}/items?customerId=${customerData._id}`);
+          const response = await axios.get(`${API.ITEMS.BASE}?customerId=${customerData._id}`);
           if (response.status === 200) {
             setCustomerProducts(response.data.items);
           }
@@ -150,7 +143,7 @@ function ProductPurchase() {
 
       // Only save to backend for new items, not temporary cart edits
       if (!isEditMode) {
-        const res = await axios.post(`${API_URL}/items`, itemData);
+        const res = await axios.post(API.ITEMS.ADD, itemData);
 
         if (res.status !== 201) {
           throw new Error('Failed to add item to database');
@@ -273,7 +266,7 @@ function ProductPurchase() {
     };
 
     try {
-      const response = await axios.post(`${API_URL}/invoices/addItem`, invoiceData);
+      const response = await axios.post(API.INVOICES.ADD, invoiceData);
 
       if (response.status === 201) {
         console.log('Invoice created:', response.data);
@@ -344,63 +337,6 @@ function ProductPurchase() {
       }
     }
   };
-
-  // const handlePayment = async () => {
-  //   try {
-  //     const res = await axios.post(`${API_URL}/payment/order`, {
-  //       headers: {
-  //         "content-type": "application/json"
-  //       },
-  //       body: JSON.stringify({
-  //         amountPaid
-  //       })
-  //     });
-
-  //     const data = await res.json();
-  //     console.log(data);
-  //     handlePaymentVerify(data.data)
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  // const handlePaymentVerify = async (data) => {
-  //   const options = {
-  //     key: import.meta.env.RAZORPAY_KEY_ID,
-  //     amount: data.amount,
-  //     currency: data.currency,
-  //     name: "Devknus",
-  //     description: "Test Mode",
-  //     order_id: data.id,
-  //     handler: async (response) => {
-  //       console.log("response", response)
-  //       try {
-  //         const res = await axios.post(`${API_URL}/payment/verify`, {
-  //           method: 'POST',
-  //           headers: {
-  //             'content-type': 'application/json'
-  //           },
-  //           body: JSON.stringify({
-  //             razorpay_order_id: response.razorpay_order_id,
-  //             razorpay_payment_id: response.razorpay_payment_id,
-  //             razorpay_signature: response.razorpay_signature,
-  //           })
-  //         })
-
-  //         const verifyData = await res.json();
-
-  //         if (verifyData.message) {
-  //           toast.success(verifyData.message)
-  //         }
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     },
-
-  //   };
-  //   const rzp1 = new window.Razorpay(options);
-  //   rzp1.open();
-  // }
 
   // Format date for invoice
   const currentDate = new Date().toLocaleDateString('en-IN', {
