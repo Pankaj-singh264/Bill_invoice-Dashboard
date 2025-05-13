@@ -46,7 +46,7 @@ export const AppProvider = ({ children }) => {
       // Auto remove notification after 5 seconds
       setTimeout(() => {
         dispatch({ type: 'REMOVE_NOTIFICATION', payload: id });
-      }, 9000);
+      }, 5000);
     },
     setUser: (user) => dispatch({ type: 'SET_USER', payload: user }),
     setLoading: (loading) => dispatch({ type: 'SET_LOADING', payload: loading }),

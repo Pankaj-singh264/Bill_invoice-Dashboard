@@ -89,7 +89,5 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// Remove any existing email index to avoid conflicts
-userSchema.index({ email: 1 }, { unique: false, sparse: true });
 
 module.exports = mongoose.model('User', userSchema);

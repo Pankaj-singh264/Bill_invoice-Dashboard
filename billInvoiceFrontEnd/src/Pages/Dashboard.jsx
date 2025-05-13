@@ -3,6 +3,7 @@ import { useCustomer } from '../contexts/CustomerContext';
 import { useApp } from '../contexts/AppContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Receipt, 
@@ -20,7 +21,11 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+<<<<<<< HEAD
 const API_URL = 'http://localhost:5000/api';
+=======
+const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+>>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
 
 // Sample activities data
 const sampleActivities = [
@@ -115,6 +120,7 @@ const sampleChats = [
 
 const Dashboard = () => {
   const { customers } = useCustomer();
+<<<<<<< HEAD
   const { 
     theme, 
     sidebarOpen, 
@@ -131,6 +137,11 @@ const Dashboard = () => {
   
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState(null);
+=======
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+>>>>>>> a1658e7ee69204c35e1d00cdc7ffd820cbbda182
   const [chatMessage, setChatMessage] = useState('');
   const [dashboardData, setDashboardData] = useState({
     totalRevenue: 0,
