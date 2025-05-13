@@ -14,42 +14,42 @@ const customerSchema = new mongoose.Schema({
         required: true
     },
     email:{
-        type:String,
-        required:true,
-        unique:true,
-        trim:true,
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
     },
     phoneNumber:{
-        type:Number,
-        required:true,
-        unique:true,
+        type: String,
+        required: true,
+        unique: true,
     },
     items: [{
         item: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Item',
-            required: true
+            ref: 'Item'
         },
         quantity: {
             type: Number,
-            required: true
+            default: 0
         },
-        price: Number,
-        gstRate: Number
+        price: {
+            type: Number,
+            default: 0
+        },
+        gstRate: {
+            type: Number,
+            default: 0
+        }
     }],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
-    },
     invoice: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Invoice',
-        required: true
-    }]
+        ref: 'Invoice'
+    }],
+    balance: {
+        type: Number,
+        default: 0
+    }
 }, {
     timestamps: true
 });

@@ -12,35 +12,38 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { CustomerProvider } from './contexts/CustomerContext';
 import Invoices from './Pages/Invoices';
+import { AppProvider } from './contexts/AppContext';
 
 export default function App() {
   return (
     <Router>
-      <AuthProvider>
-        <CustomerProvider>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
+      <AppProvider>
+        <AuthProvider>
+          <CustomerProvider>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
 
-          {/* Protected layout with nested routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="inventory" element={<Inventory />} />
-              <Route path="customer" element={<CustomerInfo />} />
-              <Route path="invoices" element={<Invoices />} />
-              <Route path="settings" element={<CustomerPage />} />
-            </Route>
-            <Route path="/productpurchase" element={<ProductPurchase />} />
-            <Route path="/billinvoice" element={<BillInvoice />} />
-          </Route>
+              {/* Protected layout with nested routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="inventory" element={<Inventory />} />
+                  <Route path="customer" element={<CustomerInfo />} />
+                  <Route path="invoices" element={<Invoices />} />
+                  <Route path="settings" element={<CustomerPage />} />
+                </Route>
+                <Route path="/productpurchase" element={<ProductPurchase />} />
+                <Route path="/billinvoice" element={<BillInvoice />} />
+              </Route>
 
-          {/* Redirect all unknown routes to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </CustomerProvider>
-      </AuthProvider>
+              {/* Redirect all unknown routes to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </CustomerProvider>
+        </AuthProvider>
+      </AppProvider>
     </Router>
   );
 }

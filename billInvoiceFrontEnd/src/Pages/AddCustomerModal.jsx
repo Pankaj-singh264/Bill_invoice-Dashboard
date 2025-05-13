@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-const API_URL = 'http://localhost:9000/api' || process.env.REACT_APP_API_URL;
+const API_URL = 'http://localhost:5000/api' || process.env.REACT_APP_API_URL;
 
 const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
   const navigate = useNavigate();
@@ -12,14 +12,18 @@ const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
     address: '',
     gstNumber: '',
     items: [],
-    invoice: []
+    invoice: [],
+    balance: 0
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-    const value = e.target.name === 'phoneNumber' ? Number(e.target.value) : e.target.value;
-    setFormData({ ...formData, [e.target.name]: value });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const validateForm = () => {
@@ -50,15 +54,22 @@ const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
     
     try {
       setIsSubmitting(true);
-      const response = await axios.post(`${API_URL}/customers`, formData);
+      setError(null);
       
-      if (response.data) {
-        onCustomerAdded(response.data);
-        onClose();
-      }
+      const customerData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        address: formData.address.trim(),
+        gstNumber: formData.gstNumber.trim(),
+        balance: 0
+      };
+      
+      await onCustomerAdded(customerData);
+      onClose();
     } catch (error) {
       console.error('Error adding customer:', error);
-      setError(error.response?.data?.error || 'Failed to add customer. Please try again.');
+      setError(error.message || 'Failed to add customer. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

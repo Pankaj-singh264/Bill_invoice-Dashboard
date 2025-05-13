@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCustomer } from '../contexts/CustomerContext';
+import { useApp } from '../contexts/AppContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Users, 
@@ -18,7 +20,7 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const API_URL = 'http://localhost:9000/api';
+const API_URL = 'http://localhost:5000/api';
 
 // Sample activities data
 const sampleActivities = [
@@ -113,10 +115,23 @@ const sampleChats = [
 
 const Dashboard = () => {
   const { customers } = useCustomer();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    theme, 
+    sidebarOpen, 
+    currentUser, 
+    loading: appLoading, 
+    error: appError,
+    setTheme,
+    toggleSidebar,
+    addNotification,
+    setUser,
+    setLoading: setAppLoading,
+    setError: setAppError
+  } = useApp();
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState(null);
   const [chatMessage, setChatMessage] = useState('');
-  const [messages, setMessages] = useState(sampleChats);
   const [dashboardData, setDashboardData] = useState({
     totalRevenue: 0,
     pendingAmount: 0,
@@ -128,6 +143,7 @@ const Dashboard = () => {
     monthlyRevenue: 0,
     monthlyGrowth: 0
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -135,19 +151,19 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await axios.get(`${API_URL}/invoices`);
       const invoices = response.data.data;
 
       // Calculate statistics
       const stats = calculateStatistics(invoices);
       setDashboardData(stats);
-      setError(null);
+      setDashboardError(null);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      setError('Failed to load dashboard data');
+      setDashboardError('Failed to load dashboard data');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -210,22 +226,6 @@ const Dashboard = () => {
     return stats;
   };
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
-
-    const newMessage = {
-      id: messages.length + 1,
-      sender: 'You',
-      message: chatMessage,
-      time: 'Just now',
-      avatar: '👤'
-    };
-
-    setMessages([newMessage, ...messages]);
-    setChatMessage('');
-  };
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -242,43 +242,43 @@ const Dashboard = () => {
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading dashboard...</div>
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'} flex items-center justify-center`}>
+        <div className={`text-xl ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Loading dashboard...</div>
       </div>
     );
   }
 
-  if (error) {
+  if (dashboardError) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl text-red-600">{error}</div>
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'} flex items-center justify-center`}>
+        <div className="text-xl text-red-600">{dashboardError}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 px-4">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'} py-6 px-4`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-          <p className="text-gray-600">Welcome to your business dashboard</p>
+          <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Dashboard Overview</h1>
+          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Welcome to your business dashboard</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Customers */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6`}>
             <div className="flex items-center justify-between mb-4">
               <div className="bg-blue-100 p-3 rounded-full">
                 <Users className="h-6 w-6 text-blue-600" />
               </div>
-              <span className="text-sm font-medium text-gray-500">Total Customers</span>
+              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Total Customers</span>
             </div>
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900">{customers.length}</h3>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{customers.length}</h3>
               <span className="text-green-500 flex items-center text-sm">
                 <ArrowUpRight className="h-4 w-4 mr-1" />
                 Active
@@ -287,15 +287,15 @@ const Dashboard = () => {
           </div>
 
           {/* Total Revenue */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6`}>
             <div className="flex items-center justify-between mb-4">
               <div className="bg-green-100 p-3 rounded-full">
                 <IndianRupee className="h-6 w-6 text-green-600" />
               </div>
-              <span className="text-sm font-medium text-gray-500">Total Revenue</span>
+              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Total Revenue</span>
             </div>
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardData.totalRevenue)}</h3>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{formatCurrency(dashboardData.totalRevenue)}</h3>
               <span className={`flex items-center text-sm ${dashboardData.monthlyGrowth >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {dashboardData.monthlyGrowth >= 0 ? <ArrowUpRight className="h-4 w-4 mr-1" /> : <ArrowDownRight className="h-4 w-4 mr-1" />}
                 {Math.abs(dashboardData.monthlyGrowth).toFixed(1)}%
@@ -304,15 +304,15 @@ const Dashboard = () => {
           </div>
 
           {/* Pending Invoices */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6`}>
             <div className="flex items-center justify-between mb-4">
               <div className="bg-yellow-100 p-3 rounded-full">
                 <AlertCircle className="h-6 w-6 text-yellow-600" />
               </div>
-              <span className="text-sm font-medium text-gray-500">Pending Invoices</span>
+              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Pending Invoices</span>
             </div>
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900">{dashboardData.pendingInvoices}</h3>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{dashboardData.pendingInvoices}</h3>
               <span className="text-yellow-500 flex items-center text-sm">
                 {formatCurrency(dashboardData.pendingAmount)}
               </span>
@@ -320,15 +320,15 @@ const Dashboard = () => {
           </div>
 
           {/* Paid Invoices */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow p-6`}>
             <div className="flex items-center justify-between mb-4">
               <div className="bg-green-100 p-3 rounded-full">
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
-              <span className="text-sm font-medium text-gray-500">Paid Invoices</span>
+              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Paid Invoices</span>
             </div>
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900">{dashboardData.paidInvoices}</h3>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{dashboardData.paidInvoices}</h3>
               <span className="text-green-500 flex items-center text-sm">
                 {formatCurrency(dashboardData.paidAmount)}
               </span>
@@ -337,21 +337,29 @@ const Dashboard = () => {
         </div>
 
         {/* Revenue Chart */}
-      <div className="grid grid-cols-2 w-full border"> 
-          <div className="bg-white rounded-lg shadow mb-6 p-6 flex-1 w-[90%]">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trends</h2>
+        <div className="grid grid-cols-2 w-full border"> 
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow mb-6 p-6 flex-1 w-[90%]`}>
+            <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>Revenue Trends</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#4B5563' : '#E5E7EB'} />
+                  <XAxis dataKey="month" stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} />
                   <YAxis
                     tickFormatter={(value) => `₹${value / 1000}K`}
                     width={80}
+                    stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'}
                   />
                   <Tooltip
                     formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
                     labelFormatter={(label) => `Month: ${label}`}
+                    contentStyle={{
+                      backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: theme === 'dark' ? '#FFFFFF' : '#000000'
+                    }}
                   />
                   <Line
                     type="monotone"
@@ -365,136 +373,48 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Three Column Layout */}
-          <div className=" border" >
-            {/* Recent Invoices - Takes up 3/7 of the space */}
-            {/* <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Invoices</h2>
+          {/* Recent Activities */}
+          <div className="lg:col-span-2">
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow`}>
+              <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Activities</h2>
               </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice No</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {dashboardData.recentInvoices.slice(0, 5).map((invoice) => (
-                      <tr key={invoice._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {invoice.invoiceNumber}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {invoice.customerName}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatCurrency(invoice.totalAmount)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            invoice.status === 'paid' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div> */}
-
-            {/* Chat Section - Takes up 2/7 of the space */}
-            {/* <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow h-full flex flex-col">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Chat Updates</h2>
-              </div>
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {messages.map((msg) => (
-                  <div key={msg.id} className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 text-2xl">{msg.avatar}</div>
-                    <div className="flex-1 bg-gray-50 rounded-lg p-3">
-                      <div className="flex justify-between items-baseline">
-                        <span className="text-sm font-medium text-gray-900">{msg.sender}</span>
-                        <span className="text-xs text-gray-400">{msg.time}</span>
+              <div className="p-6">
+                <div className="space-y-6">
+                  {dashboardData.recentInvoices.slice(0, 5).map((invoice) => (
+                    <div key={invoice._id} className="flex items-start space-x-4">
+                      <div className={`flex-shrink-0 rounded-full p-2 ${invoice.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'}`}>
+                        {invoice.status === 'paid' ? (
+                          <DollarSign className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <FileText className="h-5 w-5 text-yellow-600" />
+                        )}
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{msg.message}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          Invoice #{invoice.invoiceNumber} - {invoice.customerName}
+                        </p>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Amount: {formatCurrency(invoice.totalAmount)}
+                        </p>
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} mt-1`}>
+                          {formatDate(invoice.date)}
+                        </p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        invoice.status === 'paid'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                      </span>
                     </div>
-                  </div>
-                ))}
-              </div>
-              <div className="p-4 border-t border-gray-200">
-                <form onSubmit={handleSendMessage} className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={chatMessage}
-                    onChange={(e) => setChatMessage(e.target.value)}
-                    placeholder="Type a message..."
-                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div> */}
-
-            {/* Recent Activities - Takes up 2/7 of the space */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow">
-                <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900">Recent Activities</h2>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-6">
-                    {dashboardData.recentInvoices.slice(0, 5).map((invoice) => (
-                      <div key={invoice._id} className="flex items-start space-x-4">
-                        <div className={`flex-shrink-0 rounded-full p-2 ${invoice.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'
-                          }`}>
-                          {invoice.status === 'paid' ? (
-                            <DollarSign className="h-5 w-5 text-green-600" />
-                          ) : (
-                            <FileText className="h-5 w-5 text-yellow-600" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">
-                            Invoice #{invoice.invoiceNumber} - {invoice.customerName}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Amount: {formatCurrency(invoice.totalAmount)}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {formatDate(invoice.date)}
-                          </p>
-                        </div>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${invoice.status === 'paid'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-      </div>
+        </div>
       </div>
     </div>
   );

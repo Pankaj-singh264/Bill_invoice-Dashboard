@@ -4,10 +4,11 @@ const Customer = require('../model/Customer');
 exports.addCustomer = async (req, res) => {
   try {
     console.log("Request Body:", req.body);
-    const newCustomer = new Customer(req.body);
+    // const newCustomer = new Customer(req.body);
+    const {name, email, phoneNumber, address, balance} = req.body;
     
     // Validate required fields
-    if (!req.body.name || !req.body.email || !req.body.phoneNumber || !req.body.address) {
+    if (!name || !email || !phoneNumber || !address) {
       return res.status(400).json({
         success: false,
         error: 'Missing required fields'
@@ -31,12 +32,16 @@ exports.addCustomer = async (req, res) => {
         error: 'Customer with this phone number already exists'
       });
     }
-  
-    const savedCustomer = await newCustomer.save();
-    res.status(201).json({
-      success: true,
-      data: savedCustomer
-    });
+  const newCustomer = await  Customer.create({name, email, phoneNumber, address, balance});
+  res.status(201).json({
+    success: true,
+    data: newCustomer
+  })
+    // const savedCustomer = await newCustomer.save();
+    // res.status(201).json({
+    //   success: true,
+    //   data: savedCustomer
+    // });
   } catch (err) {
     res.status(400).json({
       success: false,

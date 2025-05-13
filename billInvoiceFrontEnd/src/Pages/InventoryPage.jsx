@@ -4,7 +4,7 @@ import axios from 'axios';
 import AddInventoryModal from '../Pages/AddInventoryModal';
 import EditInventoryModal from '../Pages/EditInventoryModal';
 
-const API_URL = 'http://localhost:9000/api' || import.meta.env.REACT_APP_API_URL;
+const API_URL = 'http://localhost:5000/api' || import.meta.env.REACT_APP_API_URL;
 
 export default function Inventory() {
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -120,10 +120,10 @@ export default function Inventory() {
     switch (filters.priceRange) {
       case 'under-1000':
         return items.filter(item => item.price < 1000);
-      case '1000-9000':
-        return items.filter(item => item.price >= 1000 && item.price <= 9000);
-      case 'over-9000':
-        return items.filter(item => item.price > 9000);
+      case '1000-5000':
+        return items.filter(item => item.price >= 1000 && item.price <= 5000);
+      case 'over-5000':
+        return items.filter(item => item.price > 5000);
       default:
         return items;
     }
@@ -274,8 +274,8 @@ filters the items by stock availability, category, and price. Finally, it sorts 
                       >
                         <option value="all">All Prices</option>
                         <option value="under-1000">Under ₹1,000</option>
-                        <option value="1000-9000">₹1,000 - ₹5,000</option>
-                        <option value="over-9000">Over ₹5,000</option>
+                        <option value="1000-5000">₹1,000 - ₹5,000</option>
+                        <option value="over-5000">Over ₹5,000</option>
                       </select>
                     </div>
 

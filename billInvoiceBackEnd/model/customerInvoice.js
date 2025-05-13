@@ -59,6 +59,5 @@ const customerInvoiceSchema = new mongoose.Schema({
 
 // Create indexes for better query performance
 customerInvoiceSchema.index({ customerId: 1, date: -1 });
-customerInvoiceSchema.index({ invoiceNo: 1 }, { unique: true });
 
 module.exports = mongoose.model('CustomerInvoice', customerInvoiceSchema);

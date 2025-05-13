@@ -6,7 +6,6 @@ const AppContext = createContext();
 const initialState = {
   theme: 'light',
   sidebarOpen: true,
-  notifications: [],
   currentUser: null,
   loading: false,
   error: null
@@ -18,16 +17,8 @@ const reducer = (state, action) => {
       return { ...state, theme: action.payload };
     case 'TOGGLE_SIDEBAR':
       return { ...state, sidebarOpen: !state.sidebarOpen };
-    case 'ADD_NOTIFICATION':
-      return { 
-        ...state, 
-        notifications: [...state.notifications, action.payload]
-      };
-    case 'REMOVE_NOTIFICATION':
-      return {
-        ...state,
-        notifications: state.notifications.filter(n => n.id !== action.payload)
-      };
+   
+    
     case 'SET_USER':
       return { ...state, currentUser: action.payload };
     case 'SET_LOADING':

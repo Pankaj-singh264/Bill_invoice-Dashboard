@@ -16,7 +16,7 @@ export function CustomerProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = 'http://localhost:9000/api' || import.meta.env.REACT_APP_API_URL;
+  const API_URL = 'http://localhost:5000/api' || import.meta.env.REACT_APP_API_URL;
 
   const fetchCustomers = async () => {
     try {
@@ -34,37 +34,60 @@ export function CustomerProvider({ children }) {
 
   const addCustomer = async (customerData) => {
     try {
-      const response = await axios.post(`${API_URL}/customers`, customerData);
-      setCustomers(prev => [...prev, response.data.data]);
-      return response.data.data;
+      // Ensure phoneNumber is a string
+      const formattedData = {
+        ...customerData,
+        phoneNumber: customerData.phoneNumber.toString(),
+        balance: customerData.balance || 0
+      };
+
+      const response = await axios.post(`${API_URL}/customers`, formattedData);
+      
+      if (response.data.success) {
+        setCustomers(prev => [...prev, response.data.data]);
+        return response.data.data;
+      } else {
+        throw new Error(response.data.error || 'Failed to add customer');
+      }
     } catch (error) {
       console.error('Error adding customer:', error);
-      throw error;
+      const errorMessage = error.response?.data?.error || error.message;
+      throw new Error(errorMessage);
     }
   };
 
   const updateCustomer = async (customerId, customerData) => {
     try {
       const response = await axios.put(`${API_URL}/customers/${customerId}`, customerData);
-      setCustomers(prev => 
-        prev.map(customer => 
-          customer._id === customerId ? response.data.data : customer
-        )
-      );
-      return response.data.data;
+      if (response.data.success) {
+        setCustomers(prev => 
+          prev.map(customer => 
+            customer._id === customerId ? response.data.data : customer
+          )
+        );
+        return response.data.data;
+      } else {
+        throw new Error(response.data.error || 'Failed to update customer');
+      }
     } catch (error) {
       console.error('Error updating customer:', error);
-      throw error;
+      const errorMessage = error.response?.data?.error || error.message;
+      throw new Error(errorMessage);
     }
   };
 
   const deleteCustomer = async (customerId) => {
     try {
-      await axios.delete(`${API_URL}/customers/${customerId}`);
-      setCustomers(prev => prev.filter(customer => customer._id !== customerId));
+      const response = await axios.delete(`${API_URL}/customers/${customerId}`);
+      if (response.data.success) {
+        setCustomers(prev => prev.filter(customer => customer._id !== customerId));
+      } else {
+        throw new Error(response.data.error || 'Failed to delete customer');
+      }
     } catch (error) {
       console.error('Error deleting customer:', error);
-      throw error;
+      const errorMessage = error.response?.data?.error || error.message;
+      throw new Error(errorMessage);
     }
   };
 

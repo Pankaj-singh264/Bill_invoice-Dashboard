@@ -21,7 +21,6 @@ export default function CustomerPage() {
     error,
     addCustomer,
     deleteCustomer,
-    updateCustomer 
   } = useCustomer();
 
   // Local state
@@ -39,6 +38,8 @@ export default function CustomerPage() {
 
   // Event Handlers
   const handleDeleteSingle = async (customerId, e) => {
+/* The line `e?.stopPropagation();` is using optional chaining (`?.`) to call the `stopPropagation()`
+method on the event object `e` if `e` is not `null` or `undefined`. */
     e?.stopPropagation();
     try {
       await deleteCustomer(customerId);
@@ -86,10 +87,14 @@ export default function CustomerPage() {
 
   const handleCustomerAdded = async (customerData) => {
     try {
-      await addCustomer(customerData);
-      setIsModalOpen(false);
+      const newCustomer = await addCustomer(customerData);
+      if (newCustomer) {
+        setIsModalOpen(false);
+      }
     } catch (error) {
       console.error("Add customer failed:", error.message);
+      // The error will be handled by the AddCustomerModal component
+      throw error;
     }
   };
 
@@ -172,9 +177,10 @@ export default function CustomerPage() {
                       onClick={() => handleCustomerClick(customer)}
                       className="hover:bg-gray-50 cursor-pointer"
                     >
+                      {/* {console.log(customer)} */}
                       <td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{customer.phone}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{customer.phoneNumber}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{customer.address}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button

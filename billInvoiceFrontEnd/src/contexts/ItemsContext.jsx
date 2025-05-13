@@ -2,7 +2,7 @@ import axios from 'axios'
 import React,{createContext,useState,useEffect,useContext} from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL = 'http://loacalhost:9000/api/user'
+const API_URL = 'http://loacalhost:5000/api/user'
 
 axios.defaults.headers.post['Content-Type'] ='application/json'
 

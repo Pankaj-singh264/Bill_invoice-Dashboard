@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ArrowRight, X, PlusCircle, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:9000/api' || import.meta.env.REACT_APP_API_URL;
+const API_URL = 'http://localhost:5000/api' || import.meta.env.REACT_APP_API_URL;
 
 // Add axios interceptor to include token in all requests
     
@@ -497,7 +497,7 @@ function ProductPurchase() {
           </div>
           <div className="text-sm space-y-1 mt-2">
             <p>Name: {customerData.name || 'N/A'}</p>
-            <p>Phone: {customerData.phone || 'N/A'}</p>
+            <p>Phone: {customerData.phoneNumber || 'N/A'}</p>
             <p>Invoice Date: {currentDate}</p>
             <p>GST Number: {customerData.gstNumber || 'N/A'}</p>
           </div>

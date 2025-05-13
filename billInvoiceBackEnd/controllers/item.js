@@ -1,4 +1,3 @@
-const User = require('../model/user');
 const Item = require('../model/item');
 
 // Utility function to send error

@@ -197,7 +197,7 @@ const SignUp = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    navigate(-1)
     // Validate form
     if (!validateForm()) {
       // Scroll to first error
