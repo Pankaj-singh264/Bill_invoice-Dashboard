@@ -33,6 +33,7 @@ exports.addCustomer = async (req, res) => {
       });
     }
   const newCustomer = await  Customer.create({name, email, phoneNumber, address, balance});
+  console.log(newCustomer);
   res.status(201).json({
     success: true,
     data: newCustomer

@@ -1,9 +1,6 @@
 const Item = require('../model/item');
 
-// Utility function to send error
-const sendError = (res, status, message) => {
-    return res.status(status).json({ success: false, message });
-};
+
 
 // Utility function to check required fields
 const validateFields = (fields) => {

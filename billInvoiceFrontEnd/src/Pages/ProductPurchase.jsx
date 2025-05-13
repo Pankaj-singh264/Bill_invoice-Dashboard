@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ArrowRight, X, PlusCircle, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
-import API from '../utils/config';
+import { useAuth } from '../contexts/AuthContext';
 
 // Add axios interceptor to include token in all requests
 function ProductPurchase() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { apiUrl } = useAuth();
 
   const customerData = location.state?.customerData || {};
 
@@ -46,7 +47,7 @@ function ProductPurchase() {
       setLoading(true);
       try {
         if (customerData._id) {
-          const response = await axios.get(`${API.ITEMS.BASE}?customerId=${customerData._id}`);
+          const response = await axios.get(`${apiUrl}/items?customerId=${customerData._id}`);
           if (response.status === 200) {
             setCustomerProducts(response.data.items);
           }
@@ -65,7 +66,7 @@ function ProductPurchase() {
     };
 
     fetchCustomerProducts();
-  }, [customerData._id, navigate]);
+  }, [customerData._id, navigate, apiUrl]);
 
   // Calculate balance
   useEffect(() => {
@@ -143,7 +144,7 @@ function ProductPurchase() {
 
       // Only save to backend for new items, not temporary cart edits
       if (!isEditMode) {
-        const res = await axios.post(API.ITEMS.ADD, itemData);
+        const res = await axios.post(`${apiUrl}/items`, itemData);
 
         if (res.status !== 201) {
           throw new Error('Failed to add item to database');
@@ -266,7 +267,7 @@ function ProductPurchase() {
     };
 
     try {
-      const response = await axios.post(API.INVOICES.ADD, invoiceData);
+      const response = await axios.post(`${apiUrl}/invoices/addItem`, invoiceData);
 
       if (response.status === 201) {
         console.log('Invoice created:', response.data);

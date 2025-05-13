@@ -15,7 +15,7 @@ const createInvoice = async (req, res) => {
       remainingBalance
     } = req.body;
 
-    console.log('Creating invoice with data:', req.body);
+    // console.log('Creating invoice with data:', req.body);
 
     // Validate required fields
     if (!customer || !items || !grandTotal) {

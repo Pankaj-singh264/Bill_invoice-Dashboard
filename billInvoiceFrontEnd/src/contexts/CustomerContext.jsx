@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const CustomerContext = createContext();
 
@@ -15,13 +16,12 @@ export function CustomerProvider({ children }) {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const API_URL = 'http://localhost:5000/api' || import.meta.env.REACT_APP_API_URL;
+  const { apiUrl } = useAuth();
 
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/customers`);
+      const response = await axios.get(`${apiUrl}/customers`);
       setCustomers(response.data.data || []);
       setError(null);
     } catch (error) {
@@ -41,7 +41,7 @@ export function CustomerProvider({ children }) {
         balance: customerData.balance || 0
       };
 
-      const response = await axios.post(`${API_URL}/customers`, formattedData);
+      const response = await axios.post(`${apiUrl}/customers`, formattedData);
       
       if (response.data.success) {
         setCustomers(prev => [...prev, response.data.data]);
@@ -58,7 +58,7 @@ export function CustomerProvider({ children }) {
 
   const updateCustomer = async (customerId, customerData) => {
     try {
-      const response = await axios.put(`${API_URL}/customers/${customerId}`, customerData);
+      const response = await axios.put(`${apiUrl}/customers/${customerId}`, customerData);
       if (response.data.success) {
         setCustomers(prev => 
           prev.map(customer => 
@@ -78,7 +78,7 @@ export function CustomerProvider({ children }) {
 
   const deleteCustomer = async (customerId) => {
     try {
-      const response = await axios.delete(`${API_URL}/customers/${customerId}`);
+      const response = await axios.delete(`${apiUrl}/customers/${customerId}`);
       if (response.data.success) {
         setCustomers(prev => prev.filter(customer => customer._id !== customerId));
       } else {
@@ -97,7 +97,7 @@ export function CustomerProvider({ children }) {
 
   useEffect(() => {
     fetchCustomers();
-  }, []);
+  }, [apiUrl]);
 
   const value = {
     customers,

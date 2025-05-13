@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../utils/config';
+
+// API Configuration
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Configure axios defaults
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -35,7 +37,7 @@ const AuthService = {
         : { 'Content-Type': 'application/json' }
     };
     
-    const response = await axios.post(API.AUTH.REGISTER, userData, config);
+    const response = await axios.post(`${API_URL}/user/register`, userData, config);
     
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
@@ -46,7 +48,7 @@ const AuthService = {
   
   // Login user
   login: async (companyEmail, password) => {
-    const response = await axios.post(API.AUTH.LOGIN, { companyEmail, password });
+    const response = await axios.post(`${API_URL}/user/login`, { companyEmail, password });
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user || response.data));
@@ -74,7 +76,7 @@ const AuthService = {
   
   // Get user profile
   getUserProfile: async () => {
-    const response = await authAxios.get(API.AUTH.PROFILE);
+    const response = await authAxios.get(`${API_URL}/user/profile`);
     // Update local storage with complete profile data
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
@@ -94,7 +96,7 @@ const AuthService = {
         : { 'Content-Type': 'application/json' }
     };
     
-    const response = await authAxios.put(API.AUTH.UPDATE, userData, config);
+    const response = await authAxios.put(`${API_URL}/user/update`, userData, config);
     
     // Update local storage with new user data
     if (response.data) {
@@ -220,6 +222,7 @@ export const AuthProvider = ({ children }) => {
     updateProfile,
     refreshUserData,
     loading,
+    apiUrl: API_URL
   };
   
   return (

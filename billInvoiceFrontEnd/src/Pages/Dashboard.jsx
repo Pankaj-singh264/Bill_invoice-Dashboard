@@ -3,7 +3,7 @@ import { useCustomer } from '../contexts/CustomerContext';
 import { useApp } from '../contexts/AppContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import API from '../utils/config';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Users, 
   Receipt, 
@@ -115,6 +115,7 @@ const sampleChats = [
 const Dashboard = () => {
   const { customers, setLoading, isLoading } = useCustomer();
   const { theme } = useApp();
+  const { apiUrl } = useAuth();
   const [dashboardError, setDashboardError] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [dashboardData, setDashboardData] = useState({
@@ -135,7 +136,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(API.INVOICES.GET_ALL);
+      const response = await axios.get(`${apiUrl}/invoices`);
       const fetchedInvoices = response.data.data || [];
       console.log(fetchedInvoices);
       
