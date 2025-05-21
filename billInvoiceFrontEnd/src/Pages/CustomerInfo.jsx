@@ -177,7 +177,7 @@ method on the event object `e` if `e` is not `null` or `undefined`. */
                       onClick={() => handleCustomerClick(customer)}
                       className="hover:bg-gray-50 cursor-pointer"
                     >
-                      {/* {console.log(customer)} */}
+                      {/* {//console.log(customer)} */}
                       <td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{customer.phoneNumber}</td>

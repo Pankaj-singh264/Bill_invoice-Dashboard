@@ -78,10 +78,14 @@ const AuthService = {
   getUserProfile: async () => {
     const response = await authAxios.get(`${API_URL}/user/profile`);
     // Update local storage with complete profile data
-    if (response.data) {
+    if (response.data && response.data.user) {
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      return response.data.user;
+    } else if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
+      return response.data;
     }
-    return response.data;
+    return null;
   },
   
   // Update user profile
@@ -160,6 +164,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await AuthService.register(userData);
+      
       // Get complete user data after registration
       const fullProfileData = await AuthService.getUserProfile();
       setCurrentUser(fullProfileData);
@@ -195,11 +200,14 @@ export const AuthProvider = ({ children }) => {
       setIsRefreshing(true);
       console.log("Refreshing user data from server");
       const freshUserData = await AuthService.getUserProfile();
-      setCurrentUser(freshUserData);
-      return freshUserData;
+      if (freshUserData) {
+        setCurrentUser(freshUserData);
+        return freshUserData;
+      }
+      return currentUser;
     } catch (error) {
       console.error("Error refreshing user data:", error);
-      throw error;
+      return currentUser;
     } finally {
       setIsRefreshing(false);
     }

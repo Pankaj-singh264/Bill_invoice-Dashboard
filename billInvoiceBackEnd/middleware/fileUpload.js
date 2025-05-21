@@ -4,6 +4,7 @@ const path = require('path');
 // Set storage engine
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    
     // Set the destination folder based on file type
     if (file.fieldname === 'logo') {
       cb(null, 'uploads/logos/');

@@ -149,7 +149,7 @@ function ProductPurchase() {
         if (res.status !== 201) {
           throw new Error('Failed to add item to database');
         }
-        console.log('Product added to database:', res.data);
+        //console.log('Product added to database:', res.data);
         // Store the database item ID for later reference
         newItem.itemId = res.data.item._id;
       }
@@ -270,7 +270,7 @@ function ProductPurchase() {
       const response = await axios.post(`${apiUrl}/invoices/addItem`, invoiceData);
 
       if (response.status === 201) {
-        console.log('Invoice created:', response.data);
+        //console.log('Invoice created:', response.data);
 
         // Create bill data for display
         const billData = {

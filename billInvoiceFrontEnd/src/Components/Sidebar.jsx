@@ -4,30 +4,42 @@ import { useAuth } from '../contexts/AuthContext';
 import { NAV_ITEMS } from '../constants/navigation';
 import SidebarItem from './layout/SidebarItem';
 import UserProfile from './layout/UserProfile';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+  // console.log(currentUser)
 
   const handleLinkClick = () => {
     setMobileOpen(false);
   };
   
+  const handleUserProfileClick = () => {
+    // Navigate to signup page with user data
+    navigate('/signup', { state: { userData: currentUser } });
+    setMobileOpen(false);
+  };
+  
   const renderSidebar = () => (
-    <div className="bg-blue-900 text-white h-full flex flex-col transition-all duration-300">
-      <UserProfile 
-        user={currentUser?.user}
-        collapsed={collapsed}
-        onMobileClose={() => setMobileOpen(false)}
-      />
+    <div className={`bg-blue-900 text-white h-full flex flex-col transition-all duration-300 ${collapsed ? 'w-16' : 'w-56'}`}>
+      <div onClick={handleUserProfileClick} className="cursor-pointer">
+        <UserProfile 
+          user={currentUser}
+          collapsed={collapsed}
+          onMobileClose={() => setMobileOpen(false)}
+        />
+      </div>
 
       <div className="px-4 py-3 border-b border-blue-800 hidden lg:block">
         <button 
           onClick={() => setCollapsed(!collapsed)}
           className="text-white opacity-70 hover:opacity-100 p-1 rounded-md hover:bg-blue-800 transition-colors"
         >
-          <HiMenuAlt1 className="w-5 h-5" />
+          <HiMenu className="w-5 h-5" />
+          {/* {collapsed ? <HiMenu className="w-5 h-5" /> : <HiMenuAlt1 className="w-5 h-5" />} */}
         </button>
       </div>
 
@@ -69,7 +81,7 @@ export default function Sidebar() {
       {/* Overlay for Mobile Menu */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-x-0 z-20 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -77,9 +89,8 @@ export default function Sidebar() {
       {/* Sidebar Container */}
       <div className={`
         fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out 
-        lg:relative lg:translate-x-0 w-64 lg:w-auto
+        lg:relative lg:translate-x-0 ${collapsed ? 'lg:w-16' : 'lg:w-64'}
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        ${collapsed ? 'lg:w-16' : 'lg:w-64'}
       `}>
         {renderSidebar()}
       </div>

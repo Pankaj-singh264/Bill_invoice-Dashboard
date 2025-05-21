@@ -13,7 +13,7 @@ const handleFileUploads = upload.fields([
 
 // REGISTER USER
 const registerUser = async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   try {
     const { 
       // Company Info
@@ -48,7 +48,7 @@ const registerUser = async (req, res) => {
     }
 
     // Check if email already exists
-    console.log("Checking for existing email:", companyEmail);
+    //console.log("Checking for existing email:", companyEmail);
     const userExists = await User.findOne({ companyEmail });
     if (userExists) {
       return res.status(400).json({ message: 'Company email already registered' });
@@ -191,6 +191,7 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const userId = req.user._id;
+    console.log("userId", userId)
     const user = await User.findById(userId);
     
     if (!user) {
@@ -315,11 +316,23 @@ const generateToken = (id) => {
   });
 };
 
+// GET USER IMAGE (LOGO/SIGNATURE)
+const getImage = async (req, res) => {
+  console.log('req.params', req.params);
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+  const imagePath = user.logo || user.signature;
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+    res.sendFile(path.join(__dirname, '..', imagePath));
+};
 module.exports = {
   registerUser,
   handleFileUploads,
   loginUser,
   logoutUser,
   getUser,
-  updateUser
+  updateUser,
+  getImage
 };

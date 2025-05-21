@@ -15,7 +15,7 @@ const createInvoice = async (req, res) => {
       remainingBalance
     } = req.body;
 
-    // console.log('Creating invoice with data:', req.body);
+    // //console.log('Creating invoice with data:', req.body);
 
     // Validate required fields
     if (!customer || !items || !grandTotal) {
@@ -126,7 +126,7 @@ const getInvoices = async (req, res) => {
       .populate('customerId', 'name address phone email') // Populate customer details
       .sort({ date: -1 }); // Sort by date descending
     
-    console.log('Fetched invoices:', invoices);
+    //console.log('Fetched invoices:', invoices);
     
     res.status(200).json({
       success: true,

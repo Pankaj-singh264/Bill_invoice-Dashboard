@@ -10,7 +10,7 @@ import {
 
 // const API_URL = 'http://localhost:5000/api';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function CustomerInvoiceModal({ customer, onClose }) {
   const [invoices, setInvoices] = useState([]);
@@ -23,7 +23,7 @@ export default function CustomerInvoiceModal({ customer, onClose }) {
       try {
         setLoading(true);
         const response = await axios.get(`${API_URL}/invoices/customer/${customer._id}`);
-        console.log('Invoice response:', response.data);
+        //console.log('Invoice response:', response.data);
         
         if (response.data.success) {
           setInvoices(response.data.invoices);

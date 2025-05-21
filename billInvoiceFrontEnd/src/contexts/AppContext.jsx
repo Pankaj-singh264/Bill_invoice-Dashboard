@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import PropTypes from 'prop-types';
 
 const AppContext = createContext();
 
@@ -17,14 +16,9 @@ const reducer = (state, action) => {
       return { ...state, theme: action.payload };
     case 'TOGGLE_SIDEBAR':
       return { ...state, sidebarOpen: !state.sidebarOpen };
-   
-    
     case 'SET_USER':
       return { ...state, currentUser: action.payload };
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload };
-    case 'SET_ERROR':
-      return { ...state, error: action.payload };
+ 
     default:
       return state;
   }
@@ -37,20 +31,7 @@ export const AppProvider = ({ children }) => {
     ...state,
     setTheme: (theme) => dispatch({ type: 'SET_THEME', payload: theme }),
     toggleSidebar: () => dispatch({ type: 'TOGGLE_SIDEBAR' }),
-    addNotification: (notification) => {
-      const id = Date.now();
-      dispatch({ 
-        type: 'ADD_NOTIFICATION', 
-        payload: { ...notification, id } 
-      });
-      // Auto remove notification after 5 seconds
-      setTimeout(() => {
-        dispatch({ type: 'REMOVE_NOTIFICATION', payload: id });
-      }, 5000);
-    },
     setUser: (user) => dispatch({ type: 'SET_USER', payload: user }),
-    setLoading: (loading) => dispatch({ type: 'SET_LOADING', payload: loading }),
-    setError: (error) => dispatch({ type: 'SET_ERROR', payload: error })
   };
 
   return (
@@ -60,9 +41,6 @@ export const AppProvider = ({ children }) => {
   );
 };
 
-AppProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export const useApp = () => {
   const context = useContext(AppContext);

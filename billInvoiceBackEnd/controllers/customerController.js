@@ -3,7 +3,7 @@ const Customer = require('../model/Customer');
 // Add new customer
 exports.addCustomer = async (req, res) => {
   try {
-    console.log("Request Body:", req.body);
+    // //console.log("Request Body:", req.body);
     // const newCustomer = new Customer(req.body);
     const {name, email, phoneNumber, address, balance} = req.body;
     
@@ -33,7 +33,7 @@ exports.addCustomer = async (req, res) => {
       });
     }
   const newCustomer = await  Customer.create({name, email, phoneNumber, address, balance});
-  console.log(newCustomer);
+  // //console.log(newCustomer);
   res.status(201).json({
     success: true,
     data: newCustomer

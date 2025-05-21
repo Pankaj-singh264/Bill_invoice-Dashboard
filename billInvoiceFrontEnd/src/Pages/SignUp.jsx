@@ -1,11 +1,13 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; 
+import { useAuth } from '../contexts/AuthContext';
+// import { useLocation } from 'react-router-dom';
 
 const SignUp = () => {
+  // const { userData } = useLocation().state;
+  const { currentUser, register, updateProfile, apiUrl } = useAuth();
+  // console.log(currentUser)
   const navigate = useNavigate();
-  const { register } = useAuth(); 
   
   // Form state
   const [formData, setFormData] = useState({
@@ -39,6 +41,42 @@ const SignUp = () => {
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Pre-fill form with currentUser data if available
+  useEffect(() => {
+    if (currentUser) {
+      setFormData(prevData => ({
+        ...prevData,
+        companyName: currentUser.companyName || '',
+        companyPhoneNo: currentUser.companyPhoneNo || '',
+        companyEmail: currentUser.companyEmail || '',
+        billingAddress: currentUser.billingAddress || '',
+        state: currentUser.state || '',
+        city: currentUser.city || '',
+        pincode: currentUser.pincode || '',
+        isGstRegistered: currentUser.isGstRegistered ?? true,
+        gstin: currentUser.gstin || '',
+        panNumber: currentUser.panNumber || '',
+        enableEInvoice: currentUser.enableEInvoice || false,
+        businessType: currentUser.businessType || '',
+        industryType: currentUser.industryType || '',
+        businessRegistrationType: currentUser.businessRegistrationType || '',
+        termsAccepted: true // Since user is already registered
+      }));
+
+      // Set logo preview if available
+      if (currentUser.logo) {
+        // console.log("currentUser.logo", currentUser.logo)
+        // setLogoPreview(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/signature`);
+        setLogoPreview(currentUser.logo)
+      }
+
+      // Set signature preview if available
+      if (currentUser.signature) {
+        setSignaturePreview(`${apiUrl}/user/signature/${currentUser._id}`);
+      }
+    }
+  }, [currentUser, apiUrl]);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -102,12 +140,14 @@ const SignUp = () => {
         logo: ''
       });
       
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result);
+      // Create preview using URL.createObjectURL
+      const objectUrl = URL.createObjectURL(file);
+      setLogoPreview(objectUrl);
+
+      // Clean up the object URL when component unmounts
+      return () => {
+        URL.revokeObjectURL(objectUrl);
       };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -173,22 +213,25 @@ const SignUp = () => {
     if (formData.isGstRegistered && !formData.gstin) newErrors.gstin = 'GSTIN is required for GST registered businesses';
     if (!formData.panNumber) newErrors.panNumber = 'PAN number is required';
     
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 8 || formData.password.length > 15) {
-      newErrors.password = 'Password must be between 8 and 15 characters';
-    }
-    
-    if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
-    else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+    // Only validate password for new registrations
+    if (!currentUser) {
+      if (!formData.password) newErrors.password = 'Password is required';
+      else if (formData.password.length < 8 || formData.password.length > 15) {
+        newErrors.password = 'Password must be between 8 and 15 characters';
+      }
+      
+      if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+      else if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = 'Passwords do not match';
+      }
     }
     
     if (!formData.businessType) newErrors.businessType = 'Business type is required';
     if (!formData.industryType) newErrors.industryType = 'Industry type is required';
     if (!formData.businessRegistrationType) newErrors.businessRegistrationType = 'Business registration type is required';
     
-    // Check if signature file is uploaded
-    if (!signature) newErrors.signature = 'Signature is required';
+    // Only require signature for new registrations
+    if (!currentUser && !signature) newErrors.signature = 'Signature is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -197,7 +240,7 @@ const SignUp = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate(-1)
+    
     // Validate form
     if (!validateForm()) {
       // Scroll to first error
@@ -212,7 +255,7 @@ const SignUp = () => {
     setSubmitSuccess('');
     
     try {
-      // Create form data for multipart form submission (for file uploads)
+      // Create form data for multipart form submission
       const submitData = new FormData();
       
       // Add all form fields
@@ -226,23 +269,30 @@ const SignUp = () => {
       if (logo) submitData.append('logo', logo);
       if (signature) submitData.append('signature', signature);
       
-      // Use the register function from AuthContext
-      await register(submitData);
+      let response;
+      if (currentUser) {
+        // Update existing user profile
+        response = await updateProfile(submitData);
+        setSubmitSuccess('Profile updated successfully!');
+      } else {
+        // Register new user
+        response = await register(submitData);
+        setSubmitSuccess('Registration successful! Redirecting to dashboard...');
+      }
       
-      setSubmitSuccess('Registration successful! Redirecting to dashboard...');
-      
-      // Redirect to dashboard after a short delay
+      // Redirect after a short delay
       setTimeout(() => {
-        navigate('/login');
+        navigate(currentUser ? '/dashboard' : '/login');
       }, 2000);
       
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Form submission error:', error);
       setSubmitError(
         error.response?.data?.message || 
-        'Registration failed. Please check your information and try again.'
+        (currentUser ? 'Profile update failed.' : 'Registration failed.') + 
+        ' Please check your information and try again.'
       );
-      window.scrollTo(0, 0); // Scroll to top to show error
+      // window.scrollTo(0, 0);
     } finally {
       setIsLoading(false);
     }
@@ -609,7 +659,27 @@ const SignUp = () => {
                     <div className={`border-2 border-dashed ${errors.signature ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-xl p-6 text-center text-gray-400`}>
                       {signaturePreview ? (
                         <div className="flex flex-col items-center">
-                          <img src={signaturePreview} alt="Signature" className="max-h-20 mb-2" />
+                          <img 
+                            src={signaturePreview} 
+                            alt="Signature" 
+                            className="max-h-20 mb-2"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.style.display = 'none';
+                              e.target.parentElement.innerHTML = `
+                                <input
+                                  type="file"
+                                  accept="image/jpeg,image/jpg,image/png"
+                                  id="signature"
+                                  className="hidden"
+                                  onChange={handleSignatureChange}
+                                />
+                                <label htmlFor="signature" className="cursor-pointer text-blue-600 font-semibold">
+                                  Upload Signature
+                                </label>
+                              `;
+                            }}
+                          />
                           <input
                             type="file"
                             accept="image/jpeg,image/jpg,image/png"

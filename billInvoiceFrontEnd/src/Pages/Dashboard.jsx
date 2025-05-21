@@ -115,7 +115,7 @@ const sampleChats = [
 const Dashboard = () => {
   const { customers, setLoading, isLoading } = useCustomer();
   const { theme } = useApp();
-  const { apiUrl } = useAuth();
+  const { apiUrl, refreshUserData } = useAuth();
   const [dashboardError, setDashboardError] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [dashboardData, setDashboardData] = useState({
@@ -130,6 +130,10 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
+    // Refresh user data to ensure we have the latest profile info including logo
+    refreshUserData();
+    
+    // Fetch dashboard data
     fetchDashboardData();
   }, []);
 
@@ -138,7 +142,7 @@ const Dashboard = () => {
       setLoading(true);
       const response = await axios.get(`${apiUrl}/invoices`);
       const fetchedInvoices = response.data.data || [];
-      console.log(fetchedInvoices);
+      // //console.log(fetchedInvoices);
       
       // Save invoices to state
       setInvoices(fetchedInvoices);
@@ -260,7 +264,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'} py-6 px-4`}>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'} py-6 px-4 mt-8`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
