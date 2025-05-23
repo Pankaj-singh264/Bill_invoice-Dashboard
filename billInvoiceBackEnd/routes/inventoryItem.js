@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 
-router.post('/addItem', addItem);
+router.post('/', addItem);
 router.get('/', getAllItems);
 router.delete('/:id', deleteItem);
 // router.get('/search/:query', searchItems);

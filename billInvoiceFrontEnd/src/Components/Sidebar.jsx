@@ -24,7 +24,7 @@ export default function Sidebar() {
   };
   
   const renderSidebar = () => (
-    <div className={`bg-blue-900 text-white h-full flex flex-col transition-all duration-300 ${collapsed ? 'w-16' : 'w-56'}`}>
+    <div className={`bg-blue-900 text-white h-[100vh] flex flex-col transition-all duration-300 ${collapsed ? 'w-16' : 'w-56'}`}>
       <div onClick={handleUserProfileClick} className="cursor-pointer">
         <UserProfile 
           user={currentUser}

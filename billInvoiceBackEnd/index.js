@@ -5,7 +5,7 @@ const connectToDB = require('./dataBase/db');
 const userRoutes = require('./routes/user');
 const invoiceRoutes = require('./routes/invoice');
 const customerRoutes = require('./routes/addCustomerRoutes');
-const itemRoutes = require('./routes/item');
+const inventoryRoutes = require('./routes/inventoryItem');
 // const paymentRoutes = require('./routes/payment');
 
 const app = express();
@@ -24,7 +24,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/user', userRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/customers', customerRoutes);
-app.use('/api/inventory', itemRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // app.use('/api/payment', paymentRoutes);
 

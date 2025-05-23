@@ -9,24 +9,16 @@ const validateFields = (fields) => {
 
 // Get all items for a specific customer
 const allItems = async (req, res) => {
-    try {
-        const customerId = req.query.customerId || req.params.customerId;
-        
-        if (!customerId) {
-            return sendError(res, 400, 'Customer ID is required');
-        }
-        
-        const items = await Item.find({ customer: customerId }).sort({ createdAt: -1 });
-
-        // Return empty array instead of 404 to make frontend handling easier
-        return res.status(200).json({ 
-            success: true, 
-            items,
-            count: items.length
-        });
-    } catch (error) {
-        return sendError(res, 500, error.message);
-    }
+   try {
+    const items = await Item.find({});
+    return res.status(200).json({
+        success: true,
+        items,
+        count: items.length
+    });
+   } catch (error) {
+    return sendError(res, 500, error.message);
+   }
 };
 
 // Add a new item

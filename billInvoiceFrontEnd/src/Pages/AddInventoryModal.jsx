@@ -181,7 +181,7 @@ export default function AddInventoryModal({ closeModal, onItemAdded }) {
     try {
       // Updated endpoint to match backend API
       // await axios.post('http://localhost:5000/api/inventory/add', form);
-      await axios.post(`${API_URL}/inventory/add`, form);
+      await axios.post(`${API_URL}/inventory/`, form);
       onItemAdded();
       closeModal();
     } catch (error) {

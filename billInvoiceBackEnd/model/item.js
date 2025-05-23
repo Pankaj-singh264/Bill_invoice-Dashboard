@@ -6,6 +6,12 @@ const itemSchema = new mongoose.Schema({
         ref: 'Customer',
         required: true
     },
+    id: {
+        type: String,
+        required: [true, 'Product id is required'],
+        trim: true,
+        unique: true
+    },
     name: {
         type: String,
         required: [true, 'Product name is required'],
