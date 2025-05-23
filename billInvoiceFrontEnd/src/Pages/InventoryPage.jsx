@@ -26,12 +26,17 @@ export default function Inventory() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/inventory`);
-      setInventoryItems(Array.isArray(res.data) ? res.data : []);
-      setError(null);
+      const response = await axios.get(`${API_URL}/inventory`);
+      if (response.data.success) {
+        setInventoryItems(response.data.data || []);
+        setError(null);
+      } else {
+        setError(response.data.message || "Failed to load inventory items");
+        setInventoryItems([]);
+      }
     } catch (error) {
       console.error("Error fetching items:", error);
-      setError("Failed to load inventory items. Please try again later.");
+      setError(error.response?.data?.message || "Failed to load inventory items. Please try again later.");
       setInventoryItems([]);
     } finally {
       setLoading(false);
@@ -158,7 +163,7 @@ filters the items by stock availability, category, and price. Finally, it sorts 
             return (
               item?.itemName?.toLowerCase().includes(searchLower) ||
               item?.category?.toLowerCase().includes(searchLower) ||
-              item?.ItemId?.toString().toLowerCase().includes(searchLower)
+              item?.itemId?.toString().toLowerCase().includes(searchLower)
             );
           })
         )
@@ -335,7 +340,7 @@ filters the items by stock availability, category, and price. Finally, it sorts 
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredItems.map((item) => (
                     <tr key={item?._id || Math.random().toString()}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item?.ItemId || 'N/A'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item?.itemId || 'N/A'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {item?.itemName || 'Unnamed Item'}
                         <div className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(item?.quantity)}`}>
@@ -379,7 +384,7 @@ filters the items by stock availability, category, and price. Finally, it sorts 
                         <span className="text-xs text-gray-500">{item?.category || 'Uncategorized'}</span>
                       </div>
                       <div className="flex space-x-4 mt-1 text-xs text-gray-600">
-                        <span>ID: {item?.ItemId || 'N/A'}</span>
+                        <span>ID: {item?.itemId || 'N/A'}</span>
                         <span>Stock: {item?.quantity || '0'}</span>
                         <span>₹{item?.price || '0'}</span>
                       </div>

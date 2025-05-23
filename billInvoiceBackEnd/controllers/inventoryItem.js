@@ -2,21 +2,70 @@
 const Item = require('../model/inventoryItem');
 
 const addItem = async (req, res) => {
-  try {
-    const newItem = new Item(req.body);
-    await newItem.save();
-    res.status(201).json({ message: 'Item added successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error adding item' });
-  }
+     try {
+       const {
+         ItemId,
+         itemName,
+         category,
+         quantity,
+         price
+       } = req.body;
+
+       // Basic validation
+       if (!ItemId || !itemName || !price || !quantity) {
+         return res.status(400).json({
+           success: false,
+           message: 'Item ID, name, price, and quantity are required fields'
+         });
+       }
+
+       // Check if item with same ID already exists
+       const existingItem = await Item.findOne({ itemId: ItemId });
+       if (existingItem) {
+         return res.status(400).json({
+           success: false,
+           message: 'Item with this ID already exists'
+         });
+       }
+
+       const item = await Item.create({
+         itemId: ItemId,
+         itemName,
+         category: category || 'General',
+         quantity: Number(quantity),
+         price: Number(price)
+       });
+
+       return res.status(201).json({
+         success: true,
+         message: 'Item created successfully',
+         data: item
+       });
+     } catch (error) {
+       console.error('Error in addItem:', error);
+       return res.status(500).json({
+         success: false,
+         message: 'Error creating item',
+         error: error.message
+       });
+     }
 };
 
 const getAllItems = async (req, res) => {
   try {
-    const items = await Item.find();
-    res.json(items);
+    const items = await Item.find({}).sort({ createdAt: -1 });
+    return res.status(200).json({
+      success: true,
+      message: 'Items fetched successfully',
+      data: items
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching items' });
+    console.error('Error in getAllItems:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching items',
+      error: error.message
+    });
   }
 };
 
