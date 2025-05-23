@@ -24,7 +24,8 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/user', userRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/customers', customerRoutes);
-app.use('/api/items', itemRoutes);
+app.use('/api/inventory', itemRoutes);
+
 // app.use('/api/payment', paymentRoutes);
 
 // Connect to database
