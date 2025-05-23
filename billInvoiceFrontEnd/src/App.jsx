@@ -12,6 +12,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { CustomerProvider } from './contexts/CustomerContext';
 import Invoices from './Pages/Invoices';
+import InvoiceDetails from './Pages/InvoiceDetails';
 import { AppProvider } from './contexts/AppContext';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
                   <Route path="inventory" element={<Inventory />} />
                   <Route path="customer" element={<CustomerInfo />} />
                   <Route path="invoices" element={<Invoices />} />
+                  <Route path="invoices/:id" element={<InvoiceDetails />} />
                   <Route path="settings" element={<CustomerPage />} />
                 </Route>
                 <Route path="/productpurchase" element={<ProductPurchase />} />

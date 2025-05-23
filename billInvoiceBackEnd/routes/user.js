@@ -30,10 +30,10 @@ router.get('/logos/:userId', async (req, res) => {
     }
 
     // Get the logo file path
-    console.log("process.cwd()", process.cwd())
-    console.log("user.logo", user.logo)
+    // console.log("process.cwd()", process.cwd())
+    // console.log("user.logo", user.logo)
     const logoPath = path.join(process.cwd(), user.logo);
-    console.log("logoPath", logoPath)
+    // console.log("logoPath", logoPath)
     
     // Check if file exists
     if (!fs.existsSync(logoPath)) {

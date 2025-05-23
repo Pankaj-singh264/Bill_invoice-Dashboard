@@ -1,56 +1,38 @@
 require('dotenv').config();
 const express = require('express');
-const connectDB = require('./dataBase/db');
 const cors = require('cors');
-const path = require('path');
-const userRoute = require('./routes/user');
-const itemRoute = require('./routes/item');
-const addCustomerRoutes = require('./routes/addCustomerRoutes');
-const inventoryItemRoute = require('./routes/inventoryItem');
+const connectToDB = require('./dataBase/db');
+const userRoutes = require('./routes/user');
 const invoiceRoutes = require('./routes/invoice');
-// const paymentRouter = require('./routes/payment.js')
-const app = express();
+const customerRoutes = require('./routes/addCustomerRoutes');
+const itemRoutes = require('./routes/item');
+// const paymentRoutes = require('./routes/payment');
 
-// Connect Database
-connectDB();
+const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({
+  extended: true
+}));
 
-// Serve static files from the uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Create upload directories if they don't exist
-/* This code snippet is creating directories for uploading files if they don't already exist. */
-const fs = require('fs');
-const uploadDirs = ['uploads', 'uploads/logos', 'uploads/signatures'];
-uploadDirs.forEach(dir => {
-  if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
 
 // Routes
-app.use('/api/user', userRoute);
-app.use('/api/customers', addCustomerRoutes);
-app.use('/api/items', itemRoute);
-app.use('/api/inventory', inventoryItemRoute);
+app.use('/api/user', userRoutes);
 app.use('/api/invoices', invoiceRoutes);
-// app.use('/api/payment', paymentRouter);
+app.use('/api/customers', customerRoutes);
+app.use('/api/items', itemRoutes);
+// app.use('/api/payment', paymentRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    message: 'Something went wrong!',
-    error: err.message
-  });
-});
+// Connect to database
+connectToDB();
+
+
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () =>
-    console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

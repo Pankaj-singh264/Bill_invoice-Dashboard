@@ -150,13 +150,15 @@ const getInvoices = async (req, res) => {
  */
 const getInvoiceById = async (req, res) => {
   try {
-    const invoice = await Invoice.findOne({
-      _id: req.params.id,
-      createdBy: req.user._id
-    }).populate('items.item');
+    const invoice = await Invoice.findById(req.params.id)
+      .populate('customerId', 'name email phone address')
+      .populate('items.productId', 'name price');
 
     if (!invoice) {
-      return res.status(404).json({ message: 'Invoice not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Invoice not found' 
+      });
     }
 
     res.json({
@@ -166,6 +168,7 @@ const getInvoiceById = async (req, res) => {
   } catch (error) {
     console.error('Get invoice error:', error);
     res.status(500).json({
+      success: false,
       message: 'Failed to fetch invoice',
       error: error.message
     });
@@ -255,7 +258,6 @@ const addInvoice = async (req, res) => {
     }
 
     // Generate unique invoice number
-    const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     // Create the invoice with properly mapped fields
     const invoice = await Invoice.create({
       customerId: customer,

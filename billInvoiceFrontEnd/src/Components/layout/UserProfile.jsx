@@ -18,9 +18,9 @@ const UserProfile = ({ user, collapsed, onMobileClose }) => {
           
           // Create a blob URL from the response
           // const blob = new Blob([response.data], { type: response.headers['content-type'] });
-          console.log("response.data", response.data)
+          // console.log("response.data", response.data)
           const blob = response.data;
-          console.log("blob", blob)
+          // console.log("blob", blob)
           const url = URL.createObjectURL(blob);
           setLogoUrl(url);
 

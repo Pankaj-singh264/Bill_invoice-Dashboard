@@ -7,7 +7,7 @@ const BillInvoice = () => {
   const location = useLocation();
   const { billData } = location.state || {};
   const { currentUser } = useAuth()
-  // //console.log("currentUser", currentUser)
+  console.log("currentUser", currentUser)
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -25,7 +25,7 @@ const BillInvoice = () => {
   //   loadUser
   // },[])
 
-  const user =  currentUser.user
+  // const currentUser =  currentUser.currentUser
   //console.log(user)
   return (
     <section className=" bg-gradient-to-r from-amber-200 via-amber-100 to-amber-50 p-4">
@@ -59,10 +59,10 @@ const BillInvoice = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div className="text-gray-600">
                 <p>
-                  <strong>Bill From:</strong> {user.companyName}
+                  <strong>Bill From:</strong> {currentUser.companyName}
                 </p>
                 <p>
-                  {user.city} || {user.pincode} || {user.state}
+                  {currentUser.city} || {currentUser.pincode} || {currentUser.state}
                 </p>
                 <p className="mt-4">
                   <strong>Bill To:</strong> {billData?.customer?.name}

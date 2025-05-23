@@ -20,7 +20,7 @@ function ProductPurchase() {
   const [loading, setLoading] = useState(false);
   const [customerProducts, setCustomerProducts] = useState([]);
   const [showProductsDrawer, setShowProductsDrawer] = useState(false);
-  const [ cartItems, setCartItems] = useState(() => {
+  const [cartItems, setCartItems] = useState(() => {
     const cart = location.state?.customerData?.cart || [];
     return cart.map(item => ({
       ...item,
@@ -224,7 +224,7 @@ function ProductPurchase() {
       // Ensure all values are valid numbers
       const quantity = Number(item.qty);
       const price = Number(item.price);
-      
+
       if (isNaN(quantity) || isNaN(price)) {
         throw new Error('Invalid quantity or price values');
       }
@@ -267,7 +267,7 @@ function ProductPurchase() {
     };
 
     try {
-      const response = await axios.post(`${apiUrl}/invoices/addItem`, invoiceData);
+      const response = await axios.post(`${apiUrl}/invoices/`, invoiceData);
 
       if (response.status === 201) {
         //console.log('Invoice created:', response.data);
@@ -275,6 +275,8 @@ function ProductPurchase() {
         // Create bill data for display
         const billData = {
           // billNumber: response.data.invoice.invoiceNumber,
+          invoiceNumber : `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+
           customer: {
             id: customerData._id || '',
             name: customerData.name || '',
@@ -317,7 +319,7 @@ function ProductPurchase() {
       }
     } catch (error) {
       console.error('Error details:', error);
-      
+
       // Handle validation errors specifically
       if (error.response?.data?.message?.includes('validation failed')) {
         const errorMessage = error.response.data.message;
