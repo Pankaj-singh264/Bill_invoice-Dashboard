@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-  const API_URL = import.meta.env.VITE_API_URL ;
+  const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
 
 export default function EditInventoryModal({ item, closeModal, onItemUpdated }) {
   const [form, setForm] = useState({

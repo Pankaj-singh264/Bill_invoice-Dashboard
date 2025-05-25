@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // API Configuration
-export const API_URL = import.meta.env.VITE_API_URL ;
+export const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
 
 // Configure axios defaults
 axios.defaults.headers.post['Content-Type'] = 'application/json';

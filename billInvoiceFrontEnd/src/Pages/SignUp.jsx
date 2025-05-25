@@ -67,7 +67,7 @@ const SignUp = () => {
       // Set logo preview if available
       if (currentUser.logo) {
         // console.log("currentUser.logo", currentUser.logo)
-        // setLogoPreview(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/signature`);
+        // setLogoPreview(`${'https://bill-invoice-dashboard.onrender.com' || 'http://localhost:5000/api/signature`);
         setLogoPreview(currentUser.logo)
       }
 
