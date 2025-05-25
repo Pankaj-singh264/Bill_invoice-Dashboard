@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-const API_URL =  import.meta.env.REACT_APP_API_URL  ;
+const API_URL = 'https://bill-invoice-dashboard.onrender.com';
 
 
 export default function AddInventoryModal({ closeModal, onItemAdded }) {
