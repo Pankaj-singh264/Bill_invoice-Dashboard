@@ -21,10 +21,10 @@ app.use(express.urlencoded({
 app.use('/uploads', express.static('uploads'));
 
 // Routes
-app.use('/api/user', userRoutes);
-app.use('/api/invoices', invoiceRoutes);
-app.use('/api/customers', customerRoutes);
-app.use('/api/inventory', inventoryRoutes);
+app.use('/user', userRoutes);
+app.use('/invoices', invoiceRoutes);
+app.use('/customers', customerRoutes);
+app.use('/inventory', inventoryRoutes);
 
 // app.use('/api/payment', paymentRoutes);
 
