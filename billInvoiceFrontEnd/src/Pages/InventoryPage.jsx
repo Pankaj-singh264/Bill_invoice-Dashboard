@@ -4,7 +4,7 @@ import axios from 'axios';
 import AddInventoryModal from '../Pages/AddInventoryModal';
 import EditInventoryModal from '../Pages/EditInventoryModal';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL ;
 
 export default function Inventory() {
   const [inventoryItems, setInventoryItems] = useState([]);

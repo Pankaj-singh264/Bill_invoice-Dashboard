@@ -25,7 +25,7 @@ const allItems = async (req, res) => {
 const addItem = async (req, res) => {
     try {
         //console.log('Request body:', req.body);
-        const { customer, name, price, quantity, discount, gstRate } = req.body;
+        const {  name, price, quantity, discount, gstRate } = req.body;
 
         // Basic validation
         if (!name || !price || !quantity) {
