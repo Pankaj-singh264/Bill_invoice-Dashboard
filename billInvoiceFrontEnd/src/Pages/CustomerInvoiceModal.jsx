@@ -7,13 +7,15 @@ import {
   faSearch,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../contexts/AuthContext";
 
 // const API_URL = 'http://localhost:5000/api';
 
-const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+// const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
 
 export default function CustomerInvoiceModal({ customer, onClose }) {
   const [invoices, setInvoices] = useState([]);
+const {apiurl}=  useAuth()
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddInvoice, setShowAddInvoice] = useState(false);
@@ -22,8 +24,8 @@ export default function CustomerInvoiceModal({ customer, onClose }) {
     const fetchInvoices = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_URL}/invoices/customer/${customer._id}`);
-        //console.log('Invoice response:', response.data);
+        const response = await axios.get(`${apiurl}/invoices/customer/${customer._id}`);
+        ////console.log('Invoice response:', response.data);
         
         if (response.data.success) {
           setInvoices(response.data.invoices);
@@ -31,7 +33,7 @@ export default function CustomerInvoiceModal({ customer, onClose }) {
           setError('Failed to fetch invoices');
         }
       } catch (error) {
-        console.error('Error fetching invoices:', error);
+        //console.error('Error fetching invoices:', error);
         setError(error.response?.data?.message || 'Failed to fetch invoices');
       } finally {
         setLoading(false);

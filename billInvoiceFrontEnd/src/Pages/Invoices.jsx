@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { HiSearch, HiDownload, HiPlus } from 'react-icons/hi';
 import { useCustomer } from '../contexts/CustomerContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -11,11 +12,12 @@ export default function Invoices() {
   const [selectedCustomer, setSelectedCustomer] = useState('all');
   
   const { customers, loading: customersLoading } = useCustomer();
+  const {apiurl} = useAuth()
   const navigate = useNavigate();
 
   // const API_URL = 'http://localhost:5000/api';
 
-  const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+  // const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
 
   useEffect(() => {
     fetchInvoices();
@@ -23,10 +25,10 @@ export default function Invoices() {
 
   const fetchInvoices = async () => {
     try {
-      const response = await axios.get(`${API_URL}/invoices`);
+      const response = await axios.get(`${apiurl}/invoices`);
       setInvoices(response.data.data);
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      //console.error('Error fetching invoices:', error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +57,7 @@ export default function Invoices() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Error downloading invoice:', error);
+      //console.error('Error downloading invoice:', error);
     }
   };
 

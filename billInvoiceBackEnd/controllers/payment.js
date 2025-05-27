@@ -23,7 +23,7 @@ const Orders = async(req, res) => {
 
         razorpayInstance.orders.create(options, (error, order) => {
             if (error) {
-                //console.log(error);
+                ////console.log(error);
                 return res.status(500).json({
                     message: "Something Went Wrong!"
                 });
@@ -31,13 +31,13 @@ const Orders = async(req, res) => {
             res.status(200).json({
                 data: order
             });
-            //console.log(order)
+            ////console.log(order)
         });
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error!"
         });
-        //console.log(error);
+        ////console.log(error);
     }
 }
 const verifyOrders = async(req,res) => {
@@ -47,7 +47,7 @@ const verifyOrders = async(req,res) => {
         razorpay_signature
     } = req.body;
 
-    // //console.log("req.body", req.body);
+    // ////console.log("req.body", req.body);
 
     try {
         // Create Sign
@@ -58,7 +58,7 @@ const verifyOrders = async(req,res) => {
             .update(sign.toString())
             .digest("hex");
 
-        // //console.log(razorpay_signature === expectedSign);
+        // ////console.log(razorpay_signature === expectedSign);
 
         // Create isAuthentic
         const isAuthentic = expectedSign === razorpay_signature;
@@ -83,7 +83,7 @@ const verifyOrders = async(req,res) => {
         res.status(500).json({
             message: "Internal Server Error!"
         });
-        //console.log(error);
+        ////console.log(error);
     }
 }
 

@@ -6,8 +6,9 @@ import Sidebar from "../Components/Sidebar";
 const BillInvoice = () => {
   const location = useLocation();
   const { billData } = location.state || {};
+  console.log(billData)
   const { currentUser } = useAuth()
-  console.log("currentUser", currentUser)
+  //console.log("currentUser", currentUser)
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -20,13 +21,13 @@ const BillInvoice = () => {
 
   // useEffect(()=>{
   //   async function loadUser() {
-  //   //console.log(currrenUser)  
+  //   ////console.log(currrenUser)  
   //   }
   //   loadUser
   // },[])
 
   // const currentUser =  currentUser.currentUser
-  //console.log(user)
+  ////console.log(user)
   return (
     <section className=" bg-gradient-to-r from-amber-200 via-amber-100 to-amber-50 p-4">
      <div>

@@ -13,7 +13,7 @@ const handleFileUploads = upload.fields([
 
 // REGISTER USER
 const registerUser = async (req, res) => {
-  //console.log(req.body);
+  ////console.log(req.body);
   try {
     const { 
       // Company Info
@@ -48,7 +48,7 @@ const registerUser = async (req, res) => {
     }
 
     // Check if email already exists
-    //console.log("Checking for existing email:", companyEmail);
+    ////console.log("Checking for existing email:", companyEmail);
     const userExists = await User.findOne({ companyEmail });
     if (userExists) {
       return res.status(400).json({ message: 'Company email already registered' });
@@ -114,7 +114,7 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (err) {
-    console.error(err);
+    //console.error(err);
 
     if (err.code === 11000) {
       return res.status(400).json({
@@ -149,7 +149,7 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
   } catch (err) {
-    console.error(err);
+    //console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -161,7 +161,7 @@ const logoutUser = async (req, res) => {
     // Optional: Handle logout logic if needed
     return res.status(200).json({ message: 'User logged out successfully' });
   } catch (err) {
-    console.error(err);
+    //console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -182,7 +182,7 @@ const getUser = async (req, res) => {
       user
     });
   } catch (err) {
-    console.error(err);
+    //console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -191,7 +191,7 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const userId = req.user._id;
-    console.log("userId", userId)
+    //console.log("userId", userId)
     const user = await User.findById(userId);
     
     if (!user) {
@@ -240,7 +240,7 @@ const updateUser = async (req, res) => {
         try {
           fs.unlinkSync(path.join(process.cwd(), user.logo));
         } catch (err) {
-          console.error('Failed to delete old logo:', err);
+          //console.error('Failed to delete old logo:', err);
         }
       }
       updateFields.logo = req.files.logo[0].path;
@@ -250,7 +250,7 @@ const updateUser = async (req, res) => {
         try {
           fs.unlinkSync(path.join(process.cwd(), user.logo));
         } catch (err) {
-          console.error('Failed to delete logo:', err);
+          //console.error('Failed to delete logo:', err);
         }
       }
       updateFields.logo = null;
@@ -263,7 +263,7 @@ const updateUser = async (req, res) => {
         try {
           fs.unlinkSync(path.join(process.cwd(), user.signature));
         } catch (err) {
-          console.error('Failed to delete old signature:', err);
+          //console.error('Failed to delete old signature:', err);
         }
       }
       updateFields.signature = req.files.signature[0].path;
@@ -273,7 +273,7 @@ const updateUser = async (req, res) => {
         try {
           fs.unlinkSync(path.join(process.cwd(), user.signature));
         } catch (err) {
-          console.error('Failed to delete signature:', err);
+          //console.error('Failed to delete signature:', err);
         }
       }
       updateFields.signature = null;
@@ -291,7 +291,7 @@ const updateUser = async (req, res) => {
       user: updatedUser
     });
   } catch (err) {
-    console.error(err);
+    //console.error(err);
     
     if (err.code === 11000) {
       return res.status(400).json({
@@ -318,7 +318,7 @@ const generateToken = (id) => {
 
 // GET USER IMAGE (LOGO/SIGNATURE)
 const getImage = async (req, res) => {
-  console.log('req.params', req.params);
+  //console.log('req.params', req.params);
   const { userId } = req.params;
   const user = await User.findById(userId);
   const imagePath = user.logo || user.signature;

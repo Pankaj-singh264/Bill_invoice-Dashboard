@@ -3,8 +3,9 @@ import { HiPencil, HiTrash, HiDotsVertical, HiPlus, HiSearch } from 'react-icons
 import axios from 'axios';
 import AddInventoryModal from '../Pages/AddInventoryModal';
 import EditInventoryModal from '../Pages/EditInventoryModal';
+import { useAuth } from '../contexts/AuthContext';
 
-const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+// const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
 
 export default function Inventory() {
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -22,11 +23,12 @@ export default function Inventory() {
     priceRange: 'all',
     sortBy: 'name-asc'
   });
+  const {apiurl}  = useAuth();
 
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/inventory`);
+      const response = await axios.get(`${apiurl}/inventory`);
       if (response.data.success) {
         setInventoryItems(response.data.data || []);
         setError(null);
@@ -35,7 +37,7 @@ export default function Inventory() {
         setInventoryItems([]);
       }
     } catch (error) {
-      console.error("Error fetching items:", error);
+      //console.error("Error fetching items:", error);
       setError(error.response?.data?.message || "Failed to load inventory items. Please try again later.");
       setInventoryItems([]);
     } finally {
@@ -93,7 +95,7 @@ export default function Inventory() {
       fetchItems(); // Refresh the list after deletion
       setDeleteConfirmation({ isOpen: false, itemId: null });
     } catch (error) {
-      console.error("Error deleting item:", error);
+      //console.error("Error deleting item:", error);
       alert("Failed to delete item. Please try again.");
     }
   };

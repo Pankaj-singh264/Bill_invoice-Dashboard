@@ -42,7 +42,7 @@ const addItem = async (req, res) => {
          data: item
        });
      } catch (error) {
-       console.error('Error in addItem:', error);
+       //console.error('Error in addItem:', error);
        return res.status(500).json({
          success: false,
          message: 'Error creating item',
@@ -60,7 +60,7 @@ const getAllItems = async (req, res) => {
       data: items
     });
   } catch (error) {
-    console.error('Error in getAllItems:', error);
+    //console.error('Error in getAllItems:', error);
     return res.status(500).json({
       success: false,
       message: 'Error fetching items',

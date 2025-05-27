@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import axios from 'axios';
-const API_URL = 'https://bill-invoice-dashboard.onrender.com';
+import { useAuth } from '../contexts/AuthContext';
 
 
 export default function AddInventoryModal({ closeModal, onItemAdded }) {
+  const {apiurl} = useAuth()
   const [form, setForm] = useState({
     ItemId: '',
     itemName: '',
@@ -24,7 +25,7 @@ export default function AddInventoryModal({ closeModal, onItemAdded }) {
     setError('');
 
     try {
-      const response = await axios.post(`${API_URL}/inventory/add`, form);
+      const response = await axios.post(`${apiurl}/inventory/add`, form);
       if (response.data.success) {
         onItemAdded();
         closeModal();
@@ -32,7 +33,7 @@ export default function AddInventoryModal({ closeModal, onItemAdded }) {
         setError(response.data.message || 'Failed to add item. Please try again.');
       }
     } catch (error) {
-      console.error("Error adding item:", error);
+      //console.error("Error adding item:", error);
       setError(error.response?.data?.message || 'Failed to add item. Please try again.');
     } finally {
       setIsSubmitting(false);

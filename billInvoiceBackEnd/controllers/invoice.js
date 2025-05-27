@@ -1,10 +1,11 @@
 const Customer = require('../model/Customer');
-const Invoice = require('../model/invoice');
+const Invoice = require('../model/invoice.js')
+
+
 const createInvoice = async (req, res) => {
   try {
     const {
       customer,
-      invoiceNumber,
       items,
       subtotal,
       totalGST,
@@ -15,8 +16,6 @@ const createInvoice = async (req, res) => {
       remainingBalance
     } = req.body;
 
-    // //console.log('Creating invoice with data:', req.body);
-
     // Validate required fields
     if (!customer || !items || !grandTotal) {
       return res.status(400).json({
@@ -25,40 +24,102 @@ const createInvoice = async (req, res) => {
       });
     }
 
+    // Get customer details
+    const customerDetails = await Customer.findById(customer);
+    if (!customerDetails) {
+      return res.status(404).json({
+        success: false,
+        message: 'Customer not found'
+      });
+    }
+
+    // Generate invoice number
+    const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
     // Create the invoice
     const invoice = await Invoice.create({
       customerId: customer,
-      customerName: req.body.customer.name || 'Customer',
-      invoiceNumber: invoiceNumber || `INV-${Date.now()}`,
+      customerName: customerDetails.name,
+      invoiceNumber,
       date: new Date(),
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       items: items.map(item => ({
         productId: item.item || item.itemId,
-        productName: item.item || item.name,
-        quantity: Number(item.quantity || item.qty),
+        productName: item.name,
+        quantity: Number(item.quantity),
         price: Number(item.price),
-        amount: Number(item.price) * Number(item.quantity || item.qty)
+        discount: Number(item.discount || 0),
+        gstRate: Number(item.gstRate || 18),
+        amount: Number(item.price) * Number(item.quantity) * (1 - Number(item.discount || 0) / 100)
       })),
       subtotal: Number(subtotal),
       tax: Number(totalGST),
-      amount: Number(grandTotal),
-      status: amountPaid >= grandTotal ? 'paid' : 'pending',
+      totalAmount: Number(grandTotal),
+      status: Number(amountPaid) >= Number(grandTotal) ? 'paid' : 'pending',
+      paymentMethod,
+      amountPaid: Number(amountPaid) || 0,
+      previousBalance: Number(previousBalance) || 0,
+      remainingBalance: Number(remainingBalance) || 0,
       notes: `Payment Method: ${paymentMethod}`,
       paymentTerms: 'Net 30',
-      createdBy: customer // Using customer ID as created by for now
+      createdBy: customer
     });
 
     // Update customer balance
     await Customer.findByIdAndUpdate(
       customer,
-      { $set: { balance: Number(remainingBalance) } },
+      { 
+        $set: { balance: Number(remainingBalance) },
+        $push: { invoice: invoice._id }
+      },
       { new: true }
     );
+
+    // Populate customer details in the response
+    const populatedInvoice = await Invoice.findById(invoice._id)
+      .populate('customerId', 'name email phoneNumber address gstNumber balance')
+      .populate('items.productId', 'name price');
+
+    // Format the response for frontend
+    const formattedInvoice = {
+      _id: populatedInvoice._id,
+      invoiceNumber: populatedInvoice.invoiceNumber,
+      date: populatedInvoice.date,
+      customer: {
+        id: populatedInvoice.customerId._id,
+        name: populatedInvoice.customerId.name,
+        email: populatedInvoice.customerId.email,
+        phone: populatedInvoice.customerId.phoneNumber,
+        address: populatedInvoice.customerId.address,
+        gstNumber: populatedInvoice.customerId.gstNumber,
+        balance: populatedInvoice.customerId.balance
+      },
+      items: populatedInvoice.items.map(item => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: item.price,
+        discount: item.discount,
+        gstRate: item.gstRate,
+        amount: item.amount
+      })),
+      totals: {
+        subtotal: populatedInvoice.subtotal,
+        tax: populatedInvoice.tax,
+        grandTotal: populatedInvoice.totalAmount
+      },
+      payment: {
+        method: populatedInvoice.paymentMethod,
+        amountPaid: populatedInvoice.amountPaid,
+        previousBalance: populatedInvoice.previousBalance,
+        remainingBalance: populatedInvoice.remainingBalance
+      },
+      status: populatedInvoice.status
+    };
 
     res.status(201).json({
       success: true,
       message: 'Invoice created successfully',
-      invoice
+      invoice: formattedInvoice
     });
   } catch (error) {
     console.error('Invoice creation error:', error);
@@ -69,6 +130,10 @@ const createInvoice = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 const getGSTSummary = async (req, res) => {
   try {
@@ -107,7 +172,7 @@ const getGSTSummary = async (req, res) => {
       totalInvoices: invoices.length
     });
   } catch (error) {
-    console.error('GST summary error:', error);
+    //console.error('GST summary error:', error);
     res.status(500).json({
       message: 'Failed to get GST summary',
       error: error.message
@@ -115,18 +180,13 @@ const getGSTSummary = async (req, res) => {
   }
 };
 
-/**
- * @desc    Get all invoices
- * @route   GET /api/invoices
- * @access  Private
- */
+
 const getInvoices = async (req, res) => {
   try {
     const invoices = await Invoice.find({})
-      .populate('customerId', 'name address phone email') // Populate customer details
-      .sort({ date: -1 }); // Sort by date descending
+      // Sort by date descending
     
-    //console.log('Fetched invoices:', invoices);
+    console.log('Fetched invoices:', invoices);
     
     res.status(200).json({
       success: true,
@@ -134,7 +194,7 @@ const getInvoices = async (req, res) => {
       data: invoices
     });
   } catch (error) {
-    console.error('Error fetching invoices:', error);
+    //console.error('Error fetching invoices:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching invoices',
@@ -143,11 +203,7 @@ const getInvoices = async (req, res) => {
   }
 };
 
-/**
- * @desc    Get invoice by ID
- * @route   GET /api/invoices/:id
- * @access  Private
- */
+
 const getInvoiceById = async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id)
@@ -166,7 +222,7 @@ const getInvoiceById = async (req, res) => {
       invoice
     });
   } catch (error) {
-    console.error('Get invoice error:', error);
+    //console.error('Get invoice error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch invoice',
@@ -207,7 +263,7 @@ const getCustomerInvoices = async (req, res) => {
       invoices: formattedInvoices
     });
   } catch (error) {
-    console.error('Error fetching customer invoices:', error);
+    //console.error('Error fetching customer invoices:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch customer invoices',
@@ -302,7 +358,7 @@ const addInvoice = async (req, res) => {
       invoice
     });
   } catch (error) {
-    console.error('Invoice creation error:', error);
+    //console.error('Invoice creation error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create invoice',

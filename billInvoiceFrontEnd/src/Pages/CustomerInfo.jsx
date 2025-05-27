@@ -49,7 +49,7 @@ method on the event object `e` if `e` is not `null` or `undefined`. */
         return newSelected;
       });
     } catch (error) {
-      console.error("Delete failed:", error);
+      //console.error("Delete failed:", error);
     }
   };
 
@@ -62,7 +62,7 @@ method on the event object `e` if `e` is not `null` or `undefined`. */
       }
       setSelectedCustomers(new Set());
     } catch (error) {
-      console.error("Bulk delete failed:", error);
+      //console.error("Bulk delete failed:", error);
     }
   };
 
@@ -92,7 +92,7 @@ method on the event object `e` if `e` is not `null` or `undefined`. */
         setIsModalOpen(false);
       }
     } catch (error) {
-      console.error("Add customer failed:", error.message);
+      //console.error("Add customer failed:", error.message);
       // The error will be handled by the AddCustomerModal component
       throw error;
     }
@@ -177,7 +177,7 @@ method on the event object `e` if `e` is not `null` or `undefined`. */
                       onClick={() => handleCustomerClick(customer)}
                       className="hover:bg-gray-50 cursor-pointer"
                     >
-                      {/* {//console.log(customer)} */}
+                      {/* {////console.log(customer)} */}
                       <td className="px-6 py-4 whitespace-nowrap">{customer.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{customer.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{customer.phoneNumber}</td>

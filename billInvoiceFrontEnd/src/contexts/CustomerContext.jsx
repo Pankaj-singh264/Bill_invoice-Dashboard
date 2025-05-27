@@ -25,7 +25,7 @@ export function CustomerProvider({ children }) {
       setCustomers(response.data.data || []);
       setError(null);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      //console.error('Error fetching customers:', error);
       setError('Failed to fetch customers');
     } finally {
       setLoading(false);
@@ -50,7 +50,7 @@ export function CustomerProvider({ children }) {
         throw new Error(response.data.error || 'Failed to add customer');
       }
     } catch (error) {
-      console.error('Error adding customer:', error);
+      //console.error('Error adding customer:', error);
       const errorMessage = error.response?.data?.error || error.message;
       throw new Error(errorMessage);
     }
@@ -70,7 +70,7 @@ export function CustomerProvider({ children }) {
         throw new Error(response.data.error || 'Failed to update customer');
       }
     } catch (error) {
-      console.error('Error updating customer:', error);
+      //console.error('Error updating customer:', error);
       const errorMessage = error.response?.data?.error || error.message;
       throw new Error(errorMessage);
     }
@@ -85,7 +85,7 @@ export function CustomerProvider({ children }) {
         throw new Error(response.data.error || 'Failed to delete customer');
       }
     } catch (error) {
-      console.error('Error deleting customer:', error);
+      //console.error('Error deleting customer:', error);
       const errorMessage = error.response?.data?.error || error.message;
       throw new Error(errorMessage);
     }

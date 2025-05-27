@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // API Configuration
-export const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+export const API_URL ='http://localhost:5000' ||'https://bill-invoice-dashboard.onrender.com' ;
 
 // Configure axios defaults
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -136,7 +136,7 @@ export const AuthProvider = ({ children }) => {
             const freshUserData = await AuthService.getUserProfile();
             setCurrentUser(freshUserData);
           } catch (error) {
-            console.error("Error fetching fresh user data:", error);
+            //console.error("Error fetching fresh user data:", error);
             // Already using fallback data from above
           }
         }
@@ -155,7 +155,7 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(fullProfileData);
       return response;
     } catch (error) {
-      console.error("Login error:", error);
+      //console.error("Login error:", error);
       throw error;
     }
   };
@@ -170,7 +170,7 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(fullProfileData);
       return response;
     } catch (error) {
-      console.error("Registration error:", error);
+      //console.error("Registration error:", error);
       throw error;
     }
   };
@@ -182,7 +182,7 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(response);
       return response;
     } catch (error) {
-      console.error("Profile update error:", error);
+      //console.error("Profile update error:", error);
       throw error;
     }
   };
@@ -192,13 +192,13 @@ export const AuthProvider = ({ children }) => {
   const refreshUserData = async () => {
     // Prevent multiple simultaneous refresh calls
     if (isRefreshing) {
-      console.log("Already refreshing user data, skipping duplicate request");
+      //console.log("Already refreshing user data, skipping duplicate request");
       return currentUser;
     }
     
     try {
       setIsRefreshing(true);
-      console.log("Refreshing user data from server");
+      //console.log("Refreshing user data from server");
       const freshUserData = await AuthService.getUserProfile();
       if (freshUserData) {
         setCurrentUser(freshUserData);
@@ -206,7 +206,7 @@ export const AuthProvider = ({ children }) => {
       }
       return currentUser;
     } catch (error) {
-      console.error("Error refreshing user data:", error);
+      //console.error("Error refreshing user data:", error);
       return currentUser;
     } finally {
       setIsRefreshing(false);

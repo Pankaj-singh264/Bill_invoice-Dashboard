@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { HiArrowLeft, HiDownload, HiPrinter } from 'react-icons/hi';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function InvoiceDetails() {
   const [invoice, setInvoice] = useState(null);
@@ -9,10 +10,11 @@ export default function InvoiceDetails() {
   const [error, setError] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
-  const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+  // const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+  const {apiurl} = useAuth()
 
   useEffect(() => {
-    // console.log("id", id);
+    // //console.log("id", id);
     fetchInvoiceDetails();
   }, [id]);
 
@@ -22,12 +24,12 @@ export default function InvoiceDetails() {
       const response = await axios.get(`${API_URL}/invoices/${id}`);
       if (response.data.success) {
         setInvoice(response.data.invoice);
-        console.log("invoice", response.data.invoice);
+        //console.log("invoice", response.data.invoice);
       } else {
         setError(response.data.message || 'Failed to load invoice details');
       }
     } catch (error) {
-      console.error('Error fetching invoice:', error);
+      //console.error('Error fetching invoice:', error);
       setError(error.response?.data?.message || 'Failed to load invoice details');
     } finally {
       setLoading(false);
@@ -47,7 +49,7 @@ export default function InvoiceDetails() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Error downloading invoice:', error);
+      //console.error('Error downloading invoice:', error);
     }
   };
 

@@ -6,6 +6,7 @@ const invoiceController = require('../controllers/customerInvoiceController');
 // Customer routes
 router.post('/', customerController.addCustomer);
 router.get('/', customerController.getAllCustomers);
+router.get('/:id',customerController.getCustomerbyId)
 router.delete('/:id', customerController.deleteCustomer);
 router.post('/delete-multiple', customerController.deleteMultipleCustomers);
 router.put('/:id', customerController.updateCustomer);

@@ -67,7 +67,7 @@ const AddCustomerModal = ({ onClose, onCustomerAdded }) => {
       await onCustomerAdded(customerData);
       onClose();
     } catch (error) {
-      console.error('Error adding customer:', error);
+      //console.error('Error adding customer:', error);
       setError(error.message || 'Failed to add customer. Please try again.');
     } finally {
       setIsSubmitting(false);

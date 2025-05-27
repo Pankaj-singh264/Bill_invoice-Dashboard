@@ -11,7 +11,7 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
-  // console.log(currentUser)
+  // //console.log(currentUser)
 
   const handleLinkClick = () => {
     setMobileOpen(false);

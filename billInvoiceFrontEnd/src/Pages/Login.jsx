@@ -20,10 +20,7 @@ const Login = () => {
     });
   };
 
-  const handleBack = () => {
-    navigate('/home');
-  };
-
+ 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -51,13 +48,7 @@ const Login = () => {
 
   return (
     <div className="relative flex items-center justify-center h-screen bg-gray-50">
-      <button 
-        onClick={handleBack}
-        aria-label="Go back to homepage"
-        className="absolute top-4 left-4 text-4xl font-bold text-gray-800 hover:text-gray-600"
-      >
-        ←
-      </button>
+  
       
       <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
         <form onSubmit={handleLogin} className="flex flex-col items-center">

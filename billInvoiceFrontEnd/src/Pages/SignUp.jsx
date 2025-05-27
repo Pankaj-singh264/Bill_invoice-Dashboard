@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 const SignUp = () => {
   // const { userData } = useLocation().state;
   const { currentUser, register, updateProfile, apiUrl } = useAuth();
-  // console.log(currentUser)
+  // //console.log(currentUser)
   const navigate = useNavigate();
   
   // Form state
@@ -66,7 +66,7 @@ const SignUp = () => {
 
       // Set logo preview if available
       if (currentUser.logo) {
-        // console.log("currentUser.logo", currentUser.logo)
+        // //console.log("currentUser.logo", currentUser.logo)
         // setLogoPreview(`${'https://bill-invoice-dashboard.onrender.com' || 'http://localhost:5000/api/signature`);
         setLogoPreview(currentUser.logo)
       }
@@ -286,7 +286,7 @@ const SignUp = () => {
       }, 2000);
       
     } catch (error) {
-      console.error('Form submission error:', error);
+      //console.error('Form submission error:', error);
       setSubmitError(
         error.response?.data?.message || 
         (currentUser ? 'Profile update failed.' : 'Registration failed.') + 

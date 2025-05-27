@@ -24,7 +24,7 @@ const allItems = async (req, res) => {
 // Add a new item
 const addItem = async (req, res) => {
     try {
-        //console.log('Request body:', req.body);
+        ////console.log('Request body:', req.body);
         const {  name, price, quantity, discount, gstRate } = req.body;
 
         // Basic validation
@@ -47,7 +47,7 @@ const addItem = async (req, res) => {
             item
         });
     } catch (error) {
-        console.error('Error in addItem:', error);
+        //console.error('Error in addItem:', error);
         return sendError(res, 500, error.message || 'Internal server error while creating item');
     }
 };

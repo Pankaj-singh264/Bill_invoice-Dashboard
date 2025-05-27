@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
-  const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
+  // const API_URL = 'https://bill-invoice-dashboard.onrender.com' ;
 
 export default function EditInventoryModal({ item, closeModal, onItemUpdated }) {
   const [form, setForm] = useState({
@@ -13,6 +14,7 @@ export default function EditInventoryModal({ item, closeModal, onItemUpdated }) 
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const {apiurl} = useAuth();
 
   useEffect(() => {
     if (item) {
@@ -37,11 +39,11 @@ export default function EditInventoryModal({ item, closeModal, onItemUpdated }) 
 
     try {
       // await axios.put(`http://localhost:5000/api/inventory/${item._id}`, form);
-      await axios.put(`${API_URL}/${item._id}`, form);
+      await axios.put(`${apiurl}/${item._id}`, form);
       onItemUpdated();
       closeModal();
     } catch (error) {
-      console.error("Error updating item:", error);
+      //console.error("Error updating item:", error);
       setError('Failed to update item. Please try again.');
     } finally {
       setIsSubmitting(false);

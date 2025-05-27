@@ -142,7 +142,7 @@ const Dashboard = () => {
       setLoading(true);
       const response = await axios.get(`${apiUrl}/invoices`);
       const fetchedInvoices = response.data.data || [];
-      // //console.log(fetchedInvoices);
+      // ////console.log(fetchedInvoices);
       
       // Save invoices to state
       setInvoices(fetchedInvoices);
@@ -152,7 +152,7 @@ const Dashboard = () => {
       setDashboardData(stats);
       setDashboardError(null);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      //console.error('Error fetching dashboard data:', error);
       setDashboardError('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -342,10 +342,10 @@ const Dashboard = () => {
         </div>
 
         {/* Revenue Chart and Recent Invoices */}
-        <div className="grid grid-cols-2 w-full border"> 
-          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow w-[800px] mb-6 p-6 flex-1`}>
+        <div className="grid  px-3 py-2 grid-cols-1  sm:grid-cols-2 w-full gap-2 border"> 
+          <div className="w-full">
             <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>Revenue Trends</h2>
-            <div className="h-80">
+            <div className="h-92 w-[800px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={revenueData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#4B5563' : '#E5E7EB'} />
@@ -379,7 +379,7 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activities */}
-          <div className="w-3/5 justify-self-end">
+          <div className="md:w-[400px] md:justify-self-end">
             <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow`}>
               <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                 <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Invoices</h2>

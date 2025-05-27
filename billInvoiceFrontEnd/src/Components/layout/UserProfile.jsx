@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 const UserProfile = ({ user, collapsed, onMobileClose }) => {
   const { apiUrl } = useAuth();
   const [logoUrl, setLogoUrl] = useState(null);
-  // console.log("user.logo", user.logo)
+  // //console.log("user.logo", user.logo)
 
   useEffect(() => {
     const fetchLogo = async () => {
@@ -18,9 +18,9 @@ const UserProfile = ({ user, collapsed, onMobileClose }) => {
           
           // Create a blob URL from the response
           // const blob = new Blob([response.data], { type: response.headers['content-type'] });
-          // console.log("response.data", response.data)
+          // //console.log("response.data", response.data)
           const blob = response.data;
-          // console.log("blob", blob)
+          // //console.log("blob", blob)
           const url = URL.createObjectURL(blob);
           setLogoUrl(url);
 
@@ -29,7 +29,7 @@ const UserProfile = ({ user, collapsed, onMobileClose }) => {
             URL.revokeObjectURL(url);
           };
         } catch (error) {
-          console.error('Error fetching logo:', error);
+          //console.error('Error fetching logo:', error);
           setLogoUrl(null);
         }
       }
